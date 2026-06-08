@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何与AI对话 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#7C3AED; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #7C3AED20;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#7C3AED30; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #7C3AED30;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#7C3AED; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#8B5CF6;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#7C3AED30; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #8B5CF630;
+}
+.practice-step:hover { border-color:#7C3AED60; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #4C1D95 0%, #7C3AED 50%, #7C3AED 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">💬</div>
+                <h1 class="cover-title">如何与AI对话</h1>
+                <p class="cover-subtitle">从注意力机制到Prompt进阶——与AI高效协作的艺术</p>
+                <div class="cover-tag">基础系列·第四篇</div>
+            </div>
+            <div class="slide-nav">1 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">你会用AI聊天，但你真正理解"AI是怎么理解你的"吗？这篇文章从底层原理讲到高级对话策略，让你从"会用AI的人"变成"AI的深度协作者"。</p>
+            </div>
+            <div class="slide-nav">2 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">AI如何"理解"语言：从词向量到Transformer</h2>
+            </div>
+            <div class="slide-nav">3 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI眼中的语言，和你眼中的语言完全不同。要写出好Prompt，你需要理解这个底层差异。</p></div><div class="content-card"><p>词向量——把语言翻译成数学</p></div><div class="content-card"><p>AI不处理"字"——它处理"向量"（一串数字）。"猫"这个字在AI内部不是一个文字符号，而是一个300维的数字向量，比如[0.23, -0.45, 0.87, ...]。词向量的核心思想是：语义相近的词，向量也相近。"猫"和"狗"的词向量在数学空间中靠得很近，"猫"和"桌子"则离得很远。AI通过这种"空间关系"来建立词之间意义上的联系——这是所有自然语言处理的基础。</p></div><div class="content-card"><p>从RNN到Transformer——为什么这步跳跃改变了AI？</p></div><div class="content-card"><p>早期的语言模型用RNN——一个词一个词地处理，每个词的处理依赖上一个词的结果。这有两个致命缺陷：① 太慢——不能并行处理；② 长距离依赖——句子长了，前面的信息就"衰减"了。Transformer的创新：让句子中的每个词"同时关注"所有其他词。通过注意力机制直接计算任意两个词之间的"相关性分数"，不再依赖词序。这意味着"猫追狗"和"狗追猫"对Transformer来说不再是同一个套路——因为每个词和其他词的关系被明确建模了。</p></div><div class="content-card"><p>语言模型的"进化树"</p></div><div class="content-card"><ul class="bullet-list"><li>2013：Word2Vec——词向量的第一次大规模应用，"国王-男人+女人≈女王"的数学之美</li></ul></div>
+            </div>
+            <div class="slide-nav">4 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>• 2017：Transformer——"注意力就是一切"，改变了AI处理语言的根本方式</p></div><div class="content-card"><p>• 2018：BERT——双向理解上下文，"完形填空式"预训练，在理解任务上碾压前代</p></div><div class="content-card"><p>• 2018-2025：GPT系列——"预测下一个词"做到极致，从GPT-1（1.17亿参数）到GPT-4（万亿级），从"会接话"到"会推理"</p></div><div class="content-card"><p>• 2025：DeepSeek、Claude、Gemini等——开源与多模态成为新常态</p></div>
+            </div>
+            <div class="slide-nav">5 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：想象你是AI——把一句话"翻译"成关注关系</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>取一句话："小明把作业交给老师，他很高兴。"对每个实词（小明/作业/老师/高兴），标注它应该"关注"句子中哪些其他词。比如"他"应该关注"小明"——这就是注意力机制在做的事。如果你设计错了关注关系（"他"关注了"老师"），句子的理解就完全变了——体会注意力为什么如此重要。</p></div>
+            </div>
+            <div class="slide-nav">6 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">注意力机制深度解析：Q、K、V——三个字母背后的魔法</h2>
+            </div>
+            <div class="slide-nav">7 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>注意力机制是整个现代AI大厦的基石。它的核心思想可以用三个字母概括：Q、K、V。</p></div><div class="content-card"><p>图书馆比喻——最直观的理解方式</p></div><div class="content-card"><p>你去图书馆找资料。你脑子里的问题就是Q（Query，查询）——"我想找关于XX的书"。图书馆每本书的索引标签就是K（Key，键）——"这本书讲的是XX"。你把你的Q和每本书的K做匹配，匹配度越高，你对这本书的"注意力"就越高。最终你从匹配度最高的几本书中提取内容——这些内容就是V（Value，值）。AI的注意力机制做的事情完全一样——计算Q和所有K的相似度，用相似度作为权重，对V做加权求和。</p></div><div class="content-card"><p>Q、K、V在自注意力中的角色</p></div><div class="content-card"><p>自注意力（Self-Attention）的特例：Q、K、V都来自同一句话。对于句子"那只猫因为太胖所以跑得很慢"，处理"跑"这个词时：Q（"我应该关注哪些词？"）与所有词（包括自己）的K匹配，发现"猫"（主体）和"慢"（状态）的匹配度最高——于是"跑"对"猫"和"慢"分配高注意力权重。这就是AI"理解"了"跑得慢"是因为"猫太胖"。</p></div><div class="content-card"><p>多头注意力——"多个视角同时看"</p></div><div class="content-card"><p>单头注意力只能从一个角度理解句子。多头注意力让AI同时从多个角度（多个Q、K、V组）关注——一个头关注"语法关系"，一个头关注"指代关系"，一个头关注"语义关联"。最后把所有头的结果拼接在一起，得到更丰富的"理解"。GPT-3有96个注意力头——你可以想象成96个不同的"专家"同时从96个角度看一句话。</p></div>
+            </div>
+            <div class="slide-nav">8 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：用"图书馆比喻"理解一次搜索</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>打开你常用的AI工具，问一个问题。在AI返回回答后，用Q/K/V的框架分析：你的问题中的关键词是什么（Q）？AI在自己的知识库里匹配到了什么（K的匹配）？AI最终提取了什么信息作为回答（V）？试着理解AI的"注意力分配"——它在什么信息上"花了最多的注意力"。</p></div>
+            </div>
+            <div class="slide-nav">9 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">Prompt工程进阶：思维链、少样本学习、角色扮演</h2>
+            </div>
+            <div class="slide-nav">10 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>基础Prompt是"告诉AI做什么"，进阶Prompt是"教AI怎么思考"。这三项高级技巧能让你从"AI使用者"升级为"AI指挥家"。</p></div><div class="content-card"><p>思维链（Chain of Thought）——让AI"展示推理过程"</p></div><div class="content-card"><p>直接问AI一道复杂数学题，它可能犯错。但如果你加上一句"请一步一步思考，展示你的推理过程"，准确率会大幅提升。原理：AI生成每个Token时都在看前面的所有内容——如果它先把推理过程写出来，后面生成答案时就能"看见"自己的推理，从而减少错误。技巧：你的Prompt越复杂，越应该要求AI展示中间步骤——不仅是"得出什么结论"，更是"为什么得出这个结论"。</p></div><div class="content-card"><p>少样本学习（Few-shot）——"我给你示范几个"</p></div><div class="content-card"><p>与其用语言描述你想要的格式和风格，不如直接给AI看几个例子。这就是少样本学习——在Prompt中放入2-3个“输入→输出”的示例，AI会自动学会你的模式。“请把以下句子翻译成文言文。示例：‘我今天很开心’ → ‘今日甚欢’。‘明天要下雨’ → ‘明日将雨’。现在请翻译：‘他昨天去了学校’。”这种“示范”的方式比“描述要求”准确得多——AI是模仿大师，给它模板比给它指令更有效。</p></div><div class="content-card"><p>角色扮演——设定AI的"人格"</p></div><div class="content-card"><p>角色扮演不只是"好玩"——它切实影响AI的输出质量。让AI扮演"资深SEO专家"来写SEO文章，和让它直接写，用词、结构、深度完全不同。有效角色设定的三个层级：① 专业身份（"你是XX领域的专家"）② 认知风格（"你习惯用第一性原理思考"）③ 输出偏好（"你说话简洁直接，喜欢用类比"）。三层叠加拿出来的效果，是单层身份设定的数倍。</p></div>
+            </div>
+            <div class="slide-nav">11 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：设计一个"三步Prompt"</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>选一个复杂任务（如"制定一个健身计划"或"分析一家公司的商业模式"），设计一个三步Prompt：第一步设定角色和任务，第二步加入2-3个示例（Few-shot），第三步要求AI"分步骤思考，展示推理过程"（CoT）。把三步合成一条完整的Prompt发给AI——观察输出质量和直接用简单Prompt的差异。</p></div>
+            </div>
+            <div class="slide-nav">12 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">多轮对话策略：如何让AI记住上下文并保持一致性</h2>
+            </div>
+            <div class="slide-nav">13 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>单轮问答是"问一句答一句"——浅层交互。多轮对话是"持续深入的协作"——这才是AI的真正力量所在。</p></div><div class="content-card"><p>上下文的运作方式</p></div><div class="content-card"><p>每次你发消息，AI都把你的消息和之前的对话历史一起"喂"给模型。AI看不到"对话之外"的任何信息——它只能看到当前这个窗口里的内容。这就是为什么：如果你在对话中修改了一个设定，后面AI会按新设定回应；如果你切换了话题，AI会"忘记"之前聊的内容（当旧话题被推到窗口之外时）。理解这个机制，你就能掌控对话。</p></div><div class="content-card"><p>保持一致性的四个策略</p></div><div class="content-card"><p>策略一：定期"回顾"。在长对话中每隔几轮就说一句"基于以上讨论，目前我们达成的共识是……"，让AI把关键信息重新确认一遍——避免它"记错"。</p></div><div class="content-card"><p>策略二：关键信息放在最后一条消息中。AI对最近的消息"注意力"最高——如果你需要AI特别记住某件事，把它放在你最新一条消息里。</p></div><div class="content-card"><p>策略三：设定"系统级约束"。对话开始时就设定规则——"在本次对话中，请始终保持以下设定：……"——AI会在整个对话中遵守这个初始设定。</p></div>
+            </div>
+            <div class="slide-nav">14 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>策略四：分层次管理信息。第一层"核心约束"（放在对话开头）→ 第二层"当前任务"（每次提问时重申）→ 第三层"辅助信息"（需要时才提）。不要让辅助信息抢占核心约束的"注意力"。</p></div>
+            </div>
+            <div class="slide-nav">15 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：开启一次长对话协作</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>找一个你想深入探讨或解决的问题（如"帮我设计一个学习计划"或"和我一起头脑风暴一个创业想法"），用至少10轮对话来完成。在过程中运用本节的两个策略（定期回顾和关键信息放在最后），结束后复盘：AI有没有出现"忘记之前说了什么"的情况？从哪一轮开始？</p></div>
+            </div>
+            <div class="slide-nav">16 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第五课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">长文本与复杂任务：分段处理、摘要提取、结构化输出</h2>
+            </div>
+            <div class="slide-nav">17 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>当任务超出了单次对话的处理范围——比如分析一本200页的书、写一篇8000字的报告——你需要一套"拆解复杂任务"的方法论。</p></div><div class="content-card"><p>分段处理——"把大象切成块"</p></div><div class="content-card"><p>AI的单次处理有上限（即使在上下文中可以放整本书，处理质量也会下降——长上下文中的"中间遗忘"现象）。策略：把大文本分成多个"块"（每块约2000-5000字），逐个发给AI处理，每块提取关键信息。汇总所有块的关键信息后，再做整体分析。这就像做论文文献综述——先读每篇文章做摘要，然后汇总摘要写综述。</p></div><div class="content-card"><p>摘要提取——"从100页到1页"</p></div><div class="content-card"><p>让AI对各分段逐一生成摘要（不是复制全文），然后对摘要做摘要——这是处理超长文档的标准流程。第一轮：逐段摘要（关键论点+证据+结论）；第二轮：摘要汇总——从所有段落摘要中找出主题、模式、矛盾；第三轮：综合报告——基于前两步输出一份完整的分析报告。每轮聚焦不同层次的信息，避免AI"摊大饼式"地处理。</p></div><div class="content-card"><p>结构化输出——"让AI填表"</p></div><div class="content-card"><p>复杂任务的最好管理方式是要求AI输出结构化信息——JSON格式、Markdown表格、或按模板回答。结构化输出有三个好处：① 你一眼就能判断输出是否完整 ② 方便程序化处理（如果你要把AI输出接入代码） ③ 强迫AI用"分析"的方式思考，而不是"叙述"的方式。在Prompt结尾加一句"请按以下格式输出：[具体格式说明]"——效果立竿见影。</p></div>
+            </div>
+            <div class="slide-nav">18 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：用分段法分析一篇长文</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>找一篇你收藏但一直没时间细读的长文章（5000字以上），用分段处理法：① 把文章分成3-5段 ② 让AI为每段写100字摘要 ③ 汇总所有摘要，让AI"找出三个核心观点和一个矛盾点"。对比：你手工读一遍的感受vs AI提取的结构——差异在哪里？AI漏掉了什么？</p></div>
+            </div>
+            <div class="slide-nav">19 / 24</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F5F3FF 0%, #7C3AED15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#7C3AED;color:white;">第六课</div>
+                <h2 class="lesson-title" style="color:#7C3AED;">AI时代的思维方式：从使用工具到协作伙伴——心态的转变</h2>
+            </div>
+            <div class="slide-nav">20 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>最后一课不讲技术——讲心态。未来5-10年，最大的竞争力差异不是"会不会用AI"，而是"如何看待AI"。</p></div><div class="content-card"><p>从"替代焦虑"到"增强思维"</p></div><div class="content-card"><p>"AI会取代我的工作吗？"——更好的问题是："有了AI，我能做到以前做不到的什么？"一个会用AI的设计师不是"被替代"了——而是从"月出10张图"变成了"月出100张精品图+10个创意方向"。一个会用AI的学生不是"不用学习了"——而是从"花3小时写一篇作文"变成了"花3小时写出3篇完全不同风格的文章然后选最好的"。AI增强的是你的能力上限，不是降低你的价值。</p></div><div class="content-card"><p>批判性思维——AI时代最重要的能力</p></div><div class="content-card"><p>当AI可以瞬间生成你想要的任何内容时，"判断力"变成了最稀缺的能力。这个回答可信吗？这段话的逻辑有漏洞吗？这个方案的可行性高吗？——AI把"生产"的成本降到几乎为零，但"判断"的成本没有降。学会判断AI输出的质量、准确性、适用性——这将是你使用AI最大的杠杆。</p></div><div class="content-card"><p>你的不可替代性</p></div><div class="content-card"><p>AI做不了的事：提出一个真正原创的问题、基于个人经历做出情感判断、面对模糊情境做出决策、承担一个决定的后果和责任。你经历过的每一次失败、体验到的每一次感动、做出的每一个选择——这些都是AI没有的。你的经历、品味、价值观和判断力，决定了"同样的AI工具在你手里会变得不一样"。</p></div>
+            </div>
+            <div class="slide-nav">21 / 24</div>
+        </div>
+        <div class="slide content-slide" style="background:#F5F3FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>一个思考框架：AI协作四象限</p></div><div class="content-card"><p>把任务分成四类来思考与AI的协作方式：① AI强+你弱 → 完全交给AI（如数据清洗、打字排版）② AI强+你强 → 你定方向，AI生成初稿，你来精修（如写文章、做设计）③ AI弱+你强 → 你主导，AI辅助（如战略判断、原创研究）④ AI弱+你弱 → 一起学习（如新领域探索——你们是同学）。清晰地对每个任务定位，你的效率会是混乱使用的数倍。</p></div>
+            </div>
+            <div class="slide-nav">22 / 24</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);">
+            <div class="practice-header" style="border-color:#7C3AED;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#7C3AED;">动手试一试：画一张你个人的"AI协作四象限"</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#7C3AED;"></span><p>列出你日常学习/工作/创作中常做的10件事。把每件事放进AI协作四象限中。问自己：哪些事我一直在"AI弱+我弱"的象限里挣扎？哪些事我应该更多地交给AI？这份清单会成为你未来使用AI的行动指南。</p></div>
+            </div>
+            <div class="slide-nav">23 / 24</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #4C1D95 0%, #7C3AED 50%, #7C3AED 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">如何与AI对话 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI是什么 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#2563EB; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #2563EB20;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#2563EB30; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #2563EB30;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#2563EB; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#3B82F6;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#2563EB30; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #3B82F630;
+}
+.practice-step:hover { border-color:#2563EB60; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #1E3A5F 0%, #2563EB 50%, #2563EB 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">🤖</div>
+                <h1 class="cover-title">AI是什么</h1>
+                <p class="cover-subtitle">从零开始，用生活的语言理解人工智能</p>
+                <div class="cover-tag">基础系列·第一篇</div>
+            </div>
+            <div class="slide-nav">1 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">人工智能正在改变世界，但"AI到底是什么"这个问题，大多数人都说不清楚。这篇文章用四节课，从生活中的例子出发，带你建立关于AI的完整认知框架。不需要任何技术背景——你只需要有一颗好奇心。</p>
+            </div>
+            <div class="slide-nav">2 / 19</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #EFF6FF 0%, #2563EB15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#2563EB;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#2563EB;">什么是人工智能？用生活中的例子理解AI的本质</h2>
+            </div>
+            <div class="slide-nav">3 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>"AI"这个词你每天都在听——手机里的语音助手、短视频的推荐算法、能写作文的ChatGPT——但AI到底是个什么东西？</p></div><div class="content-card"><p>一个简单的比喻：接龙游戏</p></div><div class="content-card"><p>想象你在玩一个文字接龙游戏：你说了上句，AI猜下句。这不是什么魔法——它只是从海量文本中学到了"在类似情况下，最可能接下什么"。天气预报预测明天下不下雨，AI预测下一个字是什么。两者用的其实是同一种思维方式：从已有的数据中找规律，然后用规律去预测未知。</p></div><div class="content-card"><p>AI三要素：数据、算法、算力</p></div><div class="content-card"><p>任何AI系统都由三个要素支撑：数据（Data）是"学习的材料"——AI从数据中发现规律；算法（Algorithm）是"学习的方法"——怎么从数据中提取有用的信息；算力（Computing Power）是"学习的体能"——需要多少计算资源来跑完这个过程。三者缺一不可。数据相当于"教材"，算法相当于"学习方法"，算力相当于"学多久、多快"。</p></div><div class="content-card"><p>传统编程 vs 机器学习</p></div><div class="content-card"><p>传统编程是"你告诉电脑每一步怎么做"——输入规则和数据，输出结果。机器学习把这个逻辑倒过来：输入数据和结果，让电脑自己找出规则。比如，传统方法是"写一套识别猫的规则（有胡须、尖耳朵……）"，机器学习的做法是"给AI看一万张猫的照片和一万张非猫的照片，让它自己学会区分"。这个差别，是AI革命的起点。</p></div>
+            </div>
+            <div class="slide-nav">4 / 19</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);">
+            <div class="practice-header" style="border-color:#2563EB;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#2563EB;">动手试一试：找出你身边的AI</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#2563EB;"></span><p>列一个清单——今天你遇到的AI有哪些？手机人脸解锁、抖音推荐、高德导航、淘宝猜你喜欢……每找到一个，想一想它背后是"传统编程"还是"机器学习"？</p></div>
+            </div>
+            <div class="slide-nav">5 / 19</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #EFF6FF 0%, #2563EB15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#2563EB;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#2563EB;">AI简史：从图灵到达特茅斯，从寒冬到爆发</h2>
+            </div>
+            <div class="slide-nav">6 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI不是一夜之间冒出来的。它的历史可以追溯到70年前——经历了"三起两落"的螺旋式发展。</p></div><div class="content-card"><p>1950年：图灵测试——"机器能思考吗？"</p></div><div class="content-card"><p>艾伦·图灵发表论文《计算机器与智能》，提出了著名的"图灵测试"：如果一台机器能在对话中让人无法分辨它是机器还是人，就可以认为它具有智能。这个大胆的问题，为整个AI领域奠定了哲学基石。</p></div><div class="content-card"><p>1956年：达特茅斯会议——AI的"出生证"</p></div><div class="content-card"><p>约翰·麦卡锡等科学家在达特茅斯学院召开夏季研讨会，首次提出"Artificial Intelligence（人工智能）"这个术语。他们乐观地认为"一个夏天就能解决AI的核心问题"——后来证明，这个预言乐观了整整60年。</p></div><div class="content-card"><p>1970s-1980s：第一次AI寒冬与专家系统</p></div><div class="content-card"><p>早期AI遇到瓶颈——单层神经网络连"异或"（XOR）问题都解决不了。政府削减经费，研究陷入低谷，这就是第一次"AI寒冬"。到了80年代，"专家系统"（把人类专家的知识写成规则让电脑执行）让AI重新获得关注，但它也有致命缺陷：规则要人工一条条写，稍微复杂一点的领域就写不完了。</p></div>
+            </div>
+            <div class="slide-nav">7 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>2012年至今：深度学习的爆发</p></div><div class="content-card"><p>2012年，AlexNet在ImageNet图像识别比赛中以巨大优势夺冠，用的技术叫"深度学习"——本质上就是多层神经网络。这不是什么新算法，而是三个条件终于同时满足：海量数据（互联网产生了足够的学习材料）、强大算力（GPU能并行处理矩阵运算）、成熟的算法（反向传播训练深层网络）。此后，AlphaGo击败李世石（2016）、Transformer架构诞生（2017）、ChatGPT引爆全球（2022）——AI进入"大爆发"时代。</p></div><div class="content-card"><p>2025-2026年，AI进入"智能体（Agent）"时代——AI不仅能回答问题，还能自主完成复杂任务：写代码、做研究、管理日程。这可能是又一次范式转变的开始。</p></div>
+            </div>
+            <div class="slide-nav">8 / 19</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);">
+            <div class="practice-header" style="border-color:#2563EB;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#2563EB;">动手试一试：画出AI发展时间线</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#2563EB;"></span><p>在一张纸上画出五个关键节点：1950（图灵测试）→ 1956（达特茅斯）→ 2012（深度学习）→ 2022（ChatGPT）→ 2026（智能体时代）。在下面写一句话总结每个时代的核心特征。</p></div>
+            </div>
+            <div class="slide-nav">9 / 19</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #EFF6FF 0%, #2563EB15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#2563EB;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#2563EB;">AI的分类：弱AI、强AI、超AI——我们在哪一层？</h2>
+            </div>
+            <div class="slide-nav">10 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>"AI"这个词包罗万象，但不是所有AI都是一回事。学术界通常把AI分为三个层次。</p></div><div class="content-card"><p>弱AI（ANI：Artificial Narrow Intelligence）——我们现在就在这里</p></div><div class="content-card"><p>"弱"不是说它能力差，而是说它"只会做一件事"。AlphaGo下围棋世界第一，但让它写一首诗就傻了；ChatGPT能聊天写代码，但它不是"理解"语言——只是"统计模仿"。目前世界上所有AI产品，无一例外，全部是弱AI。它们在一个特定领域表现惊人，但没有"通用智能"。</p></div><div class="content-card"><p>强AI（AGI：Artificial General Intelligence）——人类水平的通用智能</p></div><div class="content-card"><p>强AI指的是具备和人类同等水平的通用智能——能学习任何任务、能在不同领域之间迁移知识、有自我意识和真正的理解能力。注意：这不是"更聪明的ChatGPT"。强AI拥有的是"理解"而非"模仿"。目前强AI尚未实现，学术界对"何时能实现"的预测从5年到50年分歧极大。</p></div><div class="content-card"><p>超AI（ASI：Artificial Super Intelligence）——超越全人类</p></div><div class="content-card"><p>超AI在所有领域（包括创造力、社交能力、科学推理）都超越最聪明的人类。这是目前纯理论的概念——但一旦实现，人类文明将进入完全不可预知的新阶段。这也是为什么很多AI科学家在呼吁"AI安全研究"——我们需要在超AI到来之前做好准备。</p></div>
+            </div>
+            <div class="slide-nav">11 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>对于普通用户来说，最重要的是认清一个事实：当前所有AI工具都是弱AI。它们可以极其有用，但它们没有意识、没有意图、没有"想要"什么。把AI想得太神或太蠢，都是不准确的认知。</p></div>
+            </div>
+            <div class="slide-nav">12 / 19</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);">
+            <div class="practice-header" style="border-color:#2563EB;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#2563EB;">动手试一试：给AI产品分类</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#2563EB;"></span><p>打开你手机里的所有"智能"功能——Siri/小爱同学、抖音推荐、微信语音转文字、淘宝猜你喜欢、ChatGPT……对每一个功能问自己：它是弱AI吗？它擅长什么？它有什么明显的局限？</p></div>
+            </div>
+            <div class="slide-nav">13 / 19</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #EFF6FF 0%, #2563EB15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#2563EB;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#2563EB;">AI能做什么，不能做什么：打破神话，建立真实的认知</h2>
+            </div>
+            <div class="slide-nav">14 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>关于AI的神话和恐慌一样多。这一课帮你建立一张准确的"AI能力地图"。</p></div><div class="content-card"><p>AI擅长的事</p></div><div class="content-card"><ul class="bullet-list"><li>模式识别：在一百万张医疗影像中找到异常细胞——AI比人类快且准</li><li>内容生成：写邮件、做PPT、生成图片——前提是你给了足够好的指令</li><li>自然语言处理：翻译、摘要、分类、情感分析——文本处理是AI最强项之一</li><li>推荐与预测：猜你喜欢什么视频、预测下周的客流量——基于历史数据的推断</li></ul></div>
+            </div>
+            <div class="slide-nav">15 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>• 自动化重复劳动：数据录入、客服问答、代码审查——"无聊的事"AI最拿手</p></div><div class="content-card"><p>AI不擅长的事</p></div><div class="content-card"><ul class="bullet-list"><li>真正的理解：AI可以写出"感人"的文章，但它不理解"感人"是什么意思——它只是在模仿</li><li>常识推理：AI不知道"如果外面下雨，带伞比带防晒霜更合理"——除非数据里大量出现过这句话</li><li>创造性突破：AI可以组合已有的创意，但真正的"从零产生新想法"是人类独有的</li><li>价值判断：该不该做某件事？什么是对什么是错？这是人类的领域</li></ul></div>
+            </div>
+            <div class="slide-nav">16 / 19</div>
+        </div>
+        <div class="slide content-slide" style="background:#EFF6FF;">
+            <div class="content-scroll">
+                <div class="content-card"><p>• 可靠的事实核查：AI会"一本正经地胡说八道"（幻觉问题）——不要让它当你的唯一信息来源</p></div><div class="content-card"><p>核心认知：AI是工具，不是魔法</p></div><div class="content-card"><p>把AI当成一个超级实习生——学习能力强、干活速度快，但需要你给出清晰的指令，需要你审核它的输出，需要你做出最终的判断。会使用AI的人不会被AI取代——但不会使用AI的人，会被会使用AI的人取代。</p></div>
+            </div>
+            <div class="slide-nav">17 / 19</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);">
+            <div class="practice-header" style="border-color:#2563EB;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#2563EB;">动手试一试：测试AI的边界</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#2563EB;"></span><p>打开ChatGPT或DeepSeek，问它三个问题：① 一个它能漂亮回答的问题（如"写一首关于春天的五言绝句"）② 一个它可能犯错的问题（如"昨天发生了什么新闻"）③ 一个需要主观判断的问题（如"你觉得什么样的生活是幸福的"）。对比三个回答的质量差异，感受AI的能力边界。</p></div>
+            </div>
+            <div class="slide-nav">18 / 19</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #1E3A5F 0%, #2563EB 50%, #2563EB 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">AI是什么 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

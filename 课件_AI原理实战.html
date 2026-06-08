@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI原理实战 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#EA580C; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #EA580C20;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#EA580C30; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #EA580C30;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#EA580C; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#F97316;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#EA580C30; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #F9731630;
+}
+.practice-step:hover { border-color:#EA580C60; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #EA580C 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">⚡</div>
+                <h1 class="cover-title">AI原理实战</h1>
+                <p class="cover-subtitle">从环境搭建到完整AI项目——亲手写出你的第一个模型</p>
+                <div class="cover-tag">基础系列·第二篇</div>
+            </div>
+            <div class="slide-nav">1 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">理论已经学了不少，现在是动手的时候。六节课带你从零配置环境，一路做到一个完整的AI项目。需要一些Python基础——如果你还没学Python，建议先花一周过一遍基础语法再回来。</p>
+            </div>
+            <div class="slide-nav">2 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">环境搭建：Python、Jupyter、PyTorch——一站式配齐</h2>
+            </div>
+            <div class="slide-nav">3 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>写AI代码之前，先搭好你的"工作台"。以下步骤在Windows和Mac上都适用。</p></div><div class="content-card"><p>安装Python（推荐3.10+版本）</p></div><div class="content-card"><p>去python.org下载最新版Python安装包。安装时勾选"Add Python to PATH"——这是最容易漏掉但最关键的一步。安装完成后，打开终端（Windows按Win+R输入cmd，Mac打开Terminal），输入 python --version，如果显示版本号，安装成功。</p></div><div class="content-card"><p>安装Jupyter Notebook——AI工程师的"草稿纸"</p></div><div class="content-card"><p>Jupyter是一种"交互式编程环境"——你可以一行一行写代码，即时看到每行的输出。对AI研究来说，这是最重要的工具：你可以边写边看数据长什么样、模型训练到哪一步了、哪里出错了。安装：在终端输入 pip install jupyter，然后 jupyter notebook 启动。</p></div><div class="content-card"><p>安装PyTorch——深度学习的主力框架</p></div><div class="content-card"><p>PyTorch是目前最流行的深度学习框架，几乎所有AI研究和教学都在用它。去pytorch.org，按照你自己的系统配置（Windows/Mac、有无GPU）选择对应的安装命令。有NVIDIA显卡选CUDA版本（训练速度快10-50倍），没有就选CPU版本（速度慢但也能跑）。安装命令形如：pip install torch torchvision torchaudio。</p></div>
+            </div>
+            <div class="slide-nav">4 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>验证环境：跑一段最简单的代码</p></div><div class="code-card"><pre><code>import torch</code></pre></div><div class="code-card"><pre><code>x = torch.tensor([1.0, 2.0, 3.0])</code></pre></div><div class="code-card"><pre><code>print(f"PyTorch版本: {torch.__version__}")</code></pre></div><div class="code-card"><pre><code>print(f"GPU可用: {torch.cuda.is_available()}")</code></pre></div><div class="code-card"><pre><code>print(f"简单运算: {x.sum()}")</code></pre></div><div class="content-card"><p>如果这段代码不出错，并且打印出了版本号和计算结果——你的AI开发环境就搭好了。这是整个学习路径中最容易卡住的环节，但一旦过了，后面就顺畅了。</p></div>
+            </div>
+            <div class="slide-nav">5 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：搭好你的AI开发环境</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>按以上步骤安装Python + Jupyter + PyTorch。运行验证代码确认一切正常。如果遇到报错，把报错信息复制到搜索引擎——90%的问题都有现成的答案。</p></div>
+            </div>
+            <div class="slide-nav">6 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">Python数据处理速成：NumPy + Pandas——AI工程师的左右手</h2>
+            </div>
+            <div class="slide-nav">7 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>在AI项目中，你80%的时间不是在写模型——而是在处理数据。NumPy和Pandas是你最高频使用的两个工具。</p></div><div class="content-card"><p>NumPy：一切AI计算的基石</p></div><div class="content-card"><p>NumPy的核心是ndarray——多维数组。所有AI模型的输入输出，本质上都是数字矩阵。NumPy让矩阵运算快到飞起（底层是C语言实现）。你需要掌握的基本操作：创建数组（np.array）、改变形状（reshape）、切片索引（arr[2:5]）、矩阵运算（np.dot做矩阵乘法）、统计函数（mean, std, sum）。就这些——不需要背，用到时查文档即可。</p></div><div class="content-card"><p>Pandas：表格数据的瑞士军刀</p></div><div class="content-card"><p>Pandas的核心是DataFrame——类似Excel表格的数据结构。绝大多数真实世界的数据都是表格形式（CSV、Excel、数据库查询结果）。Pandas让你轻松完成：读取数据（pd.read_csv）、查看数据概况（df.head(), df.describe()）、选择行列（df[列名], df.iloc[行号]）、筛选数据（df[df[列] > 100]）、处理缺失值（df.dropna()）、分组统计（df.groupby）。</p></div><div class="content-card"><p>一个实战数据流</p></div><div class="code-card"><pre><code>import pandas as pd</code></pre></div>
+            </div>
+            <div class="slide-nav">8 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>import numpy as np</code></pre></div><div class="code-card"><pre><code># 1. 读取数据</code></pre></div><div class="content-card"><p>df = pd.read_csv("data.csv")</p></div><div class="code-card"><pre><code># 2. 查看数据</code></pre></div><div class="code-card"><pre><code>print(df.head())       # 前5行</code></pre></div><div class="code-card"><pre><code>print(df.describe())   # 统计描述</code></pre></div><div class="code-card"><pre><code>print(df.isnull().sum())  # 缺失值统计</code></pre></div>
+            </div>
+            <div class="slide-nav">9 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code># 3. 简单处理</code></pre></div><div class="content-card"><p>df = df.dropna()       # 删除缺失行</p></div><div class="content-card"><p>df["归一化列"] = (df["原始列"] - df["原始列"].mean()) / df["原始列"].std()</p></div><div class="content-card"><p>就这三板斧——读数据、看数据、洗数据——能让你处理掉90%的入门级AI项目数据。</p></div>
+            </div>
+            <div class="slide-nav">10 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：用Pandas分析你身边的数据</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>找一个你手边的小数据——比如你最近一周的睡眠小时、每天的步数、或者你手机的屏幕使用时间。录入CSV，用Pandas读入、查看统计描述、找出最大值那天。用你写的代码，不是用Excel手动操作。</p></div>
+            </div>
+            <div class="slide-nav">11 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">第一个神经网络：手写数字识别——从代码到训练</h2>
+            </div>
+            <div class="slide-nav">12 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>现在来真的——用PyTorch构建一个能识别手写数字（MNIST数据集）的神经网络。不要被吓到，整个代码不到80行。</p></div><div class="content-card"><p>MNIST数据集——"AI界的Hello World"</p></div><div class="content-card"><p>MNIST是7万张28x28像素的手写数字灰度图（0到9）。它是AI入门的标准数据集——够简单（每张图就784个像素）、但够真实（手写体有各种变体）。你的第一个神经网络的任务就是：看一张手写数字图，判断是0-9中的哪个数。</p></div><div class="content-card"><p>完整代码骨架——逐块讲解</p></div><div class="code-card"><pre><code># 1. 导入库</code></pre></div><div class="code-card"><pre><code>import torch, torch.nn as nn, torch.optim as optim</code></pre></div><div class="content-card"><p>from torch.utils.data import DataLoader</p></div>
+            </div>
+            <div class="slide-nav">13 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>from torchvision import datasets, transforms</p></div><div class="code-card"><pre><code># 2. 准备数据（PyTorch自动下载MNIST）</code></pre></div><div class="code-card"><pre><code>transform = transforms.Compose([transforms.ToTensor()])</code></pre></div><div class="content-card"><p>train_data = datasets.MNIST("./", train=True, download=True, transform=transform)</p></div><div class="content-card"><p>test_data = datasets.MNIST("./", train=False, transform=transform)</p></div><div class="code-card"><pre><code>train_loader = DataLoader(train_data, batch_size=64, shuffle=True)</code></pre></div><div class="code-card"><pre><code># 3. 定义网络：输入784像素 → 隐藏128神经元 → 隐藏64神经元 → 输出10类</code></pre></div>
+            </div>
+            <div class="slide-nav">14 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>class Net(nn.Module):</code></pre></div><div class="code-card"><pre><code>def __init__(self):</code></pre></div><div class="code-card"><pre><code>super().__init__()</code></pre></div><div class="code-card"><pre><code>self.fc = nn.Sequential(</code></pre></div><div class="code-card"><pre><code>nn.Linear(784, 128), nn.ReLU(),</code></pre></div><div class="code-card"><pre><code>nn.Linear(128, 64), nn.ReLU(),</code></pre></div><div class="code-card"><pre><code>nn.Linear(64, 10)</code></pre></div>
+            </div>
+            <div class="slide-nav">15 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>)</p></div><div class="code-card"><pre><code>def forward(self, x):</code></pre></div><div class="code-card"><pre><code>return self.fc(x.view(x.size(0), -1))</code></pre></div><div class="code-card"><pre><code># 4. 训练循环</code></pre></div><div class="code-card"><pre><code>model = Net()</code></pre></div><div class="code-card"><pre><code>criterion = nn.CrossEntropyLoss()  # 损失函数</code></pre></div><div class="content-card"><p>optimizer = optim.Adam(model.parameters(), lr=0.001)</p></div>
+            </div>
+            <div class="slide-nav">16 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>for epoch in range(5):</code></pre></div><div class="content-card"><p>for images, labels in train_loader:</p></div><div class="code-card"><pre><code>optimizer.zero_grad()       # 清空梯度</code></pre></div><div class="content-card"><p>outputs = model(images)      # 前向传播</p></div><div class="content-card"><p>loss = criterion(outputs, labels)  # 算损失</p></div><div class="content-card"><p>loss.backward()              # 反向传播</p></div><div class="code-card"><pre><code>optimizer.step()             # 更新参数</code></pre></div>
+            </div>
+            <div class="slide-nav">17 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>print(f"Epoch {epoch+1} 完成")</code></pre></div><div class="content-card"><p>这个网络在几分钟内就能达到95%以上的准确率——你对一个从零写的"几乎最简单的神经网络"来说，这是惊人的成绩。把它跑通，你就从"了解AI"跨越到了"创造AI"。</p></div>
+            </div>
+            <div class="slide-nav">18 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：跑通第一个神经网络</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>复制上面的完整代码到你的Jupyter Notebook中。跑通它。如果成功，试着改三个东西观察效果：① 改 epochs=10 看准确率是否继续提升 ② 改 batch_size=32 看训练速度变化 ③ 把隐藏层大小从128改到256，看准确率变化。</p></div>
+            </div>
+            <div class="slide-nav">19 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">卷积神经网络（CNN）：图像分类实战——让AI"看懂"图片</h2>
+            </div>
+            <div class="slide-nav">20 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>全连接网络处理图像有一个致命缺陷：把图片展平成一维向量后，像素之间的空间关系全部丢失了——"左上角的像素"和"右下角的像素"在模型眼里没有区别。CNN解决了这个问题。</p></div><div class="content-card"><p>卷积核——"滑动的小窗口"</p></div><div class="content-card"><p>CNN的核心思想是一个小的滤波器（叫卷积核，通常是3x3或5x5像素）在图像上滑动，每次只看一个小区域。这个滑动操作叫"卷积"。卷积核学习提取某种特征——比如一个核学会检测水平边缘，另一个核学会检测竖条纹。多层卷积叠加：第一层检测边缘/纹理，第二层检测简单形状（圆形、角），第三层检测复杂部件（眼睛、轮子），更高层识别完整物体。</p></div><div class="content-card"><p>一个完整的CNN处理流程</p></div><div class="content-card"><p>输入图像（如32x32x3的RGB图片）→ 卷积层（提取特征）→ 激活函数ReLU → 池化层（缩小尺寸，保留重要信息）→ 重复"卷积+ReLU+池化"若干次 → 展平成一维 → 全连接层 → 输出分类结果。池化（Pooling）的作用是"降低分辨率"——取一个区域的最大值（Max Pooling）或平均值（Avg Pooling），在保留关键信息的同时减小数据量、加快计算。</p></div><div class="content-card"><p>用CNN改造MNIST识别</p></div><div class="content-card"><p># CNN版本（替换之前的全连接Net类）</p></div>
+            </div>
+            <div class="slide-nav">21 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>class CNN(nn.Module):</code></pre></div><div class="code-card"><pre><code>def __init__(self):</code></pre></div><div class="code-card"><pre><code>super().__init__()</code></pre></div><div class="code-card"><pre><code>self.conv = nn.Sequential(</code></pre></div><div class="code-card"><pre><code>nn.Conv2d(1, 32, 3), nn.ReLU(), nn.MaxPool2d(2),</code></pre></div><div class="code-card"><pre><code>nn.Conv2d(32, 64, 3), nn.ReLU(), nn.MaxPool2d(2),</code></pre></div><div class="content-card"><p>)</p></div>
+            </div>
+            <div class="slide-nav">22 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>self.fc = nn.Sequential(</code></pre></div><div class="code-card"><pre><code>nn.Linear(64*5*5, 128), nn.ReLU(),</code></pre></div><div class="code-card"><pre><code>nn.Linear(128, 10)</code></pre></div><div class="content-card"><p>)</p></div><div class="code-card"><pre><code>def forward(self, x):</code></pre></div><div class="code-card"><pre><code>x = self.conv(x)</code></pre></div><div class="code-card"><pre><code>x = x.view(x.size(0), -1)</code></pre></div>
+            </div>
+            <div class="slide-nav">23 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="code-card"><pre><code>return self.fc(x)</code></pre></div><div class="content-card"><p>CNN在MNIST上能用更少的参数实现更高的准确率——这正是"设计适合数据结构的网络"带来的优势。</p></div>
+            </div>
+            <div class="slide-nav">24 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：用CNN跑CIFAR-10彩色图像分类</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>PyTorch自带CIFAR-10数据集（32x32彩色图片，10类——飞机、汽车、鸟、猫等）。把上面的CNN代码的第一个卷积输入通道从1改成3（RGB），用CIFAR-10替换MNIST，训练10个epoch。MNIST是黑白的"初阶"，CIFAR-10是彩色的"进阶"——完成它，你的AI水平就上了一个台阶。</p></div>
+            </div>
+            <div class="slide-nav">25 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第五课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">模型调试与优化：学习率、正则化、数据增强——调参心法</h2>
+            </div>
+            <div class="slide-nav">26 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>写出第一个模型只是开始。让模型从"能用"到"好用"，靠的是调试和优化的技巧。</p></div><div class="content-card"><p>学习率（Learning Rate）——最重要的超参数</p></div><div class="content-card"><p>学习率决定每一步参数更新的大小。太大：训练不稳定，损失来回震荡甚至爆炸。太小：训练太慢，可能困在局部最优。标准做法：从0.001开始试，效果不好就减半或加倍。进阶工具：学习率调度器（lr_scheduler）——训练过程中自动调整学习率（如每10个epoch减半）。</p></div><div class="content-card"><p>正则化——防止"死记硬背"</p></div><div class="content-card"><p>Dropout：训练时随机"丢弃"一部分神经元（比如设dropout=0.5，每次前向传播随机关闭50%的神经元），强迫网络不依赖特定路径，学到更鲁棒的特征。注意：只在训练时开Dropout，测试/推理时要关掉。L2正则化（Weight Decay）：在损失函数中加一项"参数平方和"的惩罚——参数越大，惩罚越重，推动模型保持"简洁"而非"复杂"。</p></div><div class="content-card"><p>数据增强——"无成本扩充训练集"</p></div><div class="content-card"><p>对图像做随机翻转、旋转、裁剪、变色——每张图变成多张"不同的"图。这等于把训练集免费扩充了几倍到几十倍，而且让模型学会了"翻转后的猫还是猫"这种不变性。这是提升泛化能力最有效的手段之一，而且代码就几行。</p></div>
+            </div>
+            <div class="slide-nav">27 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p># 数据增强示例</p></div><div class="code-card"><pre><code>transform = transforms.Compose([</code></pre></div><div class="content-card"><p>transforms.RandomHorizontalFlip(),      # 随机水平翻转</p></div><div class="content-card"><p>transforms.RandomRotation(15),          # 随机旋转±15度</p></div><div class="content-card"><p>transforms.ColorJitter(brightness=0.2), # 随机亮度变化</p></div><div class="content-card"><p>transforms.ToTensor(),</p></div><div class="content-card"><p>])</p></div>
+            </div>
+            <div class="slide-nav">28 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：用数据增强提升准确率</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>回到你第三节的MNIST CNN代码。加入数据增强（至少RandomRotation和RandomAffine）。训练同样的epoch数，对比加数据增强前后的测试集准确率。你应该能看到1-3%的提升。</p></div>
+            </div>
+            <div class="slide-nav">29 / 34</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FFF7ED 0%, #EA580C15 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#EA580C;color:white;">第六课</div>
+                <h2 class="lesson-title" style="color:#EA580C;">综合项目：从0到1完成一个完整的AI项目</h2>
+            </div>
+            <div class="slide-nav">30 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>学到这里，你已经具备了独立完成AI项目的能力。这一课带你走完一个完整项目的全流程——每一步都是真实AI工程师的日常工作。</p></div><div class="content-card"><p>项目选题建议</p></div><div class="content-card"><p>选一个你感兴趣的问题，保证数据容易获取。推荐选题：猫狗分类（Kaggle Dogs vs Cats，简单经典）、手写汉字识别（中文字手写体，对中国用户有实际价值）、表情识别（FER2013数据集，7种表情分类）。</p></div><div class="content-card"><p>完整项目七步流程</p></div><div class="content-card"><p>1. 问题定义：你要解决什么问题？输入是什么（图片/文本/数值）？输出是什么（分类/回归/生成）？成功标准是什么（准确率>90%？）</p></div><div class="content-card"><p>2. 数据获取：从哪拿数据？Kaggle下载？自己收集？爬虫爬取？注意——没有数据，一切无从开始。</p></div><div class="content-card"><p>3. 数据探索与清洗：数据长什么样？有多少类？类别平衡吗？有缺失值吗？你需要"认识"你的数据。</p></div>
+            </div>
+            <div class="slide-nav">31 / 34</div>
+        </div>
+        <div class="slide content-slide" style="background:#FFF7ED;">
+            <div class="content-scroll">
+                <div class="content-card"><p>4. 特征工程与预处理：原始数据→归一化→数据增强→划分训练/验证/测试集。</p></div><div class="content-card"><p>5. 建模：选择合适架构（图像用CNN，序列用RNN/Transformer），写出网络结构，设置损失函数和优化器。</p></div><div class="content-card"><p>6. 训练与调优：跑训练循环，观察loss曲线，调整学习率和正则化，直到验证集表现不再提升。</p></div><div class="content-card"><p>7. 评估与部署：在测试集上评估最终效果——准确率、精确率、召回率、F1。输出一份简洁的项目报告或用Gradio做一个在线demo。</p></div><div class="content-card"><p>项目复盘：问问自己</p></div><div class="content-card"><p>项目做完不是结束——复盘是能力提升最快的方式。问自己：哪个环节花时间最多？如果重做会怎么改进？学到了什么新东西？这个项目可以放进你的作品集——它在未来会比你想象的更有价值。</p></div>
+            </div>
+            <div class="slide-nav">32 / 34</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);">
+            <div class="practice-header" style="border-color:#EA580C;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#EA580C;">动手试一试：启动你的第一个独立AI项目</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#EA580C;"></span><p>选一个方向（推荐猫狗分类，数据在Kaggle直接下载），严格按七步流程走一遍。目标不是做出"最好的模型"——而是"完整地走完一遍"。把你的项目代码整理成Jupyter Notebook，加上注释，这将成为你的第一个AI作品。</p></div>
+            </div>
+            <div class="slide-nav">33 / 34</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #EA580C 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">AI原理实战 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

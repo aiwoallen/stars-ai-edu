@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI文案实战 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#0D9488; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #0D948820;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#0D948830; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #0D948830;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#0D9488; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#14B8A6;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#0D948830; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #14B8A630;
+}
+.practice-step:hover { border-color:#0D948860; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #134E4A 0%, #0D9488 50%, #0D9488 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">✍️</div>
+                <h1 class="cover-title">AI文案实战</h1>
+                <p class="cover-subtitle">从Prompt心法到五大应用场景——让AI成为你的写作搭档</p>
+                <div class="cover-tag">基础系列·第三篇</div>
+            </div>
+            <div class="slide-nav">1 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">AI文案是门槛最低、适用范围最广的AI应用。只要你会打字，就能用AI写出高质量的文章、文案和报告。六节课从Prompt设计的"铁三角"框架开始，覆盖五大真实场景。</p>
+            </div>
+            <div class="slide-nav">2 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">Prompt设计心法：角色-任务-约束——铁三角框架</h2>
+            </div>
+            <div class="slide-nav">3 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI文案的核心不是"怎么写"——而是"怎么让AI帮你写"。而让AI写出好东西的关键，全在Prompt设计上。</p></div><div class="content-card"><p>铁三角框架</p></div><div class="content-card"><p>每一条高质量Prompt都包含三层信息：① 角色（Role）——"你是谁？"设定AI的身份定位（资深文案/小红书博主/学术编辑），这决定了语气和专业度。② 任务（Task）——"要做什么？"用动词说清楚具体任务（写一篇XX/修改这段XX/分析以下XX的XX）。③ 约束（Constraints）——"有什么要求？"字数限制、风格要求、格式规范、必须包含/禁止包含的内容。</p></div><div class="content-card"><p>好Prompt vs 差Prompt的差距</p></div><div class="content-card"><p>差Prompt："帮我写一篇关于春天的文章。" → AI不知道你说的"春天"要什么风格（散文？科普？诗歌？）、多长（200字还是2000字？）、给谁看（小学生还是大学教授？）。AI只好随机发挥——结果基本不符合你的预期。</p></div><div class="content-card"><p>好Prompt："你是一位自然科普作家。请写一篇面向初中生的科普短文（约1500字），解释春季植物开花的生物学机制。要求：① 开头用一个生活化场景引入 ② 用类比解释光周期和温度信号 ③ 避免使用专业术语，如果必须用，用括号解释 ④ 结尾给一个观察实践建议。" ——AI明确了身份、任务、受众、长度、风格和具体结构要求，输出质量立竿见影地提升。</p></div><div class="content-card"><p>记住：把AI当成一个聪明但完全不了解你背景的实习生——你越清楚地告诉它"你是谁""要做什么""有什么限制"，它就越能给你惊喜。</p></div>
+            </div>
+            <div class="slide-nav">4 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：用铁三角框架改写你之前的Prompt</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>打开你常用的AI聊天工具，写一条"随便写的Prompt"（比如"帮我写个工作总结"）。然后用铁三角框架重写它——加入角色、明确任务、列出至少三条约束。对比两次输出的质量差异。</p></div>
+            </div>
+            <div class="slide-nav">5 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">场景一：社交媒体文案——小红书、公众号、朋友圈</h2>
+            </div>
+            <div class="slide-nav">6 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>社交媒体文案的核心不是"写得漂亮"——而是"让人停下来看"。AI可以帮你做到这一点，但你需要告诉它不同平台的"游戏规则"。</p></div><div class="content-card"><p>小红书——"种草体"的核心法则</p></div><div class="content-card"><p>小红书文案的特性：标题要抓眼（数字+痛点/身份标签/颠覆认知），正文要“说人话”（像朋友聊天，不要广告腔），结尾要有互动引导（“你们觉得呢？”）。AI Prompt模板：“你是一位小红书5万粉博主，专注[XX领域]。请写一篇小红书种草笔记，推荐[产品/方法]，要求：① 标题用‘数字+痛点/结果’格式，不超过20字 ② 正文300-500字，第一人称，像和朋友聊天 ③ 分3-4个小标题，每个小标题配一段文字 ④ 加入至少一句‘我踩过的坑’增加真实感 ⑤ 末尾加互动引导。”</p></div><div class="content-card"><p>公众号——"获得感"是第一优先级</p></div><div class="content-card"><p>公众号长文的核心是"让人读完觉得学到了东西"。AI帮你搭框架——大纲先行，逐段展开，最后通读去"AI味"。关键技巧：开头用一个故事或现象切入，正文用"问题→分析→方法"结构递进，结尾总结+金句收尾。</p></div><div class="content-card"><p>朋友圈——短小、真实、有个性</p></div><div class="content-card"><p>朋友圈是最"私人"的平台，AI写的朋友圈最大的问题是"像机器人发的"。技巧：用AI生成几个不同风格的草稿，你从中选一个"最像自己"的，再用自己的语气改一遍。AI提供思路和框架，你提供真实感和个人风格。</p></div>
+            </div>
+            <div class="slide-nav">7 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：用AI写一条小红书笔记</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>选一个你最近体验过的产品、去过的地方或学到的小技巧，用小红书Prompt模板让AI帮你写一条笔记。然后对比你自己手工写的版本——你会发现AI在"结构"上明显更好，但在"真实感"上往往不如你自己。</p></div>
+            </div>
+            <div class="slide-nav">8 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">场景二：商业文案——产品介绍、广告语、销售信</h2>
+            </div>
+            <div class="slide-nav">9 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>商业文案的唯一目标是"转化"——让人采取行动（购买、注册、咨询）。AI在商业文案上的核心价值是：快速生成多个版本供你筛选和优化。</p></div><div class="content-card"><p>产品介绍——"好处"而非"功能"</p></div><div class="content-card"><p>新手常犯的错误：罗列产品的功能参数（“5000mAh电池”“10核处理器”），但用户关心的是“这东西对我有什么用”。AI Prompt的关键：要求AI把每个功能翻译成一个用户利益点。模板：“这是一款[产品名称]，核心功能包括[功能1][功能2][功能3]。请为每个功能写一句面向[目标用户]的利益描述——不是'这个产品能做什么'，而是'有了它你能得到什么'。”</p></div><div class="content-card"><p>广告语——少即是多</p></div><div class="content-card"><p>一条好的广告语让人记住，一条平庸的广告语让人划走。让AI生成30个候选广告语，你从中选3个最好的再微调——这比你自己苦思冥想一下午效率高得多。关键是：告诉AI你的品牌调性（年轻活力/专业权威/温暖走心）、目标受众、避免使用的词。</p></div><div class="content-card"><p>销售信——AIDA结构</p></div><div class="content-card"><p>经典的销售信结构：Attention（吸引注意）→ Interest（激发兴趣）→ Desire（创造渴望）→ Action（号召行动）。告诉AI按这个结构写，规定每部分的篇幅（如200/300/400/100字），AI就能产出一封结构完整、逻辑流畅的销售信。</p></div>
+            </div>
+            <div class="slide-nav">10 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：用AI写三版不同的产品介绍</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>找一个你身边的产品（你正在用的手机、耳机、书包等），用AI生成为同一产品写三种不同风格的介绍：① 面向学生、活泼风格 ② 面向职场人士、专业风格 ③ 面向父母送礼、温情风格。对比三版——你会发现"同一件产品，对不同的人说不同的话"是商业文案的核心技能。</p></div>
+            </div>
+            <div class="slide-nav">11 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">场景三：创作写作——小说、诗歌、剧本</h2>
+            </div>
+            <div class="slide-nav">12 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI不是"替代"你的创作——而是"催化"你的灵感。把AI当成一个随时待命的"灵感引擎"。</p></div><div class="content-card"><p>小说：AI帮你打破"白纸恐惧症"</p></div><div class="content-card"><p>面对空白文档是最难的时刻。让AI给你一个开场段落、三条情节走向、几个角色设定——不是让它替你写，而是让它帮你"起步"。你有了方向之后，用自己的笔触去展开。AI写的初稿是你的"起跑器"，不是"终点线"。</p></div><div class="content-card"><p>对话生成——AI的强项</p></div><div class="content-card"><p>写角色之间的对话是很多作者的痛点。AI在这上面特别擅长——因为它本身就是从海量对话中训练出来的。告诉AI两个角色的性格特点和对话场景，它能产出相当自然的对话。你拿来之后做一件事：把它改成"更像你的角色会说的话"。</p></div><div class="content-card"><p>诗歌：AI的"意象生成器"</p></div><div class="content-card"><p>AI写诗的水平参差不齐——它擅长"制造意象"（那些让你眼前一亮的比喻和画面），但整首诗的节奏、留白、回味的功夫还是需要人。最佳协作方式：让AI生成20个关于[某个主题]的意象和比喻，你从中挑出最有感觉的3个，围绕它们自己写。</p></div>
+            </div>
+            <div class="slide-nav">13 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：和AI一起写一个短篇故事</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>给AI一个开头（不超过3句话），让它续写三种不同的情节走向。选择最有感觉的那条走向，你自己接着往下写一两段。感受"AI起跑、你冲刺"的协作模式。</p></div>
+            </div>
+            <div class="slide-nav">14 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第五课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">场景四：学术与报告——论文辅助、报告生成、资料整理</h2>
+            </div>
+            <div class="slide-nav">15 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>学术场景对AI的使用要格外小心——AI不是你的"枪手"，而是你的"研究助理"。</p></div><div class="content-card"><p>论文辅助——润色与结构优化</p></div><div class="content-card"><p>不要用AI写整篇论文——那叫学术不端，而且AI写的内容无法保证原创性和准确性。正确的用法：把你已经写好的段落发给AI，让它润色语言、检查逻辑漏洞、优化段落结构。格式："请润色以下学术段落，要求：① 保持原意不变 ② 优化句式流畅度 ③ 用更精准的学术词汇替换口语化表达 ④ 保持原有引用的完整性。原文：[粘贴你的文字]。"</p></div><div class="content-card"><p>文献综述辅助</p></div><div class="content-card"><p>让AI帮你整理文献的关键信息——把一篇论文的摘要粘贴给AI，让它提取研究问题、方法、核心发现、局限。这能大大提高你阅读文献的效率。但注意：AI可能误读——你最终还是要自己读一遍原文。</p></div><div class="content-card"><p>报告生成——结构化输出</p></div><div class="content-card"><p>会议纪要、项目报告、数据分析总结——这些有固定结构的东西是AI的拿手好戏。给AI一个模板格式，让它按模板填充内容。每次使用前告诉AI"请严格按照以下模板输出"，然后给出模板结构（如：一、背景 / 二、核心数据 / 三、关键发现 / 四、下一步建议）。</p></div>
+            </div>
+            <div class="slide-nav">16 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：用AI润色一段你之前写的文字</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>找你以前写过的一段文字（作文、作业、笔记等），用学术润色Prompt让AI优化它。对比原文和润色后的版本——观察AI改了什么、没改什么。思考：哪些改动是有效的？哪些改变了你的原意？</p></div>
+            </div>
+            <div class="slide-nav">17 / 21</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #F0FDFA 0%, #0D948815 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#0D9488;color:white;">第六课</div>
+                <h2 class="lesson-title" style="color:#0D9488;">场景五：多语言与翻译——AI翻译的正确打开方式</h2>
+            </div>
+            <div class="slide-nav">18 / 21</div>
+        </div>
+        <div class="slide content-slide" style="background:#F0FDFA;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI翻译已经远超传统的机器翻译了，但它不是"完美无缺的"。知道它的边界，才能真正用好它。</p></div><div class="content-card"><p>AI翻译 vs 传统翻译工具</p></div><div class="content-card"><p>传统翻译工具（如Google Translate 2019版）是"逐句翻译"——每句话独立处理，不考虑上下文。AI翻译（ChatGPT/DeepL）是"理解后翻译"——它先理解整段文字的意思和风格，再用目标语言重新表达。差别巨大：传统工具翻出来的"意思对但读起来怪"，AI翻出来的"像母语者写的"。</p></div><div class="content-card"><p>翻译Prompt的核心要素</p></div><div class="content-card"><p>好的翻译Prompt需要三个信息：① 目标语言和地区（英语-美式还是英式？繁体中文还是简体？）② 风格要求（正式学术还是日常口语？保留原文的风格还是改成目标语言的常见表达？）③ 特殊要求（人名地名保持原文、专业术语统一、敏感词替换策略）。</p></div><div class="content-card"><p>AI翻译的"坑"</p></div><div class="content-card"><p>① 文化梗：AI可能直译一个笑话或俗语，导致完全失去效果——需要你手动替换为等价的本地表达。② 专业知识：医学、法律等领域的术语翻译，AI可能用对可能用错——专业翻译场景需要人工审核。③ 文学作品：诗歌的韵律、小说的文风——这些微妙的东西AI还做不到像人类译者那样"再创作"。</p></div>
+            </div>
+            <div class="slide-nav">19 / 21</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #CCFBF1 0%, #F0FDFA 100%);">
+            <div class="practice-header" style="border-color:#0D9488;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#0D9488;">动手试一试：用三种方式翻译同一段话</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#0D9488;"></span><p>找一段中文（可以是网络文章、新闻或你自己的文字），分别用传统翻译工具、AI默认翻译、加了详细Prompt的AI翻译三种方式来翻译。对比三版结果——你应该能清晰感受到"详细Prompt"对翻译质量的提升有多大。</p></div>
+            </div>
+            <div class="slide-nav">20 / 21</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #134E4A 0%, #0D9488 50%, #0D9488 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">AI文案实战 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

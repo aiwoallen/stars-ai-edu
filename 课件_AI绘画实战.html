@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI绘画 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#DB2777; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #DB277720;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#DB277730; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #DB277730;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#DB2777; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#EC4899;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#DB277730; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #EC489930;
+}
+.practice-step:hover { border-color:#DB277760; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #831843 0%, #DB2777 50%, #DB2777 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">🎨</div>
+                <h1 class="cover-title">AI绘画</h1>
+                <p class="cover-subtitle">从敲下第一行Prompt到靠AI绘画赚钱</p>
+                <div class="cover-tag">基础系列·第一篇</div>
+            </div>
+            <div class="slide-nav">1 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">AI绘画是当前最"出圈"的AI应用——不需要会画画，只需要会用语言描述画面。六节课从注册工具开始，一路走到商业变现。</p>
+            </div>
+            <div class="slide-nav">2 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">AI绘画工具入门：注册、界面、生成你的第一张图</h2>
+            </div>
+            <div class="slide-nav">3 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>别急着学理论，先动手。选一个工具，三分钟出你的第一张AI图。</p></div><div class="content-card"><p>三大主流工具一览</p></div><div class="content-card"><ul class="bullet-list"><li>Midjourney（MJ）：在Discord里用，输入 /imagine + 描述，画质最高的商业工具。月费$10起，需要科学上网。</li><li>Stable Diffusion（SD）：安装在你自己电脑上，完全免费无限出图，精细控制最强。需要NVIDIA显卡（6GB以上显存）。</li><li>通义万相/文心一格：国内免费工具，中文输入，无需翻墙，适合快速体验。</li></ul></div><div class="content-card"><p>以通义万相为例，三分钟出图</p></div>
+            </div>
+            <div class="slide-nav">4 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>打开网页，在输入框里写下你想要的画面——至少包含三个要素：主体（谁/什么）+ 场景（在哪）+ 风格（什么画风）。例如："一只戴着宇航头盔的橘猫，漂浮在星空背景中，二次元插画风格"。点击生成，等5-10秒。你会得到几张不同版本的图。选择最喜欢的那张——恭喜，你生成了你的第一张AI绘画作品。</p></div><div class="content-card"><p>新手建议：先用通义万相免费体验一周，确定自己真的喜欢AI绘画后，再考虑付费工具。不要在还不了解自己的需求时就花钱。</p></div><div class="content-card"><p>看懂生成结果的好坏</p></div><div class="content-card"><p>每次出图后，用三个维度判断：① 主体准确度——AI画出了你想要的东西吗？② 画面瑕疵——手/脸有没有变形？有没有多出奇怪的东西？③ 风格匹配度——画风是你指定的那个吗？判断多了，你的"AI审美力"就练出来了。</p></div>
+            </div>
+            <div class="slide-nav">5 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：生成你的前10张AI图</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>打开通义万相或你已有的AI绘画工具，用不同的描述生成10张图。每张图改变一个变量——主体不同、场景不同、风格不同。观察：哪个变量对画面影响最大？</p></div>
+            </div>
+            <div class="slide-nav">6 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">Prompt写作心法：主语+风格+细节+画质——万能公式拆解</h2>
+            </div>
+            <div class="slide-nav">7 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI绘画的核心能力不是"会画画"——而是"会描述"。你的Prompt写得好不好，直接决定了图的品质。</p></div><div class="content-card"><p>万能公式：8要素结构</p></div><div class="content-card"><p>所有专业Prompt都遵循同一个结构模板：主体 + 主体细节 + 场景环境 + 艺术风格 + 画面构图 + 光影氛围 + 质量修饰词 + 参数设置。每个要素都有明确的"岗位"——没有多余，也没有遗漏。</p></div><div class="content-card"><p>逐要素拆解</p></div><div class="content-card"><ul class="bullet-list"><li>主体：画面的核心。一个人？一只动物？一栋建筑？用最简洁的词说清楚。</li><li>细节：长什么样？穿什么？在做什么？什么表情？越具体，AI越不会"自由发挥"。</li></ul></div>
+            </div>
+            <div class="slide-nav">8 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>• 场景：在哪？室内/室外？白天/夜晚？什么季节？什么天气？</p></div><div class="content-card"><p>• 风格：写实摄影？二次元？水墨画？赛博朋克？这是影响画面调性最强的要素。</p></div><div class="content-card"><p>• 构图：近景特写还是大远景？仰拍还是俯拍？像摄影师一样思考。</p></div><div class="content-card"><p>• 光影：黄昏暖光？霓虹冷光？侧光？逆光？光决定了画面的"质感"。</p></div><div class="content-card"><p>• 质量词：masterpiece, best quality, highly detailed, 8k——几乎每张必加。</p></div><div class="content-card"><p>• 参数：画面比例（--ar 16:9）、模型版本（--v 6）、风格化程度等。</p></div><div class="content-card"><p>正面Prompt vs 负面Prompt</p></div>
+            </div>
+            <div class="slide-nav">9 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>正面Prompt告诉AI"要什么"，负面Prompt告诉AI"不要什么"。很多人只写正面，不写负面，结果画面总有各种瑕疵。负面Prompt的通用模板：worst quality, low quality, blurry, deformed, bad anatomy, bad hands, extra limbs, watermark, text。这两个方向都写全，出图质量立竿见影地提升。</p></div><div class="content-card"><p>Prompt黄金四法则</p></div><div class="content-card"><p>① 具体打败模糊——"一个女孩"远不如"一个穿着红色旗袍、扎丸子头、坐在江南茶馆里的中国女孩"。② 用视觉语言不要用情感语言——"悲伤"不如"低头、眼泪、灰蓝色调"。③ 先简单再复杂——先用20个词定核心画面，方向对了再加细节。④ 迭代不是一次到位——AI绘画的真正水平不是"第一张多好看"，而是"改了三轮之后多好看"。</p></div>
+            </div>
+            <div class="slide-nav">10 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：用万能公式写三条Prompt</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>按八个要素结构，分别写出人像、风景、产品图三条Prompt。每条至少包含5个要素。把写的和模板对比，看看有没有缺哪个要素。如果你有AI绘画工具，把这些Prompt跑一遍看效果。</p></div>
+            </div>
+            <div class="slide-nav">11 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">风格控制与参数：比例、风格化、混乱度——参数就是画笔</h2>
+            </div>
+            <div class="slide-nav">12 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>同样的Prompt，换一组参数，出来的画面可能是完全不同的两个世界。参数是你控制AI绘画的"精确工具"。</p></div><div class="content-card"><p>画面比例（--aspect / --ar）</p></div><div class="content-card"><p>不同平台有不同的画面比例需求。--ar 1:1（正方形）适合头像和Instagram；--ar 3:4（竖版）适合小红书和手机壁纸；--ar 16:9（横版）适合视频封面和桌面壁纸；--ar 9:16（竖版满屏）适合抖音和手机锁屏。选择比例的第一步不是"好看"——而是"用在哪儿"。</p></div><div class="content-card"><p>风格化参数（--stylize / --s）</p></div><div class="content-card"><p>Midjourney独有参数，控制AI的"艺术发挥程度"。--s 0：完全忠实于你的Prompt，像"严格执行命令的机器"。——s 100：默认平衡。--s 1000：最大自由发挥——AI会加入很多你没描述的"艺术化元素"。数值越高越"好看"，但越偏离你的原始描述。数值越低越"准确"，但越呆板。你自己的审美决定了这个参数该往哪边调。</p></div><div class="content-card"><p>混乱度（--chaos / --c）</p></div><div class="content-card"><p>控制四张生成图之间的差异程度。--c 0：四张图非常相似（适合"我还想看看更多像这样的"）。--c 100：四张图风格迥异（适合"我也不知道要什么，你给我多点选择"）。初期探索用高混乱度找方向，确定方向后用低混乱度精细打磨。</p></div>
+            </div>
+            <div class="slide-nav">13 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>风格参考（--sref）——MJ的秘密武器</p></div><div class="content-card"><p>上传一张参考图，Midjourney会模仿它的风格。比如你找到一张喜欢的油画风格的图，传上去加 --sref [图片链接]，你之后的Prompt都会带上那种油画风。这是目前最快也最精准的风格控制方法——比你写一百个风格关键词都管用。</p></div>
+            </div>
+            <div class="slide-nav">14 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：做参数对比实验</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>选一条你写得最好的Prompt。只改变一个参数（比如ar从1:1改到16:9，或s从0改到1000），跑两组图对比。做三次这样的单变量对比——你会发现参数的力量比你想象的大得多。</p></div>
+            </div>
+            <div class="slide-nav">15 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">图生图与局部重绘：以图改图，精准控制画面细节</h2>
+            </div>
+            <div class="slide-nav">16 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>Prompt不是唯一控制AI绘画的方式。图生图（img2img）和局部重绘（Inpainting）让你用"图片"而不是"文字"来控制画面——精细程度提高一个数量级。</p></div><div class="content-card"><p>图生图（img2img）——给AI一个"起点"</p></div><div class="content-card"><p>不仅仅是"从无到有"生成图片——你可以给AI一张已有图片作为"起点"，加上新的Prompt描述，让AI在保留原有构图的基础上改变风格、细节或氛围。比如：把你随手拍的街景照片转成宫崎骏动画风格。参数"denoising strength"（去噪强度）控制改动幅度：0.3是"微调颜色"，0.7是"大幅改变风格"，0.95是"几乎完全重画"。</p></div><div class="content-card"><p>局部重绘（Inpainting）——只改你想改的地方</p></div><div class="content-card"><p>画面大体满意，但某一个局部需要修改？用Inpainting：在你用画笔（Mask）涂上想修改的区域，然后告诉AI"把这里改成XX"。AI只重新生成被涂上标记的区域，其他地方保持不变。比如生成的图人物很美但手画反了——涂上手的区域，Prompt写"perfect hands, detailed fingers"，重新生成。这就是专业AI绘画工作者的日常操作。</p></div><div class="content-card"><p>放大与增强（Upscale）</p></div><div class="content-card"><p>AI生成的图分辨率通常有限。放大工具（如Real-ESRGAN、SD的Upscale功能）可以把小图变成高清大图——适合打印、做海报、做壁纸。注意：放大不是"增加细节"，只是"让现有细节更清晰"——所以基础图的质量决定了放大后的效果。</p></div>
+            </div>
+            <div class="slide-nav">17 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：做一次"图生图"实验</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>用手机拍一张你身边任意场景的照片（书桌、窗外、走廊等），导入通义万相的图生图功能或SD的img2img。尝试把它转成：二次元动画风 / 水墨画风 / 赛博朋克风。对比三种风格转换——感受"同一张照片，不同风格"的魔法。</p></div>
+            </div>
+            <div class="slide-nav">18 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第五课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">商业变现实战：从接单平台到个人品牌，5条变现路径</h2>
+            </div>
+            <div class="slide-nav">19 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>AI绘画不只是"好玩"——已经有很多人靠它赚钱了。以下是经过验证的五条变现路径。</p></div><div class="content-card"><p>路径一：商业插画定制（月入最稳定）</p></div><div class="content-card"><p>客户包括出版社（书籍封面/插图）、自媒体（文章配图）、电商（产品展示图）。单张报价100-500元，系列项目1000-5000元。接单渠道：猪八戒、站酷、小红书私信。关键是建立作品集——让客户看到你的风格和能力。</p></div><div class="content-card"><p>路径二：数字艺术品销售（一劳永逸）</p></div><div class="content-card"><p>把精选作品打包出售。主题系列（如"AI国风二十四节气"）比单张更容易卖。定价：9.9-99元/套。渠道：小红书店铺、微店、淘宝。一张好画可以反复卖，这是"睡后收入"的逻辑。</p></div><div class="content-card"><p>路径三：Prompt产品化（AI绘画特有的变现方式）</p></div><div class="content-card"><p>你花时间调出来的精品Prompt，打包成"Prompt模板库"出售。"100个国风Prompt模板"、"50个二次元风格Prompt"——这些是刚需。定价：9.9-99元/套。高端玩法：为客户定制专属Prompt，单条50-200元。</p></div>
+            </div>
+            <div class="slide-nav">20 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>路径四：内容账号运营（长期主义路线）</p></div><div class="content-card"><p>在抖音/小红书/B站持续发布AI绘画作品，积累粉丝后接商业合作。前三个月可能零收入，但账号一旦做起来，品牌广告、课程转化空间很大。国风、二次元、写实人像是目前流量最好的三大赛道。</p></div><div class="content-card"><p>路径五：实体产品衍生（从线上到线下）</p></div><div class="content-card"><p>把画印在实物上卖——手机壳、T恤、帆布包、装饰画、明信片。按需印刷模式下不需要囤货，客户下单后工厂直发。利润不如定制服务高，但"一次创作，持续销售"。</p></div><div class="content-card"><p>90天变现路线图</p></div><div class="content-card"><ul class="bullet-list"><li>第1-30天：每天生成50张图，建立Prompt词库，注册社交媒体账号日更——找到你的风格赛道</li></ul></div>
+            </div>
+            <div class="slide-nav">21 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>• 第31-60天：在接单平台发布服务，从低价（50-200元/张）开始接商业插画——完成第一笔收入</p></div><div class="content-card"><p>• 第61-90天：确定个人定位（如"AI国风插画师"），开通店铺上架数字产品和Prompt模板——建立稳定月收入</p></div>
+            </div>
+            <div class="slide-nav">22 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：写你的90天变现计划</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>选一个你最有兴趣的风格赛道（国风？二次元？写实人像？产品设计？）。写出三个关键问题：① 你的第一批客户是谁？② 你的第一件商品是什么（定制服务还是数字产品）？③ 你在第30/60/90天的里程碑分别是什么？不需要马上行动——但要把思路写下来。</p></div>
+            </div>
+            <div class="slide-nav">23 / 27</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #FDF2F8 0%, #DB277715 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#DB2777;color:white;">第六课</div>
+                <h2 class="lesson-title" style="color:#DB2777;">作品集的构建：筛选、整理、展示——让客户主动找你</h2>
+            </div>
+            <div class="slide-nav">24 / 27</div>
+        </div>
+        <div class="slide content-slide" style="background:#FDF2F8;">
+            <div class="content-scroll">
+                <div class="content-card"><p>在AI绘画领域，"你的作品集就是你的简历"——而且比简历重要一百倍。客户通过你的作品判断你的审美和能力。</p></div><div class="content-card"><p>筛选：质量 > 数量</p></div><div class="content-card"><p>作品集的核心原则：宁缺毋滥。放10张精品，远好于放50张平庸之作。筛选标准：每张图在自己擅长的风格中最具代表性；画面没有明显瑕疵（坏手、变形脸、奇怪元素）；构图和色彩有专业水准。如果一张图你犹豫"要不要放"——答案通常是"不放"。</p></div><div class="content-card"><p>整理：分类与排版</p></div><div class="content-card"><p>按风格或应用场景分类——写真肖像、国风插画、赛博场景、产品渲染——每类3-5张。排版上，保持统一输出格式（如竖版3:4）、在每类前面加一张标题图作为分隔、末尾放联系方式和接单信息。推荐平台：站酷（专业设计社区，客户质量高）、Behance（国际平台，机会更大）、小红书（流量大，适合种草到私域接单）。</p></div><div class="content-card"><p>展示：讲好画面背后的故事</p></div><div class="content-card"><p>不要只放图。对每张/每组作品写一段50-100字的说明——用了什么工具、什么Prompt思路、想表达什么。这不仅展示你的作品，更展示你的"创作思维"。客户想找的不是"会用AI的人"，而是"有审美、能解决问题的人"。你的作品集就是在回答这个隐性问题。</p></div>
+            </div>
+            <div class="slide-nav">25 / 27</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+            <div class="practice-header" style="border-color:#DB2777;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#DB2777;">动手试一试：开始搭建你的作品集</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#DB2777;"></span><p>从你已经生成的AI图中，选出最能代表你风格的10张。按风格分成2-3类。为每类写一段说明。选一个平台（站酷或小红书）把作品集发布出去——即使现在没有客户，这个动作也标志着你从"随便玩玩"到"认真对待"的转变。</p></div>
+            </div>
+            <div class="slide-nav">26 / 27</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #831843 0%, #DB2777 50%, #DB2777 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">AI绘画 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

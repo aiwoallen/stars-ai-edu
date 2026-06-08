@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI基础知识 - 「群星」AI教育平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Helvetica Neue",sans-serif;
+    background:#0F172A; overflow:hidden; user-select:none;
+    -webkit-font-smoothing:antialiased;
+}
+.slide {
+    width:100vw; height:100vh;
+    display:none; position:relative;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+}
+.slide.active { display:flex; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cover */
+.cover { flex-direction:column; color:white; text-align:center; }
+.cover-content { z-index:2; position:relative; }
+.cover-emoji { font-size:80px; margin-bottom:20px; }
+.cover-title { font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:4px; margin-bottom:16px; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.cover-subtitle { font-size:clamp(16px,2.5vw,24px); opacity:0.9; margin-bottom:24px; max-width:600px; line-height:1.6; }
+.cover-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-size:14px; letter-spacing:2px; border:1px solid rgba(255,255,255,0.3); }
+.cover-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+.c1 { width:600px; height:600px; top:-200px; right:-100px; }
+.c2 { width:300px; height:300px; bottom:-50px; left:-50px; }
+.c3 { width:200px; height:200px; top:50%; left:10%; }
+.cover-decor-dots {
+    position:absolute; width:100%; height:100%;
+    background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);
+    background-size:30px 30px; opacity:0.5;
+}
+
+/* Intro */
+.intro-card {
+    background:#FFFFFF; border-radius:24px;
+    padding:clamp(30px,5vw,60px); max-width:800px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+    text-align:center; margin:0 20px;
+}
+.intro-icon { font-size:60px; margin-bottom:16px; }
+.intro-title { font-size:clamp(22px,3.5vw,32px); color:#059669; margin-bottom:20px; font-weight:700; }
+.intro-text { font-size:clamp(15px,2vw,18px); color:#64748B; line-height:1.8; max-width:650px; margin:0 auto; }
+
+/* Lesson Header */
+.lesson-header { flex-direction:column; }
+.lesson-header-content { text-align:center; z-index:2; padding:0 20px; }
+.lesson-badge { display:inline-block; padding:6px 24px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:20px; letter-spacing:2px; }
+.lesson-title { font-size:clamp(24px,4vw,40px); font-weight:800; max-width:700px; line-height:1.4; }
+.lesson-header-decor {
+    position:absolute; width:400px; height:400px;
+    border-radius:50%; border:2px dashed #05966920;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    animation:spin 60s linear infinite;
+}
+@keyframes spin { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* Content */
+.content-slide { padding:60px clamp(20px,4vw,80px); flex-direction:column; }
+.content-scroll {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+    padding-right:10px;
+}
+.content-scroll::-webkit-scrollbar { width:6px; }
+.content-scroll::-webkit-scrollbar-track { background:transparent; }
+.content-scroll::-webkit-scrollbar-thumb { background:#05966930; border-radius:3px; }
+
+.content-card {
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border-left:4px solid #05966930;
+    transition:all 0.3s;
+}
+.content-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left-color:#059669; }
+.content-card p {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+}
+.bullet-list {
+    list-style:none; padding:0;
+}
+.bullet-list li {
+    font-size:clamp(14px,1.8vw,17px); color:#1E293B; line-height:1.8;
+    padding:8px 0; padding-left:20px; position:relative;
+}
+.bullet-list li::before {
+    content:""; position:absolute; left:0; top:16px;
+    width:8px; height:8px; border-radius:50%; background:#10B981;
+}
+.code-card {
+    background:#1E293B; border-radius:12px;
+    padding:clamp(12px,2vw,20px) clamp(16px,2.5vw,24px);
+    overflow-x:auto;
+}
+.code-card pre { margin:0; }
+.code-card code {
+    font-family:"Cascadia Code","Fira Code","Consolas",monospace;
+    font-size:clamp(12px,1.5vw,15px); color:#E2E8F0; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* Practice */
+.practice-slide {
+    padding:60px clamp(20px,4vw,80px); flex-direction:column;
+}
+.practice-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:clamp(20px,3vw,40px);
+    padding-bottom:16px; border-bottom:3px solid;
+}
+.practice-icon { font-size:clamp(30px,4vw,44px); }
+.practice-header h2 {
+    font-size:clamp(20px,3vw,32px); font-weight:700;
+}
+.practice-steps {
+    width:100%; max-width:1000px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height:calc(100vh - 240px); overflow-y:auto;
+    padding-right:10px;
+}
+.practice-steps::-webkit-scrollbar { width:6px; }
+.practice-steps::-webkit-scrollbar-track { background:transparent; }
+.practice-steps::-webkit-scrollbar-thumb { background:#05966930; border-radius:3px; }
+
+.practice-step {
+    display:flex; gap:16px; align-items:flex-start;
+    background:#FFFFFF; border-radius:16px;
+    padding:clamp(14px,2vw,24px) clamp(16px,2.5vw,28px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+    border:1px solid #10B98130;
+}
+.practice-step:hover { border-color:#05966960; }
+.step-dot {
+    min-width:12px; height:12px; border-radius:50%;
+    margin-top:6px; flex-shrink:0;
+}
+.practice-step p {
+    font-size:clamp(13px,1.7vw,16px); color:#1E293B; line-height:1.8;
+}
+
+/* End */
+.end-slide { flex-direction:column; color:white; text-align:center; }
+.end-content { z-index:2; position:relative; }
+.end-emoji { font-size:80px; margin-bottom:20px; }
+.end-content h1 { font-size:clamp(32px,6vw,56px); font-weight:900; margin-bottom:16px; }
+.end-subtitle { font-size:clamp(15px,2vw,20px); opacity:0.85; margin-bottom:20px; }
+.end-tag { display:inline-block; padding:8px 24px; border-radius:30px; background:rgba(255,255,255,0.2); font-size:14px; letter-spacing:2px; }
+.end-decor-circle {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.05);
+}
+
+/* Nav */
+.slide-nav {
+    position:absolute; bottom:20px; right:30px;
+    font-size:13px; opacity:0.5; color:#1E293B;
+    z-index:10;
+}
+.cover .slide-nav, .end-slide .slide-nav { color:rgba(255,255,255,0.5); }
+
+/* Navigation hint */
+.nav-hint {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.4); font-size:13px;
+    z-index:100; pointer-events:none;
+    animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+/* Responsive */
+@media (max-width:768px) {
+    .content-slide,.practice-slide { padding:40px 16px; }
+    .intro-card { margin:0 16px; }
+    .cover-title { font-size:28px; }
+}
+
+/* Slide top nav */
+.slide-top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+}
+.slide-nav-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s; cursor: pointer; font-family: inherit;
+}
+.slide-nav-btn:hover {
+    color: #fff; background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.25);
+}
+.slide-nav-arrow { font-size: 14px; transition: transform 0.3s; }
+.slide-nav-btn:hover .slide-nav-arrow { transform: translateX(-2px); }
+</style>
+</head>
+<body>
+<div class="slide-top-nav">
+  <a href="全部课程.html" class="slide-nav-btn"><span class="slide-nav-arrow">&#8592;</span> 课程目录</a>
+  <button class="slide-nav-btn" onclick="prevSlide()"><span class="slide-nav-arrow">&#8592;</span> 上一页</button>
+</div>
+
+
+<div id="slides">
+
+        <div class="slide cover" style="background:linear-gradient(135deg, #064E3B 0%, #059669 50%, #059669 100%);">
+            <div class="cover-decor-circle c1"></div>
+            <div class="cover-decor-circle c2"></div>
+            <div class="cover-decor-circle c3"></div>
+            <div class="cover-decor-dots"></div>
+            <div class="cover-content">
+                <div class="cover-emoji">🧠</div>
+                <h1 class="cover-title">AI基础知识</h1>
+                <p class="cover-subtitle">机器学习、深度学习、大语言模型——从原理到应用</p>
+                <div class="cover-tag">基础系列·第二篇</div>
+            </div>
+            <div class="slide-nav">1 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="intro-card">
+                <div class="intro-icon">📖</div>
+                <h2 class="intro-title">课程导览</h2>
+                <p class="intro-text">了解了AI是什么之后，这一篇我们深入"AI是怎么工作的"。六节课从机器学习三大范式讲起，一路走到大语言模型的原理——这是成为AI深度使用者的必经之路。</p>
+            </div>
+            <div class="slide-nav">2 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第一课</div>
+                <h2 class="lesson-title" style="color:#059669;">机器学习的三大范式：监督/无监督/强化学习</h2>
+            </div>
+            <div class="slide-nav">3 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>所有的机器学习任务，本质上都可以归入三种范式。理解了这个分类，你就理解了一半的AI。</p></div><div class="content-card"><p>监督学习（Supervised Learning）——有答案的练习册</p></div><div class="content-card"><p>想象你有一本"附答案的练习册"——每道题都有正确答案。监督学习就是这样：给AI大量"输入→正确输出"的配对数据，AI从中找到映射规律。比如：给AI看10000张照片+每张的标签（"有猫"/"没猫"），AI学习从照片预测"有猫还是没猫"。分类（判断是/否、A/B/C）和回归（预测数值，如房价）是最常见的监督学习任务。</p></div><div class="content-card"><p>无监督学习（Unsupervised Learning）——没有答案的探索</p></div><div class="content-card"><p>现在给你一堆数据，但没有任何标签——你得自己找出数据中的结构和规律。无监督学习的典型应用：聚类（把相似的用户分到一组——"喜欢买运动鞋的人"vs"喜欢买护肤品的人"）、降维（把100个特征压缩到2-3个，方便可视化）、异常检测（找出信用卡交易中的"不正常"行为）。</p></div><div class="content-card"><p>强化学习（Reinforcement Learning）——在尝试中学习</p></div><div class="content-card"><p>强化学习不是从数据中学习，而是从"试错+奖励"中学习。像训练一只狗：做对了给零食（正奖励），做错了没有零食（负反馈）。AI在一个环境里不断尝试各种动作，目标是最大化累计奖励。AlphaGo下围棋、自动驾驶汽车、机器人控制——这些都是强化学习的地盘。</p></div>
+            </div>
+            <div class="slide-nav">4 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：给AI任务分类</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>想五个日常生活中的AI应用场景（淘宝推荐、网易云音乐日推、自动驾驶、垃圾邮件过滤、AlphaGo），判断每个属于监督/无监督/强化学习中的哪一种。</p></div>
+            </div>
+            <div class="slide-nav">5 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第二课</div>
+                <h2 class="lesson-title" style="color:#059669;">数据：AI的燃料——特征工程、数据清洗、训练集与测试集</h2>
+            </div>
+            <div class="slide-nav">6 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>"垃圾进，垃圾出"——这是AI领域最重要的定律。模型再厉害，数据不好，一切都是白搭。</p></div><div class="content-card"><p>特征工程：把"原材料"变成"可用的信息"</p></div><div class="content-card"><p>AI不吃"原始数据"——它需要的是"特征"（Feature）。原始数据是"一张照片的像素值"，特征是"照片里有没有人、有几张脸、背景是室内还是室外"。特征工程就是把手头的原始数据转换成AI能用的信息格式。好的特征比好的模型更重要——这是所有AI实践者的共识。</p></div><div class="content-card"><p>数据清洗：为什么80%的AI工作时间花在数据上？</p></div><div class="content-card"><p>真实世界的数据充满问题：缺失值（有人没填年龄）、异常值（"年龄=999岁"）、格式不一（"2024年1月1日" vs "2024/1/1"）。数据清洗就是把这些"脏数据"整理干净。如果你跳过清洗直接训练，模型会学到错误的规律——比如发现"年龄=999岁的人特别喜欢买轮椅"。</p></div><div class="content-card"><p>训练集、验证集、测试集：为什么要把数据分成三份？</p></div><div class="content-card"><p>把数据分成三份，是防止"自欺欺人"的关键设计：训练集（70%）用来训练模型；验证集（15%）在训练过程中用来调参——"这个参数好不好？"；测试集（15%）在最终训练完成后才使用一次——"这个模型真实的水平是多少？"。关键原则：测试集在训练过程中绝对不能碰！否则就像考试前偷看了答案——考得好不代表学得好。</p></div>
+            </div>
+            <div class="slide-nav">7 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：体验"垃圾进垃圾出"</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>找一个小数据集（比如你手机里记录的自己的每日步数），故意制造一些"脏数据"（改一天步数=999999，删掉几天的记录）。然后计算平均值——看脏数据如何改变结果。这就是数据清洗的意义。</p></div>
+            </div>
+            <div class="slide-nav">8 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第三课</div>
+                <h2 class="lesson-title" style="color:#059669;">神经网络入门：神经元、激活函数、前向传播</h2>
+            </div>
+            <div class="slide-nav">9 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>神经网络是深度学习的核心。它听起来唬人，但核心思想简单得惊人——"用简单的零件搭出复杂的机器"。</p></div><div class="content-card"><p>神经元——"一个小小的决策器"</p></div><div class="content-card"><p>一个神经网络由成千上万个"神经元"组成。每个神经元做的事极其简单：接收几个输入 → 加权求和 → 经过激活函数"决定是否激活" → 输出给下一层。类比：水管的阀门。水流进来（输入），经过阀门调整大小（权重），流到下一个管道。成千上万个阀门组合在一起，就能控制极其复杂的水流系统。</p></div><div class="content-card"><p>激活函数——"决定要不要传递信号"</p></div><div class="content-card"><p>没有激活函数，整个神经网络就只是一堆线性方程的组合——无论有多少层，最终等价于一层。激活函数引入了"非线性"，让网络能学习复杂的关系。常见的激活函数：ReLU（最常用，"小于0就输出0，大于0就原样输出"）、Sigmoid（把输出压缩到0-1之间，常用于最后判断概率）、Softmax（多分类任务，"算出每个类别的概率"）。</p></div><div class="content-card"><p>前向传播——"从输入走到输出"</p></div><div class="content-card"><p>前向传播是神经网络"推理"时的计算过程：数据从输入层进入 → 经过隐藏层逐层变换 → 到达输出层给出结果。就像一条流水线——原材料从一头进入，经过多个加工站（网络层），最终变成产品。在整个"训练"开始之前，前向传播的结果是随机的——像闭着眼睛第一次走一条路。</p></div>
+            </div>
+            <div class="slide-nav">10 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：用纸笔模拟一个简单网络</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>画三个输入（x1=2, x2=3, x3=1），每两个神经元组成隐藏层，再加一个输出神经元。给每个连接随手赋权重（如w=0.5或w=-0.3），手动做前向传播计算——感受"加权求和→过激活函数"的完整过程。你不需要算对——重点是感受数据怎么"流"的。</p></div>
+            </div>
+            <div class="slide-nav">11 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第四课</div>
+                <h2 class="lesson-title" style="color:#059669;">训练与评估：梯度下降、反向传播、过拟合与正则化</h2>
+            </div>
+            <div class="slide-nav">12 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>"训练"是让AI从"随机乱猜"变成"准确预测"的过程。这一课揭开训练的黑盒子。</p></div><div class="content-card"><p>损失函数——"AI，你错得有多离谱？"</p></div><div class="content-card"><p>训练的第一步，是让AI知道自己错了。损失函数（Loss Function）就是用于衡量"预测值和真实值之间的差距"的数学工具。平方误差（预测房价和真实房价的差额的平方）、交叉熵（分类任务中预测概率和正确答案的差异）是两种最常见的损失函数。损失越小，模型越准。</p></div><div class="content-card"><p>梯度下降——"闭着眼往山下走"</p></div><div class="content-card"><p>想象你站在一座山上，目标是走到最低的山谷——但你什么都看不见（大雾天）。你能做的只有一件事：用脚探一探周围哪里是下坡，然后往下走一小步。重复这个动作足够多次，你就能到达山谷底部。梯度下降就是这个"探下坡→走一步"的过程：计算当前各参数的"梯度"（哪个方向损失下降最快？），然后沿那个方向微调参数。每一步调整的大小叫"学习率"——太大容易冲过头，太小走得太慢。</p></div><div class="content-card"><p>反向传播——"怎么调参数才能让下次错得更少？"</p></div><div class="content-card"><p>反向传播是深度学习最重要的训练算法。它从输出层的损失出发，把"错误"沿着网络一层层往回传，计算出每个参数对最终损失"贡献了多少错误"，从而知道该往哪个方向调参数。前向传播是"从输入到输出"，反向传播是"从错误到责任"。</p></div>
+            </div>
+            <div class="slide-nav">13 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>过拟合与正则化——"考满分不一定学得好"</p></div><div class="content-card"><p>过拟合是AI最常见的毛病：在训练数据上表现完美（99.9%准确率），但在从未见过的新数据上一塌糊涂。本质是"死记硬背"而不是"理解规律"。应对方法叫正则化：Dropout（训练时随机"关闭"一部分神经元，强迫网络不要依赖特定路径）、L2正则化（惩罚过大的权重值，让模型保持"简洁"）、早停（在验证集表现开始下降时就停止训练）。</p></div>
+            </div>
+            <div class="slide-nav">14 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：体验"学习率"的影响</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>用你手机里的计算器，选一个数（比如100），每次乘以0.5（模拟步长）。试试"学习率=0.1"和"学习率=0.9"的感觉——太小的学习率需要太多步，太大的学习率会"跳跃"过度。这就是梯度下降中学习率选择的直观感受。</p></div>
+            </div>
+            <div class="slide-nav">15 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第五课</div>
+                <h2 class="lesson-title" style="color:#059669;">深度学习的崛起：CNN、RNN到Transformer——为什么深度更强大</h2>
+            </div>
+            <div class="slide-nav">16 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>深度学习不是"深一点好一点"那么简单。不同的网络架构专门解决不同类型的问题。</p></div><div class="content-card"><p>CNN（卷积神经网络）——图像处理的王者</p></div><div class="content-card"><p>CNN的核心是"卷积核"——一个小的滑动窗口在图像上扫描，每次只关注一个小区域（比如3x3像素），提取局部特征（边缘、纹理、形状）。多层卷积层层递进：第一层检测边缘，第二层检测简单形状，第三层检测复杂物体（眼睛、轮子），更高层检测"这是一张人脸"或"这是一辆车"。CNN让AI第一次真正"看懂"了图片。</p></div><div class="content-card"><p>RNN（循环神经网络）——序列数据的专家</p></div><div class="content-card"><p>RNN的设计理念是"记忆"——处理当前输入时，也记住了前面处理过的信息。这对文字、语音、时间序列来说至关重要。"我昨天去了超市"和"我今天去了超市"意思完全不同——RNN能捕捉这种顺序的差异。但原始的RNN有一个致命缺陷：句子太长时，前面的信息会"衰减消失"（梯度消失问题）。LSTM和GRU是RNN的改进版，通过"门控机制"学会该记住什么、该忘记什么。</p></div><div class="content-card"><p>Transformer——改变一切的架构</p></div><div class="content-card"><p>2017年，谷歌团队提出了Transformer架构，核心创新叫"自注意力"——让句子中的每个词都和所有其他词建立关系，而不是按顺序一个个处理。"那只猫，虽然它很胖，跑得很快。"——"它"指的是"猫"，但要理解这个，模型需要跨越五个词的"距离"来建立联系。RNN做这个很吃力，Transformer的注意力机制直接给每对词打分，轻松搞定。GPT、BERT、各类大语言模型——全部基于Transformer。它不仅是"更好的RNN"，而是从根本上改变了AI处理语言的方式。</p></div>
+            </div>
+            <div class="slide-nav">17 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：用"自注意力"思考一句话</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>取一句话："小明把作业交给老师，他很高兴。"问自己：① "他"指的是谁？② 如果AI弄错了，会出什么问题？③ 为什么需要"注意力机制"才能准确理解这句话？用这个例子感受Transformer的价值。</p></div>
+            </div>
+            <div class="slide-nav">18 / 23</div>
+        </div>
+        <div class="slide lesson-header" style="background:linear-gradient(135deg, #ECFDF5 0%, #05966915 100%);">
+            <div class="lesson-header-decor"></div>
+            <div class="lesson-header-content">
+                <div class="lesson-badge" style="background:#059669;color:white;">第六课</div>
+                <h2 class="lesson-title" style="color:#059669;">大语言模型原理速览：GPT系列背后的核心技术思路</h2>
+            </div>
+            <div class="slide-nav">19 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>你会用ChatGPT，但你理解它背后的原理吗？这一课给你一个"从内往外看"的视角。</p></div><div class="content-card"><p>预训练——"读完整个互联网"</p></div><div class="content-card"><p>GPT的核心训练分两阶段。第一阶段叫"预训练"：让模型以"预测下一个词"为任务，在海量文本（几乎是整个互联网的公开文本）上学习。这个阶段的目标不是回答问题，而是学会"语言的本能"——什么词通常跟什么词一起出现？句子的结构是怎样的？这段训练出来的叫"基座模型"——它懂语言，但不会聊天。</p></div><div class="content-card"><p>对齐——"学会做人"</p></div><div class="content-card"><p>第二阶段叫"对齐"（Alignment）：让基座模型学会按照人类期望的方式回答问题。包括指令微调（用大量"用户问→理想回答"的配对数据训练）、RLHF（人类反馈强化学习——人类对多个AI回答评分，AI学习"哪种回答更好"）。这个过程把"会说话的AI"变成了"有用的AI助手"。</p></div><div class="content-card"><p>三个关键技术：Token化、位置编码、缩放定律</p></div><div class="content-card"><p>Token化（Tokenization）：模型处理的基本单位不是"字"，而是更小的"词片"（Token）。比如"unbelievable"可能被拆成"un + believe + able"三个Token。这样做的好处：即使遇到从未见过的词，也能从组成部分推测含义。位置编码（Position Encoding）：Transformer本身不关心词的位置——"猫追狗"和"狗追猫"对它来说可能是一样的。位置编码给每个词加上了"我排第几"的信息。缩放定律（Scaling Law）：更大的模型+更多的数据+更多的算力=更好的性能。这就是为什么GPT从1代到4代，参数从1.17亿涨到了据传万亿级别——效果确实在持续提升。</p></div>
+            </div>
+            <div class="slide-nav">20 / 23</div>
+        </div>
+        <div class="slide content-slide" style="background:#ECFDF5;">
+            <div class="content-scroll">
+                <div class="content-card"><p>从GPT-1到GPT-4：不是"升级"，是"进化"</p></div><div class="content-card"><p>GPT-1（2018）：证明了"预训练+微调"的范式有效。GPT-2（2019）：因为"太强大可能被滥用"而引发伦理争议——第一次让公众意识到AI能写出以假乱真的文本。GPT-3（2020）：1750亿参数，"涌现能力"出现——很多能力是在训练过程中自发出现的，没有人专门教过。GPT-4（2023）：多模态（能理解图片）、推理能力大幅提升、支持超长上下文。每一次迭代，都不是"参数多一点"那么简单——是质的飞跃。</p></div>
+            </div>
+            <div class="slide-nav">21 / 23</div>
+        </div>
+        <div class="slide practice-slide" style="background:linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);">
+            <div class="practice-header" style="border-color:#059669;">
+                <span class="practice-icon">🛠️</span>
+                <h2 style="color:#059669;">动手试一试：研究你用的AI模型</h2>
+            </div>
+            <div class="practice-steps">
+                <div class="practice-step"><span class="step-dot" style="background:#059669;"></span><p>打开你常用的AI聊天工具（ChatGPT、DeepSeek等），去搜索"XX模型的参数规模"和"XX模型的技术架构"。你可能会发现：很多模型的底层都是Transformer。用这一课的知识去理解它的技术文档——你会发现那些术语不再陌生了。</p></div>
+            </div>
+            <div class="slide-nav">22 / 23</div>
+        </div>
+        <div class="slide end-slide" style="background:linear-gradient(135deg, #064E3B 0%, #059669 50%, #059669 100%);">
+            <div class="end-decor-circle c1"></div>
+            <div class="end-decor-circle c2"></div>
+            <div class="end-content">
+                <div class="end-emoji">🚀</div>
+                <h1>感谢学习</h1>
+                <p class="end-subtitle">AI基础知识 · 系列课程</p>
+                <div class="end-tag">「群星」AI教育平台</div>
+            </div>
+        </div>
+</div>
+
+<div class="nav-hint" id="hint">← → 方向键切换页面 · 点击屏幕翻页</div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var hint = document.getElementById('hint');
+    
+    function showSlide(index) {
+        slides.forEach(function(s,i) { s.classList.toggle('active', i===index); });
+        current = index;
+    }
+    
+    function next() {
+        if (current < slides.length - 1) showSlide(current + 1);
+        if (current >= slides.length - 2) hint.style.display = 'none';
+    }
+    
+    window.prevSlide = function() { prev(); };
+    function prev() {
+        if (current > 0) showSlide(current - 1);
+        hint.style.display = 'block';
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault(); next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault(); prev();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        var x = e.clientX;
+        if (x > window.innerWidth / 2) next();
+        else prev();
+    });
+    
+    // Touch support
+    var touchStartX = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) {
+            if (diff < 0) next();
+            else prev();
+        }
+    });
+    
+    showSlide(0);
+})();
+</script>
+
+</body>
+</html>

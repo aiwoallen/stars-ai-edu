@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景三：创作写作——小说、诗歌、剧本 - AI文案实战 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.5) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.12) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.18) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.nav-pill{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:36px;padding:14px 36px;border-radius:60px;background:rgba(10,14,39,.65);border:1px solid rgba(240,200,80,.12);transition:all .4s cubic-bezier(.16,1,.3,1)}
+.nav-pill.scrolled{background:rgba(10,14,39,.85);border-color:rgba(240,200,80,.18);box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.nav-logo{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:3px;display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo img{height:28px}
+.nav-link{font-size:13px;font-weight:400;color:#8890B0;text-decoration:none;letter-spacing:.5px;transition:color .3s}
+.nav-link:hover,.nav-link.active{color:#F0C850}
+
+.article-section{position:relative;z-index:2;padding-top:150px;padding-bottom:80px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:12px;flex-wrap:wrap}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.lesson-meta{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.55);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.lesson-meta::before{content:'';width:24px;height:1px;background:rgba(240,200,80,.3)}
+.lesson-title{font-size:clamp(2rem,4vw,2.8rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.25;margin-bottom:40px;max-width:900px}
+.article-body{max-width:800px;margin:0 auto}
+.content-block{background:#181E40;border:1px solid rgba(240,200,80,.08);border-left:3px solid rgba(240,200,80,.25);border-radius:0 16px 16px 0;padding:32px 36px;margin-bottom:20px;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.content-block:hover{border-left-color:rgba(240,200,80,.45);border-color:rgba(240,200,80,.12)}
+.content-block h3{font-size:18px;font-weight:500;color:#F0C850;margin-bottom:14px;line-height:1.4}
+.content-block p{font-size:15px;color:#BCC3CC;line-height:1.9;margin-bottom:12px}
+.content-block p:last-child{margin-bottom:0}
+.content-block code{background:rgba(240,200,80,.1);padding:2px 8px;border-radius:4px;font-size:13px;color:#F8E090;font-family:'Cascadia Code','Consolas',monospace}
+.content-block pre{background:rgba(0,0,0,.4);padding:18px 22px;border-radius:8px;overflow-x:auto;margin:12px 0;border:1px solid rgba(240,200,80,.08)}
+.content-block pre code{background:none;padding:0;font-size:12px;line-height:1.8;color:#BCC3CC}
+.content-block ul,.content-block ol{padding-left:24px;margin:10px 0}
+.content-block li{font-size:15px;color:#BCC3CC;line-height:1.8;padding:3px 0}
+
+.ai-chat-section{padding:40px 0 60px;z-index:2;position:relative}
+.ai-chat-card{background:#181E40;border-radius:18px;border:1px solid rgba(240,200,80,.1);overflow:hidden;max-width:680px;margin:0 auto;box-shadow:0 4px 30px rgba(0,0,0,.3)}
+.ai-chat-header{background:linear-gradient(135deg,rgba(91,155,213,.25),rgba(108,92,231,.18));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.1)}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 12px rgba(91,155,213,.4)}
+.ai-info{flex:1}
+.ai-name{font-size:14px;font-weight:500;color:#E8ECF1;letter-spacing:1px}
+.ai-status{font-size:11px;color:#4CAF50;display:flex;align-items:center;gap:5px}
+.ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block}
+.ai-chat-body{padding:16px 24px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.ai-msg{display:flex;gap:10px;align-items:flex-start}
+.msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;box-shadow:0 1px 8px rgba(91,155,213,.35)}
+.msg-bubble{background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)}
+.ai-chat-input{padding:14px 20px;border-top:1px solid rgba(240,200,80,.1);display:flex;gap:10px;background:rgba(5,8,25,.8)}
+.ai-chat-input input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(240,200,80,.18);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;font-family:inherit;outline:none;transition:all .3s}
+.ai-chat-input input::placeholder{color:#555D80}
+.ai-chat-input input:focus{border-color:rgba(240,200,80,.4);background:rgba(255,255,255,.1)}
+.send-btn{background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .3s;flex-shrink:0;box-shadow:0 2px 12px rgba(91,155,213,.35)}
+.send-btn:hover{opacity:.9;transform:scale(1.08)}
+
+.lesson-nav{display:flex;justify-content:space-between;align-items:center;padding:0;z-index:2;position:relative}
+.lesson-nav a{display:inline-flex;align-items:center;gap:8px;color:#8890B0;text-decoration:none;font-size:13px;padding:10px 20px;border-radius:24px;border:1px solid rgba(240,200,80,.12);transition:all .35s}
+.lesson-nav a:hover{color:#F0C850;border-color:rgba(240,200,80,.3);background:rgba(240,200,80,.06)}
+.lesson-nav .nav-center{color:#555D80;font-size:12px;letter-spacing:1px;text-decoration:none}
+.lesson-nav .disabled{color:#555D80;pointer-events:none;border-color:rgba(240,200,80,.05);opacity:.4}
+
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+
+@media(max-width:768px){
+  .nav-pill{gap:18px;padding:10px 22px;top:14px}.nav-logo{font-size:14px}.nav-link{font-size:11px}
+  .article-section{padding-top:120px}
+  .content-block{padding:22px 20px}
+  .lesson-title{font-size:clamp(1.5rem,5vw,2rem)}
+  .footer-grid{flex-direction:column;text-align:center}
+  .lesson-nav{flex-wrap:wrap;gap:8px;justify-content:center}
+}
+</style>
+</head>
+<body>
+<main style="overflow-x:hidden;width:100%;max-width:100%">
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div>
+<div class="grain-overlay"></div>
+
+<nav class="nav-pill" id="navPill">
+  <a href="index.html" class="nav-logo"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></a>
+  <a href="index.html" class="nav-link">首页</a>
+  <a href="全部课程.html" class="nav-link active">课程</a>
+  <a href="about.html" class="nav-link">关于</a>
+</nav>
+
+<section class="article-section">
+  <div class="max-w-4xl mx-auto px-8">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a> <span>/</span>
+      <a href="课程_AI文案实战.html">AI文案实战</a> <span>/</span>
+      <span>场景三：创作写作——小说、诗歌、剧本</span>
+    </div>
+    <div class="lesson-meta"></div>
+    <h1 class="lesson-title"></h1>
+    <div class="article-body">
+      <div class="content-block"><p>AI不是&quot;替代&quot;你的创作——而是&quot;催化&quot;你的灵感。把AI当成一个随时待命的&quot;灵感引擎&quot;。</p><div class="content-block"><h3>小说：AI帮你打破&quot;白纸恐惧症&quot;</h3><p>面对空白文档是最难的时刻。让AI给你一个开场段落、三条情节走向、几个角色设定——不是让它替你写，而是让它帮你&quot;起步&quot;。你有了方向之后，用自己的笔触去展开。AI写的初稿是你的&quot;起跑器&quot;，不是&quot;终点线&quot;。</p><div class="content-block"><h3>对话生成——AI的强项</h3><p>写角色之间的对话是很多作者的痛点。AI在这上面特别擅长——因为它本身就是从海量对话中训练出来的。告诉AI两个角色的性格特点和对话场景，它能产出相当自然的对话。你拿来之后做一件事：把它改成&quot;更像你的角色会说的话&quot;。</p><div class="content-block"><h3>诗歌：AI的&quot;意象生成器&quot;</h3><p>AI写诗的水平参差不齐——它擅长&quot;制造意象&quot;（那些让你眼前一亮的比喻和画面），但整首诗的节奏、留白、回味的功夫还是需要人。最佳协作方式：让AI生成20个关于[某个主题]的意象和比喻，你从中挑出最有感觉的3个，围绕它们自己写。</p><div class="content-block"><h3>动手试一试：和AI一起写一个短篇故事</h3><p>给AI一个开头（不超过3句话），让它续写三种不同的情节走向。选择最有感觉的那条走向，你自己接着往下写一两段。感受&quot;AI起跑、你冲刺&quot;的协作模式。</p></div>
+    </div>
+  </div>
+</section>
+<section class="ai-chat-section"><div class="container mx-auto px-8"><section class="ai-chat-section" style="padding:10px 0 30px;"><div class="ai-chat-card">
+<div class="ai-chat-header"><div class="ai-avatar">✨</div><div class="ai-info"><div class="ai-name">群星 AI 助手</div><div class="ai-status">在线 · 随时为你解答</div></div></div>
+<div class="ai-chat-body" id="aiChatBody"><div class="ai-msg"><div class="msg-avatar">✨</div><div class="msg-bubble">你好！关于本节课的内容有任何问题都可以问我。</div></div></div>
+<div class="ai-chat-input"><input type="text" id="aiInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendAiMsg()"><button class="send-btn" onclick="sendAiMsg()">➤</button></div>
+</div></section></div></section>
+<section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI文案实战_场景二商业文案产品介绍广告语销售信.html">← 上一课</a><a href="课程_AI文案实战.html">课程目录</a><a href="课节_AI文案实战_场景四学术与报告论文辅助报告生成资料整理.html">下一课 →</a></div></div></section>
+
+<footer class="site-footer">
+  <div class="max-w-6xl mx-auto px-8">
+    <div class="footer-grid">
+      <div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div>
+      <div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div>
+      <p class="footer-copy">&copy; 2026 群星</p>
+    </div>
+  </div>
+</footer>
+</main>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+  var c=document.getElementById('starField'),f=document.createDocumentFragment();
+  for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+  var st=document.createElement('style'),cs='';
+  for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+  st.textContent=cs;document.head.appendChild(st);
+})();
+window.addEventListener('scroll',function(){document.getElementById('navPill').classList.toggle('scrolled',window.scrollY>60)});
+const AI_PROXY = 'http://localhost:8899/api/chat';  // 本地开发代理
+
+  async function sendAiMsg() {
+    const input = document.getElementById('aiInput');
+    const body = document.getElementById('aiChatBody');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    // Show user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'ai-msg';
+    userMsg.style.justifyContent = 'flex-end';
+    userMsg.innerHTML = '<div class="msg-bubble" style="background:rgba(240,200,80,0.1);border-radius:14px 14px 4px 14px;">' + msg + '</div>';
+    body.appendChild(userMsg);
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    // Show typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'ai-msg';
+    typing.id = 'typing-msg';
+    typing.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble" style="opacity:0.6;">思考中...</div>';
+    body.appendChild(typing);
+    body.scrollTop = body.scrollHeight;
+
+    try {
+      let reply;
+      
+      if (AI_PROXY) {
+        // 通过安全代理访问（API密钥仅存在于服务端）
+        const resp = await fetch(AI_PROXY, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await resp.json();
+        reply = data.reply;
+      } else {
+        throw new Error('No proxy configured');
+      }
+      
+      typing.remove();
+      
+      if (!reply || reply.length < 2) throw new Error('empty');
+      
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'ai-msg';
+      aiMsg.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble">' + reply.replace(/\n/g, '<br>') + '</div>';
+      body.appendChild(aiMsg);
+    } catch(e) {
+      typing.remove();
+      // 离线模式 - 关键词匹配回复
+      var reply = msg.includes('推荐') || msg.includes('课程') ? '推荐从「AI 是什么」开始，这是入门首选！然后可以学「AI 基础知识」打好基础，再根据兴趣选实战课程。' :
+                  msg.includes('机器学习') ? '机器学习是AI的核心技术。简单说，就是让计算机从数据中自己学习规律，而不是人工编写规则。它分为监督学习、无监督学习和强化学习三大类。' :
+                  msg.includes('你好') || msg.includes('hi') || msg.includes('hello') ? '你好呀！有什么想了解的吗？' :
+                  'AI助手暂时离线，请检查代理服务器是否运行。本地开发请运行: python proxy_server.py';
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'ai-msg';
+      aiMsg.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble">' + reply + '</div>';
+      body.appendChild(aiMsg);
+    }
+    body.scrollTop = body.scrollHeight;
+  }
+</script>
+</body>
+</html>
