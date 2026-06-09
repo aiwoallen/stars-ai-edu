@@ -584,9 +584,7 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 // =============================================
 // CONFIG
 // =============================================
-const STORAGE_KEY = 'stars_users';
-const SESSION_KEY = 'stars_session';
-const AVATAR_PREFIX = 'stars_avatar_';
+const API_BASE = 'https://thestars-ai.vercel.app/api';
 
 // =============================================
 // COSMIC BACKGROUND
@@ -612,17 +610,23 @@ window.addEventListener('scroll',function(){
 });
 
 // =============================================
-// STORAGE HELPERS
+// API HELPERS (replaces localStorage)
 // =============================================
-function getUsers(){
-  try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||{};}catch{return {};}
+function getToken(){
+  try{return JSON.parse(localStorage.getItem('stars_token'));}catch{return null;}
 }
-function saveUsers(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
-function getSession(){
-  try{return JSON.parse(localStorage.getItem(SESSION_KEY))||null;}catch{return null;}
+function saveToken(token){localStorage.setItem('stars_token',JSON.stringify({token,ts:Date.now()}));}
+function clearToken(){localStorage.removeItem('stars_token');}
+
+async function apiFetch(path, options = {}){
+  const token = getToken();
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  if (token) headers['Authorization'] = 'Bearer ' + token.token;
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '请求失败');
+  return data;
 }
-function saveSession(email){localStorage.setItem(SESSION_KEY,JSON.stringify({email,ts:Date.now()}));}
-function clearSession(){localStorage.removeItem(SESSION_KEY);}
 
 // =============================================
 // TOAST
@@ -716,7 +720,7 @@ function updateStrength(pw){
 // =============================================
 // REGISTER
 // =============================================
-function handleRegister(){
+async function handleRegister(){
   clearErrors();
   const nickname=document.getElementById('regNickname').value.trim();
   const email=document.getElementById('regEmail').value.trim().toLowerCase();
@@ -730,27 +734,24 @@ function handleRegister(){
   if(password!==confirm){showError('regConfirm','regConfirmErr','两次密码不一致');valid=false;}
   if(!valid)return;
 
-  const users=getUsers();
-  if(users[email]){showError('regEmail','regEmailErr','该邮箱已注册，请直接登录');return;}
-
-  users[email]={
-    nickname,
-    email,
-    password:btoa(password), // base64 obfuscation (client-side only)
-    joinDate:new Date().toISOString(),
-    progress:{0:0,1:0,2:0,3:0,4:0,5:0}
-  };
-  saveUsers(users);
-  saveSession(email);
-  closeAuth();
-  showToast('注册成功，欢迎加入群星！','success');
-  renderProfile();
+  try{
+    const data = await apiFetch('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, nickname })
+    });
+    saveToken(data.token);
+    closeAuth();
+    showToast('注册成功，欢迎加入群星！','success');
+    renderProfile(data.user);
+  } catch(e) {
+    showError('regEmail','regEmailErr',e.message);
+  }
 }
 
 // =============================================
 // LOGIN
 // =============================================
-function handleLogin(){
+async function handleLogin(){
   clearErrors();
   const email=document.getElementById('loginEmail').value.trim().toLowerCase();
   const password=document.getElementById('loginPassword').value;
@@ -760,25 +761,26 @@ function handleLogin(){
   if(!password){showError('loginPassword','loginPasswordErr','请输入密码');valid=false;}
   if(!valid)return;
 
-  const users=getUsers();
-  const user=users[email];
-  if(!user||atob(user.password)!==password){
-    showError('loginEmail','loginEmailErr','邮箱或密码错误');
-    showError('loginPassword','loginPasswordErr','邮箱或密码错误');
-    return;
+  try{
+    const data = await apiFetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    saveToken(data.token);
+    closeAuth();
+    showToast('登录成功，欢迎回来！','success');
+    renderProfile(data.user);
+  } catch(e) {
+    showError('loginEmail','loginEmailErr',e.message);
+    showError('loginPassword','loginPasswordErr',e.message);
   }
-
-  saveSession(email);
-  closeAuth();
-  showToast('登录成功，欢迎回来！','success');
-  renderProfile();
 }
 
 // =============================================
 // LOGOUT
 // =============================================
 function handleLogout(){
-  clearSession();
+  clearToken();
   showToast('已退出登录');
   renderGuestView();
 }
@@ -786,21 +788,29 @@ function handleLogout(){
 // =============================================
 // AVATAR UPLOAD
 // =============================================
-function handleAvatarUpload(e){
+async function handleAvatarUpload(e){
   const file=e.target.files[0];
   if(!file||!file.type.startsWith('image/'))return;
-  const session=getSession();
-  if(!session)return;
+  if(!getToken()){showToast('请先登录','error');return;}
 
   const reader=new FileReader();
-  reader.onload=function(ev){
+  reader.onload=async function(ev){
     const dataUrl=ev.target.result;
-    // Store avatar separately (can be large)
-    try{localStorage.setItem(AVATAR_PREFIX+session.email,dataUrl);}
-    catch(err){showToast('图片过大，请选择较小的图片','error');return;}
-    document.getElementById('avatarImg').src=dataUrl;
-    showToast('头像已更新','success');
-    // Reset input
+    try{
+      await apiFetch('/user/avatar', {
+        method: 'PUT',
+        body: JSON.stringify({ avatar: dataUrl })
+      });
+      document.getElementById('avatarImg').src=dataUrl;
+      // Remove placeholder if exists
+      const ph=document.querySelector('.avatar-placeholder');
+      if(ph)ph.remove();
+      const avEl=document.getElementById('avatarImg');
+      avEl.style.display='block';
+      showToast('头像已更新','success');
+    } catch(err) {
+      showToast(err.message || '头像上传失败','error');
+    }
     e.target.value='';
   };
   reader.readAsDataURL(file);
@@ -810,11 +820,9 @@ function handleAvatarUpload(e){
 // EDIT NICKNAME
 // =============================================
 function openEditName(){
-  const session=getSession();
-  if(!session)return;
-  const users=getUsers();
-  const user=users[session.email];
-  document.getElementById('editNicknameInput').value=user?user.nickname:'';
+  const el=document.getElementById('editNicknameInput');
+  const nameEl=document.getElementById('profileName');
+  el.value=nameEl?nameEl.textContent:'';
   document.getElementById('editOverlay').classList.add('visible');
   document.body.style.overflow='hidden';
 }
@@ -825,51 +833,59 @@ function closeEdit(){
 document.getElementById('editOverlay').addEventListener('click',function(e){
   if(e.target===this)closeEdit();
 });
-function saveNickname(){
+async function saveNickname(){
   const val=document.getElementById('editNicknameInput').value.trim();
   if(!val){showToast('昵称不能为空','error');return;}
-  const session=getSession();
-  if(!session)return;
-  const users=getUsers();
-  if(!users[session.email])return;
-  users[session.email].nickname=val;
-  saveUsers(users);
-  document.getElementById('profileName').textContent=val;
-  closeEdit();
-  showToast('昵称已更新','success');
+  try{
+    await apiFetch('/user/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ nickname: val })
+    });
+    document.getElementById('profileName').textContent=val;
+    // Update placeholder letter
+    const ph=document.querySelector('.avatar-placeholder');
+    if(ph)ph.textContent=val[0].toUpperCase();
+    closeEdit();
+    showToast('昵称已更新','success');
+  } catch(e) {
+    showToast(e.message,'error');
+  }
 }
 
 // =============================================
 // RENDER
 // =============================================
-function renderProfile(){
-  const session=getSession();
-  if(!session){renderGuestView();return;}
-
-  const users=getUsers();
-  const user=users[session.email];
-  if(!user){clearSession();renderGuestView();return;}
-
+async function renderProfile(cachedUser){
   document.getElementById('guestView').style.display='none';
   document.getElementById('profileView').style.display='block';
 
+  let userData;
+  try{
+    // Fetch full user data from API
+    const data = await apiFetch('/auth/me');
+    userData = data.user;
+  } catch(e) {
+    clearToken();
+    renderGuestView();
+    return;
+  }
+
   // Name & Email
-  document.getElementById('profileName').textContent=user.nickname||'学习者';
-  document.getElementById('profileEmail').textContent=user.email;
+  document.getElementById('profileName').textContent=userData.nickname||'学习者';
+  document.getElementById('profileEmail').textContent=userData.email;
 
   // Avatar
-  const avatarData=localStorage.getItem(AVATAR_PREFIX+user.email);
   const avatarEl=document.getElementById('avatarImg');
-  if(avatarData){
-    avatarEl.src=avatarData;
+  const wrapper=avatarEl.parentElement;
+
+  if(userData.avatar){
+    avatarEl.src=userData.avatar;
+    avatarEl.style.display='block';
+    const ph=document.querySelector('.avatar-placeholder');
+    if(ph)ph.remove();
   } else {
-    // Generate initials avatar
     avatarEl.src='';
-    avatarEl.style.background=`linear-gradient(135deg,#1A2248,#2a3a70)`;
-    avatarEl.style.display='flex';
-    avatarEl.onerror=null;
-    // Replace with SVG placeholder
-    const wrapper=avatarEl.parentElement;
+    avatarEl.style.display='none';
     let placeholder=wrapper.querySelector('.avatar-placeholder');
     if(!placeholder){
       placeholder=document.createElement('div');
@@ -877,24 +893,18 @@ function renderProfile(){
       placeholder.style.cssText='width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#1A2248,#2a3a70);border:3px solid rgba(240,200,80,.25);display:flex;align-items:center;justify-content:center;font-family:Space Grotesk,sans-serif;font-size:44px;font-weight:700;color:#F0C850;position:absolute;top:0;left:0;cursor:pointer';
       wrapper.insertBefore(placeholder,avatarEl);
     }
-    const letter=(user.nickname||'S')[0].toUpperCase();
+    const letter=(userData.nickname||'S')[0].toUpperCase();
     placeholder.textContent=letter;
-    avatarEl.style.display='none';
     placeholder.onclick=function(){document.getElementById('avatarInput').click();};
-  }
-  if(avatarData){
-    const ph=document.querySelector('.avatar-placeholder');
-    if(ph)ph.remove();
-    avatarEl.style.display='block';
   }
 
   // Days since join
-  const joinDate=user.joinDate?new Date(user.joinDate):new Date();
+  const joinDate=userData.joinDate?new Date(userData.joinDate):new Date();
   const days=Math.max(1,Math.floor((Date.now()-joinDate.getTime())/(1000*60*60*24))+1);
   document.getElementById('statDays').textContent=days;
 
   // Progress bars
-  const progress=user.progress||{};
+  const progress=userData.progress||{};
   const totals=[4,6,6,6,6,6];
   for(let i=0;i<6;i++){
     const done=progress[i]||0;
@@ -908,7 +918,6 @@ function renderProfile(){
     if(cpEl) cpEl.textContent=`${done}/${total} 课节`;
   }
 
-  // GSAP animations
   gsapAnimateProfile();
 }
 
@@ -954,12 +963,15 @@ function gsapAnimateGuest(){
 // =============================================
 // INIT
 // =============================================
-document.addEventListener('DOMContentLoaded',function(){
-  const session=getSession();
-  if(session){
-    const users=getUsers();
-    if(users[session.email]){renderProfile();}
-    else{clearSession();renderGuestView();}
+document.addEventListener('DOMContentLoaded',async function(){
+  const token = getToken();
+  if(token){
+    try{
+      await renderProfile();
+    } catch(e) {
+      clearToken();
+      renderGuestView();
+    }
   } else {
     renderGuestView();
   }

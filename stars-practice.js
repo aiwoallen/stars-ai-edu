@@ -174,19 +174,77 @@
   let chatHistory = [];
   let rewardData = {};
 
-  function loadRewards() {
+  const API_USER_BASE = 'https://thestars-ai.vercel.app/api/user';
+
+  function getToken() {
+    try {
+      const raw = localStorage.getItem('stars_token');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  async function apiPut(path, body) {
+    const token = getToken();
+    if (!token) throw new Error('not_logged_in');
+    const res = await fetch(API_USER_BASE + path, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token.token
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('api_error');
+    return res.json();
+  }
+
+  async function loadRewards() {
+    const token = getToken();
+    if (token) {
+      try {
+        const res = await fetch(API_USER_BASE + '/progress', {
+          headers: { 'Authorization': 'Bearer ' + token.token }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const progress = data.progress || {};
+          // Map progress to rewards format
+          const r = {};
+          const courseNames = Object.keys(COURSES);
+          for (let i = 0; i < courseNames.length; i++) {
+            r[courseNames[i]] = { stars: progress[i] || 0, completed: [], unlockedAt: null };
+          }
+          return r;
+        }
+      } catch (e) {
+        console.warn('StarsPractice: API failed, falling back to localStorage');
+      }
+    }
+    // Fallback to localStorage
     try {
       const raw = localStorage.getItem('stars_practice_rewards');
       return raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      return {};
-    }
+    } catch (e) { return {}; }
   }
 
-  function saveRewards() {
+  async function saveRewards() {
+    // Save to localStorage as fallback
     try {
       localStorage.setItem('stars_practice_rewards', JSON.stringify(rewardData));
     } catch (e) {}
+
+    // Sync to API
+    const token = getToken();
+    if (!token) return;
+    const progress = {};
+    const courseNames = Object.keys(COURSES);
+    for (let i = 0; i < courseNames.length; i++) {
+      const cr = rewardData[courseNames[i]];
+      progress[i] = cr ? cr.stars : 0;
+    }
+    try {
+      await apiPut('/progress', { progress });
+    } catch (e) { /* silent */ }
   }
 
   function getCourseRewards() {
