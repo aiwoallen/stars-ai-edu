@@ -1,0 +1,547 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>群星 - AI教学平台</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --white: #FFFFFF;
+    --bg: #FAFBFC;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --text-muted: #6B7280;
+    --text-dim: #9CA3AF;
+    --purple: #6C5CE7;
+    --purple-light: #A29BFE;
+    --teal: #00CEC9;
+    --gold: #FDCB6E;
+    --border: #E5E7EB;
+    --border-hover: #D1D5DB;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Nav */
+  nav {
+    padding: 24px 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot {
+    width: 10px; height: 10px;
+    background: var(--purple);
+    border-radius: 50%;
+  }
+  .nav-links { display: flex; gap: 40px; }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links .active { color: var(--purple); font-weight: 500; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+  }
+  .hero-content {
+    max-width: 680px;
+  }
+  .hero h1 {
+    font-size: 64px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 8px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .hero .subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    line-height: 1.6;
+  }
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 40px;
+    border: 1px solid var(--text);
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: inherit;
+    letter-spacing: 1px;
+  }
+  .hero-btn:hover {
+    background: var(--text);
+    color: var(--white);
+  }
+  .hero-btn .arrow {
+    transition: transform 0.25s;
+  }
+  .hero-btn:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  /* Decorative ring */
+  .hero-ring {
+    position: absolute;
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 400px;
+    height: 400px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-ring::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px; height: 280px;
+    border: 1px solid rgba(108,92,231,0.15);
+    border-radius: 50%;
+  }
+
+  /* Section titles */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+  .section-header a {
+    font-size: 13px;
+    color: var(--purple);
+    text-decoration: none;
+  }
+  .section-header a:hover { color: var(--purple-light); }
+
+  /* Courses */
+  .courses-section {
+    padding: 80px 0;
+    background: var(--bg);
+  }
+  .course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .course-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    background: var(--card);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .course-item:hover {
+    background: #F9FAFB;
+  }
+  .course-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .course-circle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .course-item:hover .course-circle {
+    border-color: var(--purple);
+    background: rgba(108,92,231,0.04);
+  }
+  .course-info h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .course-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .course-arrow {
+    font-size: 18px;
+    color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .course-item:hover .course-arrow {
+    color: var(--purple);
+    transform: translateX(4px);
+  }
+
+  /* Why section */
+  .why-section {
+    padding: 100px 0;
+  }
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+  }
+  .why-col h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .why-item {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .why-item:hover {
+    padding-left: 8px;
+  }
+  .why-item h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .why-item p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Why us */
+  .whyus-section {
+    padding: 80px 0 100px;
+  }
+  .whyus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .whyus-card {
+    padding: 32px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .whyus-card:hover {
+    background: var(--bg);
+    border-radius: 8px;
+  }
+  .whyus-card .icon-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .whyus-card:hover .icon-circle {
+    border-color: var(--purple);
+  }
+  .whyus-card h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .whyus-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+  }
+  footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer p {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  footer .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+  footer .footer-links a {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+  footer .footer-links a:hover { color: var(--text-muted); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 40px; letter-spacing: 4px; }
+    .hero .subtitle { font-size: 16px; }
+    .hero-ring { display: none; }
+    .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .whyus-grid { grid-template-columns: 1fr; }
+    .container { padding: 0 24px; }
+    .nav-links { gap: 20px; }
+    .course-left { gap: 12px; }
+    .course-item { padding: 18px 20px; }
+  }
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 32px; }
+    .hero .subtitle { font-size: 14px; }
+    .hero-btn { padding: 12px 28px; font-size: 13px; }
+    .container { padding: 0 16px; }
+    .section-header h2 { font-size: 18px; }
+    .course-circle { width: 36px; height: 36px; font-size: 16px; }
+    .course-info h3 { font-size: 13px; }
+    .course-info p { font-size: 11px; }
+    footer .container { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo"><img src="stars_logo.png" alt="★" style="height:30px; vertical-align:middle; margin-right:8px;">群星</div>
+    <div class="nav-links">
+      <a href="#" class="active">首页</a>
+      <a href="#">课程</a>
+      <a href="#">关于</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container" style="position: relative;">
+    <div class="hero-ring"></div>
+    <div class="hero-content">
+      <h1>群 星</h1>
+      <p class="subtitle">AI 教育，以光年计。<br>在知识的轨道上，找到属于你的那颗星。</p>
+      <div class="hero-divider"></div>
+      <button class="hero-btn">
+        浏览课程 <span class="arrow">→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="courses-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>精选课程</h2>
+      <a href="#">查看全部 →</a>
+    </div>
+    <div class="course-list">
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">🌌</div>
+          <div class="course-info">
+            <h3>AI 是什么</h3>
+            <p>从零理解人工智能的本质，建立完整的认知框架</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">🔬</div>
+          <div class="course-info">
+            <h3>AI 基础知识 — 机器学习与神经网络</h3>
+            <p>核心概念 + 图文并茂讲解，零基础友好</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">🎨</div>
+          <div class="course-info">
+            <h3>AI 绘画实战 — 从第一张图到商业变现</h3>
+            <p>完整实战路径，画出你的第一张AI作品</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">⚡</div>
+          <div class="course-info">
+            <h3>AI 原理实战 — 从零训练第一个模型</h3>
+            <p>动手理解深度学习的本质</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">✍️</div>
+          <div class="course-info">
+            <h3>AI 文案实战 — Prompt 心法与五大场景</h3>
+            <p>让你的文字更有力量</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+      <div class="course-item">
+        <div class="course-left">
+          <div class="course-circle">💬</div>
+          <div class="course-info">
+            <h3>如何与 AI 对话 — 从注意力机制到沟通艺术</h3>
+            <p>掌握 AI 时代的核心能力</p>
+          </div>
+        </div>
+        <span class="course-arrow">→</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why-section">
+  <div class="container">
+    <div class="why-grid">
+      <div class="why-col">
+        <h3>为什么学 AI</h3>
+        <div class="why-item">
+          <h4>这不是未来，这是现在</h4>
+          <p>AI 正在重塑每一个行业。越早掌握，越早拥有主动权。</p>
+        </div>
+        <div class="why-item">
+          <h4>门槛从未如此之低</h4>
+          <p>不需要博士学位，不需要数学天赋，只需要一颗好奇心。</p>
+        </div>
+        <div class="why-item">
+          <h4>从 0 到 1 的清晰路径</h4>
+          <p>从完全零基础到能独立训练模型，每一步都有陪伴。</p>
+        </div>
+      </div>
+      <div class="why-col">
+        <h3>为什么在群星</h3>
+        <div class="why-item">
+          <h4>体系化学习路径</h4>
+          <p>从入门到进阶，从理论到实战，不绕弯路。</p>
+        </div>
+        <div class="why-item">
+          <h4>实战导向</h4>
+          <p>不是看视频，是真的动手。学完就能做出东西。</p>
+        </div>
+        <div class="why-item">
+          <h4>持续更新</h4>
+          <p>AI 日新月异，课程内容持续迭代，永不过时。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="whyus-section">
+  <div class="container">
+    <div class="section-header" style="margin-bottom: 48px;">
+      <h2>选择群星的理由</h2>
+    </div>
+    <div class="whyus-grid">
+      <div class="whyus-card">
+        <div class="icon-circle">✦</div>
+        <h3>体系化</h3>
+        <p>精心设计的学习路径，每一步都有明确目标</p>
+      </div>
+      <div class="whyus-card">
+        <div class="icon-circle">◈</div>
+        <h3>实战派</h3>
+        <p>每个课程都配有实战项目，学完就能用</p>
+      </div>
+      <div class="whyus-card">
+        <div class="icon-circle">◎</div>
+        <h3>持续进化</h3>
+        <p>内容持续迭代，确保你学到的永远不会过时</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 群星</p>
+    <div class="footer-links">
+      <a href="#">课程</a>
+      <a href="#">关于</a>
+      <a href="#">联系我们</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

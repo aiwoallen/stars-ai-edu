@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Noto Sans SC"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Noto Sans SC"', 'sans-serif'],
+      },
+      colors: {
+        deep: { DEFAULT: '#0A0E27', card: '#141832', hover: '#1A2248' },
+        gold: { DEFAULT: '#F0C850', light: '#F8E090', dim: '#A08030' },
+        star: { white: '#E8ECF1', muted: '#8890B0', dim: '#555D80' },
+      }
+    }
+  }
+}
+</script>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+
+  .cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .nebula{position:absolute;border-radius:50%;filter:blur(120px);opacity:.16}
+  .nebula-1{width:900px;height:900px;background:radial-gradient(circle,rgba(91,155,213,.5) 0%,transparent 70%);top:-10%;left:-15%}
+  .nebula-2{width:700px;height:700px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+  .nebula-3{width:600px;height:600px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+  .star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .star-dot{position:absolute;border-radius:50%;background:#fff}
+  .grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+
+  
+  
+  
+  
+  .nav-logo .sub{font-weight:400;font-size:10px;color:#8890B0;letter-spacing:2px;margin-top:2px}
+  
+  
+
+  /* Hero */
+  .hero-section{position:relative;z-index:2;padding-top:160px;padding-bottom:48px;text-align:center}
+  .hero-radial{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(91,155,213,.08) 0%,rgba(240,200,80,.03) 30%,transparent 70%)}
+  .hero-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:rgba(240,200,80,.5);margin-bottom:20px;position:relative}
+  .hero-title{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.15;max-width:600px;margin:0 auto 16px;position:relative}
+
+  /* Tab Nav */
+  .tab-nav{display:flex;justify-content:center;gap:4px;margin:0 auto 48px;position:relative;z-index:2;background:rgba(20,24,50,.5);border-radius:28px;padding:5px;max-width:340px;border:1px solid rgba(240,200,80,.1)}
+  .tab-btn{flex:1;padding:12px 28px;border-radius:24px;font-size:13px;color:#8890B0;cursor:pointer;transition:all .3s;border:none;background:transparent;font-family:inherit;letter-spacing:1px}
+  .tab-btn.active{background:rgba(240,200,80,.12);color:#F0C850}
+  .tab-btn:hover:not(.active){color:#E8ECF1}
+
+  /* Content */
+  .content-section{display:none;padding-bottom:80px;position:relative;z-index:2}
+  .content-section.active{display:block}
+
+  .policy-card{background:rgba(20,24,50,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:20px;padding:48px 44px;border:1px solid rgba(240,200,80,.08);line-height:1.9}
+  .policy-card h2{font-size:22px;font-weight:500;color:#F0C850;margin-bottom:8px;letter-spacing:2px}
+  .policy-card .update-date{font-size:12px;color:#555D80;margin-bottom:36px;letter-spacing:1px}
+  .policy-card .intro{font-size:14px;color:#8890B0;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(240,200,80,.08)}
+  .policy-card h3{font-size:16px;font-weight:500;color:#E8ECF1;margin-top:32px;margin-bottom:16px;padding-left:16px;border-left:2px solid #F0C850}
+  .policy-card h4{font-size:14px;font-weight:500;color:#F8E090;margin-top:20px;margin-bottom:10px}
+  .policy-card p{font-size:14px;color:#A0A8B8;margin-bottom:12px}
+  .policy-card ul{list-style:none;padding-left:0;margin-bottom:16px}
+  .policy-card ul li{font-size:14px;color:#A0A8B8;padding:6px 0 6px 20px;position:relative}
+  .policy-card ul li::before{content:'\2022';position:absolute;left:4px;color:#F0C850;opacity:.5}
+  .policy-card .contact{margin-top:36px;padding-top:24px;border-top:1px solid rgba(240,200,80,.08);font-size:13px;color:#555D80}
+  .policy-card .contact a{color:#5B9BD5;text-decoration:none}
+  .policy-card .contact a:hover{color:#8BBFEE}
+
+  /* Bottom TabBar - Mobile only */
+  
+  
+  
+  
+  
+  
+
+  .site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+  .footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+  .footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+  .footer-links{display:flex;gap:28px}
+  .footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+  .footer-links a:hover{color:#F0C850}
+
+  @media(max-width:768px){
+    
+    
+    body{padding-bottom:72px}
+    .hero-section{padding-top:100px;padding-bottom:36px}
+    .hero-title{font-size:clamp(2rem,7vw,2.8rem)}
+    .tab-nav{max-width:300px;margin-bottom:32px}
+    .tab-btn{font-size:12px;padding:10px 20px}
+    .policy-card{padding:28px 20px}
+    .policy-card h2{font-size:20px}
+    .policy-card h3{font-size:15px}
+    .policy-card p,.policy-card ul li{font-size:13px}
+    .footer-grid{flex-direction:column;text-align:center}
+    .footer-links{gap:20px}
+  }
+
+.nav-logo{display:none}
+.nav-link{display:none}
+.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
+.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
+.menu-btn img{width:24px;height:24px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
+.sidebar-menu.open{transform:translateX(0)}
+.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
+.sidebar-header img{width:32px;height:32px}
+.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
+.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
+.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
+.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+
+</style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar-menu" id="sidebarMenu">
+<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
+<div class="sidebar-items">
+<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
+<a href="全部课程.html" class="sidebar-item"><span class="si-icon">&#9783;</span>课程</a>
+<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
+<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
+</div>
+<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+</nav>
+
+<div class="cosmic-bg">
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+</div>
+<div class="star-field" id="starField"></div>
+<div class="grain-overlay"></div>
+
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-radial"></div>
+  <div class="max-w-6xl mx-auto px-6 md:px-8" style="position:relative">
+    <p class="hero-label">About</p>
+    <h1 class="hero-title">关于群星</h1>
+  </div>
+</section>
+
+<!-- Tab Nav -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('privacy')">隐私政策</button>
+  <button class="tab-btn" onclick="switchTab('terms')">服务条款</button>
+</div>
+
+<!-- 隐私政策 -->
+<div class="content-section active" id="tab-privacy">
+  <div class="max-w-4xl mx-auto px-8">
+    <div class="policy-card">
+      <h2>隐私政策</h2>
+      <p class="update-date">更新日期：2026年5月24日 · 生效日期：2026年5月24日</p>
+      <p class="intro">「群星」AI教育平台（以下简称"本平台"或"我们"）深知个人信息对您的重要性。我们致力于保护您的隐私，并将以透明、合法、正当的方式处理您的个人信息。本隐私政策旨在向您说明我们如何收集、使用、存储、共享和保护您的个人信息，以及您所享有的权利。</p>
+      <p class="intro">请您在使用本平台服务前仔细阅读并理解本隐私政策。如您对本政策有任何疑问，可通过本政策末页提供的联系方式与我们沟通。</p>
+
+      <h3>一、我们收集哪些信息</h3>
+      <p>根据您使用本平台服务的方式和程度，我们可能收集以下类型的信息：</p>
+      <h4>1.1 您主动提供的信息</h4>
+      <ul>
+        <li><strong>联系信息：</strong>当您通过邮箱或其他渠道主动联系我们时，我们可能收集您的电子邮箱地址及您提供的相关信息。</li>
+        <li><strong>个人资料：</strong>您可选择填写头像、昵称、个人简介等补充信息。</li>
+        <li><strong>互动内容：</strong>您在平台发布的评论、学习笔记等由您主动生成的信息（如相关功能上线后）。</li>
+        <li><strong>联系记录：</strong>您与我们客服沟通时产生的通信记录及您提供的相关信息。</li>
+      </ul>
+      <h4>1.2 我们自动收集的信息</h4>
+      <ul>
+        <li><strong>设备信息：</strong>包括设备型号、操作系统版本、唯一设备标识符、浏览器类型及版本等。</li>
+        <li><strong>日志信息：</strong>您访问本平台的时间、浏览页面、点击行为、搜索记录等技术日志。</li>
+        <li><strong>使用数据：</strong>课程学习进度、完成情况、互动频率等平台使用行为数据。</li>
+        <li><strong>网络信息：</strong>IP地址、网络接入方式、移动网络运营商等。</li>
+      </ul>
+      <h4>1.3 第三方来源信息</h4>
+      <p>如本平台未来支持通过第三方账户登录，我们将根据该第三方的授权获取相应的账户信息，具体信息范围以该第三方的授权页面展示为准。</p>
+
+      <h3>二、我们如何使用信息</h3>
+      <p>我们收集的信息将用于以下目的：</p>
+      <ul>
+        <li>提供、维护和改进本平台的核心服务功能。</li>
+        <li>创建和管理您的用户账户，验证您的身份（如本平台提供账户功能）。</li>
+        <li>推荐个性化学习内容和课程，优化您的学习体验。</li>
+        <li>向您发送与服务相关的通知，包括课程更新、系统公告等。</li>
+        <li>分析平台使用情况，改善产品设计和用户体验。</li>
+        <li>保障平台安全，检测和防范欺诈、滥用及安全事件。</li>
+        <li>履行法律法规规定的义务。</li>
+      </ul>
+      <p>我们不会将您的个人信息用于与本政策所述目的无直接关联的其他用途。如需变更使用目的，我们将事先征得您的同意。</p>
+
+      <h3>三、信息存储与安全保护</h3>
+      <h4>3.1 存储地点与期限</h4>
+      <p>您的个人信息将存储于中华人民共和国境内。我们仅在实现本政策所述目的所必需的最短期限内保留您的个人信息，法律法规另有规定的除外。当超过保留期限后，我们将对您的个人信息进行删除或匿名化处理。</p>
+      <h4>3.2 安全措施</h4>
+      <p>我们采用业界通行的安全技术和组织管理措施保护您的个人信息，包括但不限于：数据加密传输（SSL/TLS）、访问权限控制、数据脱敏处理、定期安全审计等。我们会对员工进行数据保护培训，要求接触个人信息的人员承担保密义务。</p>
+      <p>尽管我们已采取合理的安全措施，但需提请您注意，互联网环境不存在绝对的安全。我们无法保证您的信息在传输或存储过程中的绝对安全。</p>
+      <h4>3.3 安全事件处置</h4>
+      <p>若发生个人信息安全事件，我们将按照法律法规的要求及时告知您事件的基本情况和可能的影响、我们已采取或将要采取的处置措施、您可自主防范和降低风险的建议等。我们将通过平台公告等适当方式向您告知。</p>
+
+      <h3>四、信息的共享、转让与公开披露</h3>
+      <h4>4.1 共享</h4>
+      <p>我们不会将您的个人信息出售给任何第三方。在以下情形中，我们可能与其他方共享您的信息：</p>
+      <ul>
+        <li>获得您明确同意或授权后。</li>
+        <li>与为我们提供技术基础设施服务的合作方共享（如云服务提供商、数据分析服务商），此类共享以实现本平台服务功能为必要前提，且受严格的合同约束。</li>
+        <li>根据法律法规、行政或司法机关的强制要求。</li>
+        <li>为保护我们、您或其他用户的合法权益免受损害所合理必需的范围内。</li>
+      </ul>
+      <h4>4.2 转让</h4>
+      <p>如发生合并、收购或资产出售等交易，您的个人信息可能作为交易资产的一部分而转移。我们将要求接收方继续受本隐私政策的约束；如需变更处理目的，接收方需重新征得您的同意。</p>
+      <h4>4.3 公开披露</h4>
+      <p>除获得您明确同意或法律要求外，我们不会公开披露您的个人信息。您在平台的社区板块主动发布的公开内容（如评论、帖子）不在此列。</p>
+
+      <h3>五、您的权利</h3>
+      <p>根据适用的个人信息保护法律法规，您享有以下权利：</p>
+      <ul>
+        <li><strong>查阅权：</strong>您有权查阅我们持有的您的个人信息。</li>
+        <li><strong>更正权：</strong>如发现您的个人信息不准确或不完整，您有权要求更正或补充。</li>
+        <li><strong>删除权：</strong>在法定情形下，您有权要求删除您的个人信息。</li>
+        <li><strong>撤回同意权：</strong>您可以随时撤回对个人信息处理的同意，撤回不影响此前基于同意已进行的处理活动的合法性。</li>
+        <li><strong>注销账户权：</strong>您有权注销已注册的账户，注销后我们将停止提供服务并删除或匿名化处理您的个人信息。</li>
+        <li><strong>数据可携带权：</strong>在符合法定条件时，您有权要求将您的个人信息转移至您指定的第三方。</li>
+      </ul>
+      <p>您可以通过本政策末页提供的联系方式与我们联系行使上述权利。我们将在收到请求后15个工作日内予以响应。</p>
+
+      <h3>六、Cookie及类似技术</h3>
+      <p>我们可能使用Cookie及类似技术（如本地存储、像素标签等）来提升您的使用体验。Cookie是存储在您设备上的小型文本文件，用于记录您的偏好设置、登录状态及使用习惯。</p>
+      <p>您可以通过浏览器或设备设置管理或删除Cookie。但请注意，禁用某些Cookie可能导致平台部分功能无法正常使用。</p>
+
+      <h3>七、未成年人保护</h3>
+      <p>本平台高度重视未成年人的个人信息保护。如果您是未满14周岁的未成年人，在使用本平台服务前，须在您的父母或其他监护人的陪同下阅读本隐私政策，并在征得监护人同意后使用我们的服务。</p>
+      <p>我们不会在明知对方为未满14周岁未成年人的情况下，未经监护人同意收集其个人信息。如监护人发现我们在未获同意的情况下收集了未成年人的信息，请及时与我们联系，我们将尽快删除相关数据。</p>
+
+      <h3>八、本政策的更新</h3>
+      <p>我们可能根据法律法规的变化、业务发展的需要适时修订本隐私政策。修订后的政策将在本平台公布并以适当方式通知您（如平台公告、弹窗提示等）。若修订涉及对您权益的重大影响，我们还将通过邮件或短信等更显著的方式向您告知。</p>
+      <p>请您定期查阅本隐私政策，以了解最新的隐私保护措施。如您在政策更新后继续使用本平台服务，即表示您已充分阅读、理解并接受修订后的政策。</p>
+
+      <h3>九、联系我们</h3>
+      <p>如您对本隐私政策有任何疑问、意见或建议，或需要行使您的个人信息相关权利，请通过以下方式与我们联系：</p>
+      <ul>
+        <li>电子邮箱：star_group2011@163.com</li>
+      </ul>
+      <p style="margin-top:20px">我们将在收到您的反馈后15个工作日内予以回复。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 服务条款 -->
+<div class="content-section" id="tab-terms">
+  <div class="max-w-4xl mx-auto px-8">
+    <div class="policy-card">
+      <h2>服务条款</h2>
+      <p class="update-date">更新日期：2026年5月24日 · 生效日期：2026年5月24日</p>
+      <p class="intro">欢迎使用「群星」AI教育平台（以下简称"本平台"或"我们"）。本服务条款（以下简称"本条款"）是您（以下简称"用户"或"您"）与本平台运营方之间就使用本平台服务所订立的协议。请您在注册账户或使用本平台服务前，仔细阅读并充分理解本条款的全部内容。</p>
+      <p class="intro">您通过注册、登录、浏览、使用本平台任何服务的行为，即视为您已阅读、理解并同意接受本条款的约束。如您不同意本条款的任何内容，请勿注册或使用本平台服务。</p>
+
+      <h3>一、服务说明</h3>
+      <h4>1.1 平台定位</h4>
+      <p>本平台是一个集AI（人工智能）实践教育、理论知识传播、开发者社区交流及项目招募于一体的内容优先型在线教育服务平台。我们致力于通过体系化的教学内容和实践项目，帮助用户系统地学习和掌握人工智能相关知识。</p>
+      <h4>1.2 服务内容</h4>
+      <p>本平台向用户提供的服务包括但不限于：</p>
+      <ul>
+        <li>AI相关课程内容的浏览与学习，涵盖基础认知、理论知识、代码实战及工具应用等模块。</li>
+        <li>教学长文、案例分析、动手实操等教育教学资源。</li>
+        <li>社区互动功能（规划中），包括发布评论、参与讨论等。</li>
+        <li>未来可能上线的项目招募与协作功能。</li>
+        <li>其他经平台发布或更新的服务功能。</li>
+      </ul>
+      <h4>1.3 服务载体</h4>
+      <p>本平台目前通过网页端（thestars-ai.com）作为主要服务载体。未来可能根据业务发展需要拓展至微信小程序、移动应用（APP）等其他载体形式。</p>
+      <h4>1.4 使用方式</h4>
+      <p>本平台目前为开放浏览模式，用户可直接访问和学习所有课程内容。如未来推出账户注册功能，用户须提供真实、准确、完整的信息。用户对其账户安全负有保管责任。</p>
+      <h4>1.5 服务限制</h4>
+      <p>本平台目前所有课程内容均为免费开放。未来可能根据业务发展需要推出付费服务，付费服务的具体收费标准、支付方式及退费政策将以平台公示或单独协议的方式向您告知。</p>
+
+      <h3>二、用户责任</h3>
+      <h4>2.1 一般义务</h4>
+      <p>您在使用本平台服务过程中应遵守中华人民共和国法律法规，尊重社会公德，遵守网络道德规范。</p>
+      <h4>2.2 禁止行为</h4>
+      <p>在使用本平台服务时，您不得实施以下行为：</p>
+      <ul>
+        <li>发布、传播、存储含有违反宪法基本原则、危害国家安全、泄露国家秘密、损害国家荣誉和利益、煽动民族仇恨、破坏宗教政策、散布谣言、淫秽色情、侮辱诽谤他人、侵害他人知识产权等法律法规禁止的内容。</li>
+        <li>冒充他人或机构，或虚假陈述与任何个人或实体的关系。</li>
+        <li>对平台进行反向工程、反向编译或试图提取源代码。</li>
+        <li>使用自动化手段（如爬虫、机器人程序）批量抓取平台内容或数据，干扰平台的正常运营。</li>
+        <li>传播恶意软件、病毒、木马或其他破坏性代码。</li>
+        <li>以任何形式出售、出租、转让或再许可本平台的服务或内容。</li>
+      </ul>
+      <h4>2.3 用户生成内容责任</h4>
+      <p>您对您在平台发布的任何内容独立承担全部法律责任。本平台不预先审查用户发布的内容，但保留依据法律法规和社区准则对用户内容进行审核、删除或屏蔽的权利。</p>
+      <h4>2.4 违约责任</h4>
+      <p>如您违反本条款的约定，我们有权根据违约情节的严重程度，采取警告、限制账户功能、删除违规内容、封禁账户、终止服务等措施，并保留追究法律责任的权利。</p>
+
+      <h3>三、知识产权保护</h3>
+      <h4>3.1 平台知识产权</h4>
+      <p>本平台所有内容（包括但不限于课程文本、图片、图表、界面设计、品牌标识等）的知识产权归本平台运营方或其授权方所有，受相关法律法规的保护。未经许可，不得复制、修改、传播或以其他方式使用。</p>
+      <h4>3.2 侵权举报</h4>
+      <p>如果您认为本平台的内容侵犯了您的合法权益，请通过本平台公布的电子邮箱（star_group2011@163.com）提交书面通知，包括权利人的身份证明、权属证明、侵权内容的具体链接以及联系信息。我们在收到符合法定要求的通知后将依法及时处理。</p>
+
+      <h3>四、内容使用许可</h3>
+      <h4>4.1 许可范围</h4>
+      <p>本平台授予您一项有限的、非独占的、不可转让的个人使用许可，允许您基于个人学习、研究目的访问和使用本平台的教学内容。该许可不包含对内容的商业使用、再分发或衍生创作的权利。</p>
+      <h4>4.2 使用限制</h4>
+      <ul>
+        <li>不得对平台内容进行系统性下载、复制或存档，构建独立的内容数据库。</li>
+        <li>不得移除、修改或遮挡内容中的版权声明、商标标识或其他权属标记。</li>
+        <li>不得将本平台内容用于训练或开发AI模型。</li>
+        <li>如需引用平台内容，应注明出处并遵守合理使用的法律要求。</li>
+      </ul>
+
+      <h3>五、免责声明</h3>
+      <h4>5.1 服务按现状提供</h4>
+      <p>本平台的服务及内容均"按现状"提供，不作任何明示或默示的保证。我们不对服务不会中断、内容完全准确、平台免受病毒攻击等事项作出保证。</p>
+      <h4>5.2 教学内容声明</h4>
+      <p>AI技术领域发展迅速，部分内容可能随时间推移而发生变化。我们不保证所有内容始终与最新技术进展保持一致，用户在实际应用时应自行核实和判断。</p>
+      <h4>5.3 责任限制</h4>
+      <p>在法律允许的最大范围内，本平台对任何间接损失（包括但不限于利润损失、数据丢失、商誉损失等）不承担赔偿责任。本平台承担的全部赔偿责任，以您在过去十二个月内向本平台实际支付的费用总额为上限。</p>
+
+      <h3>六、服务变更与终止</h3>
+      <h4>6.1 服务变更</h4>
+      <p>我们保留为优化用户体验、适应法律法规变化或调整业务方向等目的，随时对平台服务内容进行修改、增加或暂停的权利。重大变更将通过平台公告等方式提前通知。</p>
+      <h4>6.2 终止后果</h4>
+      <p>服务终止后，本条款中依其性质应当持续有效的条款（包括但不限于知识产权保护、免责声明、责任限制、争议解决等）继续有效。</p>
+
+      <h3>七、其他</h3>
+      <h4>7.1 条款修改</h4>
+      <p>我们有权根据需要修订本条款。修订后的条款将在本平台公布。您在条款修订后继续使用本平台服务，即视为接受修订后的条款。</p>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="max-w-6xl mx-auto px-8">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">群星</div>
+        <p class="footer-copy" style="margin-top:4px">AI EDUCATION</p>
+      </div>
+      <div class="footer-links">
+        <a href="about.html">隐私政策</a>
+        <a href="about.html">服务条款</a>
+        <a href="contact.html">联系我们</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 群星</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Bottom TabBar -->
+
+<script>
+(function(){
+  var c=document.getElementById('starField'),f=document.createDocumentFragment();
+  for(var i=0;i<120;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+  var st=document.createElement('style'),cs='';
+  for(var i=0;i<120;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+  st.textContent=cs;document.head.appendChild(st);
+})();
+
+function switchTab(tab){document.querySelectorAll('.tab-btn,.content-section').forEach(function(el){el.classList.remove('active')});document.getElementById('tab-'+tab).classList.add('active');event.target.classList.add('active')}
+</script>
+<script>
+// Sidebar menu toggle
+(function(){
+var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
+function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
+function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
+if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
+if(overlay)overlay.addEventListener('click',close);
+})();
+</script>
+</body>
+</html>

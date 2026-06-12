@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何与AI对话 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script>tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.55) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.nav-pill{display:none}
+.nav-logo{display:none}
+.nav-link{display:none}
+.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
+.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
+.menu-btn img{width:24px;height:24px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
+.sidebar-menu.open{transform:translateX(0)}
+.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
+.sidebar-header img{width:32px;height:32px}
+.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
+.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
+.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
+.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:16px}
+.section-heading{font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;margin-bottom:12px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:40px}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.hero-section{position:relative;z-index:2;padding-top:150px;padding-bottom:60px}
+.hero-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,14,39,.3) 0%,rgba(10,14,39,.85) 80%)}
+.hero-content{position:relative;z-index:1;max-width:900px}
+.hero-icon{font-size:clamp(3rem,6vw,5rem);display:block;margin-bottom:24px;color:#F0C850;line-height:1}
+.hero-title{font-size:clamp(2.4rem,5vw,3.4rem);font-weight:500;color:#E8ECF1;letter-spacing:2px;margin-bottom:16px}
+.hero-subtitle{font-size:15px;color:#A0A8B8;font-weight:300;margin-bottom:12px}
+.hero-overview{font-size:14px;color:#A0A8B8;line-height:1.9;max-width:640px;margin-bottom:36px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.btn-gold{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:48px;font-size:14px;font-weight:500;text-decoration:none;color:#0A0E27;background:linear-gradient(135deg,#F0C850,#F8E090);transition:all .4s}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(240,200,80,.25)}
+.btn-outline{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:48px;font-size:14px;font-weight:500;text-decoration:none;color:#F0C850;background:transparent;border:1px solid rgba(240,200,80,.25);transition:all .4s}
+.btn-outline:hover{background:rgba(240,200,80,.08);border-color:rgba(240,200,80,.45)}
+.content-section{position:relative;z-index:2;padding:80px 0}
+.content-section.alt{background:#0A0E27}
+.goals-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.goal-card{background:#181E40;border:1px solid rgba(240,200,80,.12);border-radius:18px;padding:28px 22px;transition:all .45s;position:relative;overflow:hidden}
+.goal-card:hover{border-color:rgba(240,200,80,.2);transform:translateY(-3px)}
+.goal-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle at top right,rgba(240,200,80,.06) 0%,transparent 70%);pointer-events:none}
+.goal-num{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:rgba(240,200,80,.5);margin-bottom:14px;line-height:1}
+.goal-text{font-size:14px;color:#F0F2F5;line-height:1.7}
+.modules-list{display:flex;flex-direction:column;gap:14px}
+.module-item{display:flex;align-items:flex-start;gap:24px;background:#181E40;border:1px solid rgba(240,200,80,.1);border-radius:16px;padding:24px 28px;text-decoration:none;transition:all .45s;position:relative;overflow:hidden;color:inherit}
+.module-item:hover{border-color:rgba(240,200,80,.18);transform:translateX(5px);background:#1C2246}
+.module-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,rgba(240,200,80,.5) 0%,rgba(240,200,80,0) 100%);opacity:0;transition:opacity .4s}
+.module-item:hover::before{opacity:1}
+.module-num{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:rgba(240,200,80,.45);line-height:1;min-width:40px;flex-shrink:0}
+.module-item:hover .module-num{color:rgba(240,200,80,.6)}
+.module-info{flex:1;min-width:0}
+.module-title{font-size:16px;font-weight:500;color:#E8ECF1;margin-bottom:6px}
+.module-item:hover .module-title{color:#F0C850}
+.module-desc{font-size:13px;color:#BCC3CC;line-height:1.6}
+.module-arrow{color:rgba(240,200,80,.4);font-size:18px;flex-shrink:0;align-self:center;transition:all .3s}
+.module-item:hover .module-arrow{color:#F0C850;transform:translateX(4px)}
+.cta-card{background:linear-gradient(135deg,rgba(240,200,80,.05),rgba(108,92,231,.06));border:1px solid rgba(240,200,80,.1);border-radius:24px;padding:56px 40px;text-align:center;position:relative;overflow:hidden}
+.cta-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(240,200,80,.03) 0%,transparent 60%)}
+.cta-title{font-size:22px;font-weight:500;color:#F0C850;margin-bottom:12px;position:relative}
+.cta-sub{font-size:14px;color:#A0A8B8;margin-bottom:28px;position:relative}
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+@media(max-width:1024px){.goals-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+.hero-section{padding-top:100px;padding-bottom:40px}.goals-grid{grid-template-columns:1fr}
+.module-item{padding:20px;gap:16px}.module-num{font-size:26px}
+.footer-grid{flex-direction:column;text-align:center}
+}</style>
+</head>
+<body><button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar-menu" id="sidebarMenu">
+<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
+<div class="sidebar-items">
+<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
+<a href="全部课程.html" class="sidebar-item active"><span class="si-icon">&#9783;</span>课程</a>
+<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
+<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
+</div>
+<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+</nav><main>
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div><div class="grain-overlay"></div>
+<section class="hero-section">
+<div class="hero-bg" style="background:linear-gradient(135deg, #1e3a5f 0%, #152b4e 30%, #1a2850 70%, #0a0e27 100%)"></div>
+<div class="max-w-6xl mx-auto px-8"><div class="hero-content">
+<div class="breadcrumb"><a href="全部课程.html">全部课程</a><span>/</span><span>如何与AI对话</span></div>
+<span class="hero-icon">&#10077;</span><h1 class="hero-title">如何与AI对话</h1>
+<p class="hero-subtitle">掌握Prompt Engineering，让AI成为你的超级助手</p><p class="hero-overview">Prompt是AI时代的编程语言。学会写好Prompt，你就能让AI从"还行"变成"惊艳"。</p>
+<div class="hero-ctas">
+<a href="#modules" class="btn-gold">开始学习</a>
+<a href="#modules" class="btn-outline">浏览课程大纲</a></div></div></div>
+</section>
+<section class="content-section" style="padding-top:0">
+<div class="max-w-6xl mx-auto px-8">
+<p class="section-label">Learning Goals</p><h2 class="section-heading">学习目标</h2>
+<div class="goals-grid" style="margin-top:28px"><div class="goal-card"><div class="goal-num">01</div><div class="goal-text">掌握Prompt Engineering的核心方法论</div></div><div class="goal-card"><div class="goal-num">02</div><div class="goal-text">学会思维链、少样本学习等进阶技巧</div></div><div class="goal-card"><div class="goal-num">03</div><div class="goal-text">理解多轮对话策略与上下文管理</div></div><div class="goal-card"><div class="goal-num">04</div><div class="goal-text">能在学习与创作中高效协作使用AI</div></div></div></div></section>
+<section class="content-section alt" id="modules">
+<div class="max-w-6xl mx-auto px-8">
+<p class="section-label">Curriculum</p><h2 class="section-heading">课程大纲</h2>
+<p style="font-size:14px;color:#A0A8B8;margin-bottom:36px">共 9 课时，循序渐进掌握如何与AI对话</p>
+<div class="modules-list"><a href="课节_如何与AI对话_01_Prompt_AI时代的编程语言.html" class="module-item"><div class="module-num">01</div><div class="module-info"><div class="module-title">Prompt：AI时代的编程语言</div><div class="module-desc">为什么写好Prompt如此重要</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_02_Prompt基本结构.html" class="module-item"><div class="module-num">02</div><div class="module-info"><div class="module-title">Prompt基本结构</div><div class="module-desc">角色、任务、格式、约束四要素</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_03_思维链（Chain-of-Thought）.html" class="module-item"><div class="module-num">03</div><div class="module-info"><div class="module-title">思维链（Chain-of-Thought）</div><div class="module-desc">让AI一步步思考</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_04_少样本学习（Few-shot）.html" class="module-item"><div class="module-num">04</div><div class="module-info"><div class="module-title">少样本学习（Few-shot）</div><div class="module-desc">用例子教AI做事</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_05_角色扮演Prompt.html" class="module-item"><div class="module-num">05</div><div class="module-info"><div class="module-title">角色扮演Prompt</div><div class="module-desc">让AI变成任何人</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_06_多轮对话策略.html" class="module-item"><div class="module-num">06</div><div class="module-info"><div class="module-title">多轮对话策略</div><div class="module-desc">如何让AI记住上下文</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_07_长文本与复杂任务处理.html" class="module-item"><div class="module-num">07</div><div class="module-info"><div class="module-title">长文本与复杂任务处理</div><div class="module-desc">分段、摘要与结构化输出</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_08_Prompt调试与优化.html" class="module-item"><div class="module-num">08</div><div class="module-info"><div class="module-title">Prompt调试与优化</div><div class="module-desc">像调试代码一样调试Prompt</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_如何与AI对话_09_AI协作思维.html" class="module-item"><div class="module-num">09</div><div class="module-info"><div class="module-title">AI协作思维</div><div class="module-desc">从工具使用者到AI协作伙伴</div></div><span class="module-arrow">&#8594;</span></a></div></div></section>
+<section class="content-section">
+<div class="max-w-4xl mx-auto px-8"><div class="cta-card">
+<p class="section-label" style="margin:0 auto">Start Learning</p>
+<h3 class="cta-title">准备好开始学习了吗？</h3><p class="cta-sub">从第一课开始，掌握如何与AI对话</p>
+<a href="课节_如何与AI对话_01_Prompt_AI时代的编程语言.html" class="btn-gold">开始第一课</a></div></div>
+</section>
+<footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
+</main>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+var c=document.getElementById('starField'),f=document.createDocumentFragment();
+for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+var st=document.createElement('style'),cs='';
+for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+st.textContent=cs;document.head.appendChild(st);
+})();
+// Sidebar menu toggle
+(function(){
+var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
+function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
+function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
+if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
+if(overlay)overlay.addEventListener('click',close);
+})();
+window.initSlideshow=function(id){
+var c=document.getElementById(id);if(!c)return;
+var s=c.querySelectorAll('.slideshow-slide'),d=c.querySelectorAll('.slideshow-dot');
+var p=c.querySelector('.slideshow-prev'),n=c.querySelector('.slideshow-next'),cur=0;
+function go(i){s[cur].classList.remove('active');d[cur].classList.remove('active');cur=(i+s.length)%s.length;s[cur].classList.add('active');d[cur].classList.add('active');}
+if(p)p.addEventListener('click',function(){go(cur-1)});
+if(n)n.addEventListener('click',function(){go(cur+1)});
+d.forEach(function(dd,i){dd.addEventListener('click',function(){go(i)})});
+};
+</script>
+<script src="stars-practice.js"></script>
+<script>StarsPractice.init({course:'如何与AI对话'});</script>
+</body></html>

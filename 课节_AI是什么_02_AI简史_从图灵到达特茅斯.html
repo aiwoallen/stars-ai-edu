@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI简史：从图灵到达特茅斯 - AI是什么 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.55) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.nav-pill{display:none}
+.nav-logo{display:none}
+.nav-link{display:none}
+/* ===== Sidebar Menu ===== */
+.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
+.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
+.menu-btn img{width:24px;height:24px}
+.menu-btn .menu-dot{display:none}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
+.sidebar-menu.open{transform:translateX(0)}
+.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
+.sidebar-header img{width:32px;height:32px}
+.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
+.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
+.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
+.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+.article-section{position:relative;z-index:2;padding-top:150px;padding-bottom:80px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:12px;flex-wrap:wrap}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.lesson-meta{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.55);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.lesson-meta::before{content:'';width:24px;height:1px;background:rgba(240,200,80,.3)}
+.lesson-title{font-size:clamp(2rem,4vw,2.8rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.25;margin-bottom:24px;max-width:900px}
+.lesson-subtitle{font-size:15px;color:#8890B0;line-height:1.7;margin-bottom:40px;max-width:700px}
+.article-body{max-width:800px;margin:0 auto}
+.content-block{background:#181E40;border:1px solid rgba(240,200,80,.08);border-left:3px solid rgba(240,200,80,.25);border-radius:0 16px 16px 0;padding:32px 36px;margin-bottom:20px;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.content-block:hover{border-left-color:rgba(240,200,80,.45);border-color:rgba(240,200,80,.12)}
+.content-block h3{font-size:18px;font-weight:500;color:#F0C850;margin-bottom:14px;line-height:1.4}
+.content-block p{font-size:15px;color:#BCC3CC;line-height:1.9;margin-bottom:12px}
+.content-block p:last-child{margin-bottom:0}
+.content-block .highlight-box{background:rgba(240,200,80,.06);border:1px solid rgba(240,200,80,.15);border-radius:12px;padding:18px 22px;margin:16px 0}
+.content-block .highlight-box p{font-size:14px;color:#F0C850;line-height:1.8;margin:0}
+.content-block code{background:rgba(240,200,80,.1);padding:2px 8px;border-radius:4px;font-size:13px;color:#F8E090;font-family:'Cascadia Code','Consolas',monospace}
+.content-block ul,.content-block ol{padding-left:24px;margin:10px 0}
+.content-block li{font-size:15px;color:#BCC3CC;line-height:1.8;padding:3px 0}
+.slideshow-section{position:relative;z-index:2;padding:0 0 60px}
+.slideshow-container{max-width:900px;margin:0 auto;position:relative}
+.slideshow-viewer{position:relative;background:linear-gradient(135deg,#141832 0%,#1a1840 100%);border-radius:20px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 20px 60px rgba(0,0,0,.5);aspect-ratio:16/9;min-height:400px}
+.slideshow-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 56px;opacity:0;transform:scale(.96);transition:all .5s cubic-bezier(.16,1,.3,1);pointer-events:none;text-align:center}
+.slideshow-slide.active{opacity:1;transform:scale(1);pointer-events:auto}
+.slide-num{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;color:rgba(240,200,80,.4);margin-bottom:24px}
+.slide-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;margin-bottom:20px;max-width:600px;line-height:1.3}
+.slide-body{font-size:15px;color:#BCC3CC;line-height:1.9;max-width:600px}
+.slide-body ul{text-align:left;padding-left:24px;margin:10px 0}
+.slide-body li{font-size:15px;color:#BCC3CC;line-height:1.9;padding:4px 0}
+.slideshow-dots{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.slideshow-dot{width:8px;height:8px;border-radius:50%;background:rgba(240,200,80,.2);cursor:pointer;transition:all .3s;border:none}
+.slideshow-dot.active{background:#F0C850;width:24px;border-radius:4px}
+.slideshow-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:rgba(10,14,39,.7);border:1px solid rgba(240,200,80,.15);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#8890B0;font-size:18px;transition:all .3s}
+.slideshow-nav:hover{color:#F0C850;border-color:rgba(240,200,80,.4);background:rgba(20,24,50,.9)}
+.slideshow-prev{left:-22px}
+.slideshow-next{right:-22px}
+/* PPT链接按钮 */
+.ai-chat-section{padding:40px 0 60px;z-index:2;position:relative}
+.ai-chat-card{background:#181E40;border-radius:18px;border:1px solid rgba(240,200,80,.1);overflow:hidden;max-width:680px;margin:0 auto;box-shadow:0 4px 30px rgba(0,0,0,.3)}
+.ai-chat-header{background:linear-gradient(135deg,rgba(91,155,213,.25),rgba(108,92,231,.18));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.1)}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ai-info{flex:1}
+.ai-name{font-size:14px;font-weight:500;color:#E8ECF1}
+.ai-status{font-size:11px;color:#4CAF50;display:flex;align-items:center;gap:5px}
+.ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block}
+.ai-chat-body{padding:16px 24px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.ai-msg{display:flex;gap:10px;align-items:flex-start}
+.msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.msg-bubble{background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)}
+.ai-chat-input{padding:14px 20px;border-top:1px solid rgba(240,200,80,.1);display:flex;gap:10px;background:rgba(5,8,25,.8)}
+.ai-chat-input input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(240,200,80,.18);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;font-family:inherit;outline:none;transition:all .3s}
+.ai-chat-input input::placeholder{color:#555D80}
+.ai-chat-input input:focus{border-color:rgba(240,200,80,.4);background:rgba(255,255,255,.1)}
+.send-btn{background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .3s;flex-shrink:0}
+.send-btn:hover{opacity:.9;transform:scale(1.08)}
+.content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.content-image svg{display:block;width:100%}
+.image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:16px}
+.lesson-nav{display:flex;justify-content:space-between;align-items:center;padding:0;z-index:2;position:relative;margin-top:20px}
+.lesson-nav a{display:inline-flex;align-items:center;gap:8px;color:#8890B0;text-decoration:none;font-size:13px;padding:10px 20px;border-radius:24px;border:1px solid rgba(240,200,80,.12);transition:all .35s}
+.lesson-nav a:hover{color:#F0C850;border-color:rgba(240,200,80,.3);background:rgba(240,200,80,.06)}
+.lesson-nav .nav-center{color:#555D80;font-size:12px;letter-spacing:1px;text-decoration:none}
+.lesson-nav .disabled{color:#555D80;pointer-events:none;border-color:rgba(240,200,80,.05);opacity:.4}
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+@media(max-width:768px){
+.article-section{padding-top:80px}
+.content-block{padding:22px 20px}
+.lesson-title{font-size:clamp(1.5rem,5vw,2rem)}
+.footer-grid{flex-direction:column;text-align:center}
+.lesson-nav{flex-wrap:wrap;gap:8px;justify-content:center}
+}
+</style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar-menu" id="sidebarMenu">
+<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
+<div class="sidebar-items">
+<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
+<a href="全部课程.html" class="sidebar-item active"><span class="si-icon">&#9783;</span>课程</a>
+<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
+<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
+</div>
+<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+</nav>
+<main>
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div>
+<div class="grain-overlay"></div>
+<section class="article-section">
+<div class="max-w-4xl mx-auto px-8">
+<div class="breadcrumb"><a href="index.html">首页</a><span>/</span><a href="课程_AI是什么.html">AI是什么</a><span>/</span><span>AI简史：从图灵到达特茅斯</span></div>
+<div class="lesson-meta">LESSON 02</div>
+<h1 class="lesson-title">AI简史：从图灵到达特茅斯</h1>
+<p class="lesson-subtitle">一段跨越70年的智能探索之路</p>
+<div class="article-body">
+<div class="content-block"><p>人工智能是怎么从一个哲学思想实验，变成今天能写诗、画画、编程的超级工具的？这个跨越70年的故事，充满了天才的闪光、盲目的乐观、冰冷的寒冬，以及不可思议的复兴。理解AI的历史不只是为了知道"过去发生了什么"——更重要的是，它帮你理解为什么今天的AI是这个样子，以及它将走向何方。AI的发展不是一条直线，而是"希望-失望-再希望"的周期循环。</p></div>
+<div class="content-image" style="background:transparent;border-radius:16px;overflow:hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300"><rect width="800" height="300" fill="#111835"/>
+<text x="400" y="25" text-anchor="middle" fill="rgba(240,200,80,0.85)" font-size="11" font-family="Space Grotesk,sans-serif" letter-spacing="3">AI IMAGE GENERATION PIPELINE</text>
+<!-- Text input -->
+<rect x="40" y="60" width="200" height="60" rx="10" fill="rgba(91,155,213,0.21)" stroke="rgba(91,155,213,0.70)" stroke-width="1"/><text x="140" y="82" text-anchor="middle" fill="rgba(91,155,213,0.85)" font-size="10">文本 Prompt</text><text x="140" y="105" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="7">a cat in a garden...</text>
+<!-- Model -->
+<rect x="300" y="60" width="200" height="60" rx="10" fill="rgba(108,92,231,0.21)" stroke="rgba(108,92,231,0.70)" stroke-width="1"/><text x="400" y="82" text-anchor="middle" fill="rgba(108,92,231,0.85)" font-size="10">扩散模型 / VAE</text><text x="400" y="105" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="7">去噪迭代生成</text>
+<!-- Output -->
+<rect x="560" y="60" width="200" height="60" rx="10" fill="rgba(240,200,80,0.21)" stroke="rgba(240,200,80,0.70)" stroke-width="1"/><text x="660" y="82" text-anchor="middle" fill="rgba(240,200,80,0.85)" font-size="10">生成图像 Output</text><text x="660" y="105" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="7">1280×720 图像</text>
+<line x1="240" y1="90" x2="290" y2="90" stroke="rgba(240,200,80,0.53)" stroke-width="1"/><line x1="500" y1="90" x2="550" y2="90" stroke="rgba(240,200,80,0.53)" stroke-width="1"/>
+<!-- Below: Prompt dimensions -->
+<text x="400" y="155" text-anchor="middle" fill="rgba(240,200,80,0.85)" font-size="9">Prompt 六维度拆解</text>
+<rect x="20" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="77" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">主体 Subject</text><rect x="150" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="207" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">风格 Style</text><rect x="280" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="337" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">构图 Comp</text><rect x="410" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="467" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">光线 Light</text><rect x="540" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="597" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">色调 Color</text><rect x="670" y="170" width="115" height="35" rx="6" fill="rgba(240,200,80,0.10)" stroke="rgba(240,200,80,0.28)" stroke-width="1"/><text x="727" y="193" text-anchor="middle" fill="rgba(255,255,255,0.53)" font-size="8">细节 Detail</text>
+<!-- Bottom: tools -->
+<text x="400" y="240" text-anchor="middle" fill="rgba(240,200,80,0.70)" font-size="9">主流工具</text>
+<text x="400" y="265" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8">Midjourney / Stable Diffusion / DALL-E / Adobe Firefly</text>
+</svg><p class="image-caption">概念图解</p></div>
+<div class="content-block"><h3>1950年：图灵的思想实验——AI的起点</h3><p>1950年，英国数学家艾伦·图灵在学术期刊《Mind》上发表了一篇名为《计算机器与智能》的论文。这篇论文的开篇第一句话就石破天惊："我提议考虑一个问题——机器能思考吗？"图灵没有直接回答这个问题，因为他知道"思考"这个词太模糊了。他提出了一个更可操作的替代方案：后来被广泛称为"图灵测试"——如果一个人通过文字和两个对象（一个是真人，一个是机器）聊天，聊了足够长时间后，他无法判断哪个是人哪个是机器，那么这台机器就展现了"智能"。</p><p>图灵测试的意义不在于它是否是完美的智能评判标准，而在于它第一次把"智能"从一个哲学问题变成了一个可测量的科学问题。这是一个思维方式的关键转变。图灵本人预测到2000年，计算机会有30%的概率通过5分钟的图灵测试。虽然这个预测没有实现，但图灵测试至今仍然是我们讨论AI能力的核心参照点。值得注意的是，图灵在那个计算机还跟一间房子一样大的年代，就已经在思考"机器智能"的问题了——这种远见令人惊叹。</p><div class="highlight-box"><p>图灵测试不是关于"机器有没有意识"，而是关于"机器的行为是否与人类无法区分"。这奠定了AI研究的实用主义传统——我们不关心机器是否"真的有意识"，我们关心它是否能完成"需要智能的任务"。</p></div></div>
+<div class="content-block"><h3>1956年达特茅斯会议 + 两次AI寒冬</h3><p>1956年夏天，四位美国科学家——约翰·麦卡锡、马文·明斯基、克劳德·香农和纳撒尼尔·罗切斯特——在达特茅斯学院组织了一个为期两个月的暑期研讨会。他们邀请了一些研究者，目标简单而雄心勃勃："让机器使用语言、形成抽象概念、解决现在只有人类能解决的问题，并自我改进。"这个会议被认为是人工智能作为一门独立学科诞生的标志。麦卡锡说服大家采用了"Artificial Intelligence"这个名字——虽然他后来后悔了，因为这个名字太容易让人联想到人造的、有意识的生物。</p><p>1960年代是AI的第一个黄金时代。早期的AI系统取得了令人印象深刻的成就。但问题很快暴露——这些系统只能在极其有限的环境中工作，缺乏常识，当时的算力远远不足以支撑真正的智能运算。1973年英国政府发布的Lighthill报告严厉批评AI研究的实际成果，触发了第一次AI寒冬。1980年代专家系统带来了短暂的复兴，但很快又暴露出知识固化、无法学习的致命缺陷。1987年后第二次AI寒冬降临，许多AI公司破产。</p></div>
+<div class="content-block"><h3>2012年至今：深度学习的复兴</h3><p>真正的转机发生在2012年。这一年，多伦多大学杰弗里·辛顿带领的研究团队使用卷积神经网络在ImageNet图像识别竞赛中以压倒性优势击败了所有传统方法——错误率从26%骤降到15%。这不是微小的领先，而是代际性的技术跨越。为什么这次不同？三个因素同时成熟了：GPU让大规模并行计算变得便宜高效，互联网的爆发式增长创造了前所未有的海量数据，ReLU、Dropout等算法创新让训练深层网络变得可行。接下来的故事你都知道——2016年AlphaGo击败李世石，2022年底ChatGPT横空出世两个月内达到一亿用户，成为人类历史上增长最快的消费级应用。</p><p>现在回头看AI的70年历史，你会发现一个规律：每一次AI寒冬之后，技术反而变得更加成熟和务实。现在的AI繁荣建立在三个坚实支柱上——大数据、强算力、好算法——这比之前任何一次AI热潮都要稳固。我们可能正处于AI历史中最重要的转折点。但历史也告诉我们：不要过度乐观。务实、持续地推进技术发展，比任何一次"革命性"的宣言都更有价值。</p></div>
+
+</div></div></section>
+<section class="ai-chat-section" style="padding:10px 0 30px;"><div class="max-w-4xl mx-auto px-8"><div class="ai-chat-card">
+<div class="ai-chat-header"><div class="ai-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="ai-info"><div class="ai-name">群星 AI 助手</div><div class="ai-status">在线 · 随时为你解答</div></div></div>
+<div class="ai-chat-body" id="aiChatBody"><div class="ai-msg"><div class="msg-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="msg-bubble">你好！关于本节课的内容有任何问题都可以问我。</div></div></div>
+<div class="ai-chat-input"><input type="text" id="aiInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendAiMsg()"><button class="send-btn" onclick="sendAiMsg()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;cursor:pointer;font-size:16px;color:#fff;display:flex;align-items:center;justify-content:center">&#8594;</button></div></div></div></section><section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI是什么_01_什么是人工智能.html">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_03_AI的分类_弱AI、强AI与超AI.html">下一课 &#8594;</a></div></div></section>
+<footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
+</main>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+var c=document.getElementById('starField'),f=document.createDocumentFragment();
+for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+var st=document.createElement('style'),cs='';
+for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+st.textContent=cs;document.head.appendChild(st);
+})();
+// Sidebar menu toggle
+(function(){
+var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
+function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
+function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
+if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
+if(overlay)overlay.addEventListener('click',close);
+})();
+window.initSlideshow=function(id){
+var c=document.getElementById(id);if(!c)return;
+var s=c.querySelectorAll('.slideshow-slide'),d=c.querySelectorAll('.slideshow-dot');
+var p=c.querySelector('.slideshow-prev'),n=c.querySelector('.slideshow-next'),cur=0;
+function go(i){s[cur].classList.remove('active');d[cur].classList.remove('active');cur=(i+s.length)%s.length;s[cur].classList.add('active');d[cur].classList.add('active');}
+if(p)p.addEventListener('click',function(){go(cur-1)});
+if(n)n.addEventListener('click',function(){go(cur+1)});
+d.forEach(function(dd,i){dd.addEventListener('click',function(){go(i)})});
+};
+</script>
+<script src="stars-practice.js"></script>
+<script>StarsPractice.initLesson("AI简史：从图灵到达特茅斯");</script>
+</body></html>

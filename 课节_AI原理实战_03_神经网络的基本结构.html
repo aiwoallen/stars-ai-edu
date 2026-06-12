@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神经网络的基本结构 - AI原理实战 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.55) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.nav-pill{display:none}
+.nav-logo{display:none}
+.nav-link{display:none}
+/* ===== Sidebar Menu ===== */
+.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
+.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
+.menu-btn img{width:24px;height:24px}
+.menu-btn .menu-dot{display:none}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
+.sidebar-menu.open{transform:translateX(0)}
+.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
+.sidebar-header img{width:32px;height:32px}
+.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
+.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
+.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
+.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+.article-section{position:relative;z-index:2;padding-top:150px;padding-bottom:80px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:12px;flex-wrap:wrap}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.lesson-meta{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.55);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.lesson-meta::before{content:'';width:24px;height:1px;background:rgba(240,200,80,.3)}
+.lesson-title{font-size:clamp(2rem,4vw,2.8rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.25;margin-bottom:24px;max-width:900px}
+.lesson-subtitle{font-size:15px;color:#8890B0;line-height:1.7;margin-bottom:40px;max-width:700px}
+.article-body{max-width:800px;margin:0 auto}
+.content-block{background:#181E40;border:1px solid rgba(240,200,80,.08);border-left:3px solid rgba(240,200,80,.25);border-radius:0 16px 16px 0;padding:32px 36px;margin-bottom:20px;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.content-block:hover{border-left-color:rgba(240,200,80,.45);border-color:rgba(240,200,80,.12)}
+.content-block h3{font-size:18px;font-weight:500;color:#F0C850;margin-bottom:14px;line-height:1.4}
+.content-block p{font-size:15px;color:#BCC3CC;line-height:1.9;margin-bottom:12px}
+.content-block p:last-child{margin-bottom:0}
+.content-block .highlight-box{background:rgba(240,200,80,.06);border:1px solid rgba(240,200,80,.15);border-radius:12px;padding:18px 22px;margin:16px 0}
+.content-block .highlight-box p{font-size:14px;color:#F0C850;line-height:1.8;margin:0}
+.content-block code{background:rgba(240,200,80,.1);padding:2px 8px;border-radius:4px;font-size:13px;color:#F8E090;font-family:'Cascadia Code','Consolas',monospace}
+.content-block ul,.content-block ol{padding-left:24px;margin:10px 0}
+.content-block li{font-size:15px;color:#BCC3CC;line-height:1.8;padding:3px 0}
+.slideshow-section{position:relative;z-index:2;padding:0 0 60px}
+.slideshow-container{max-width:900px;margin:0 auto;position:relative}
+.slideshow-viewer{position:relative;background:linear-gradient(135deg,#141832 0%,#1a1840 100%);border-radius:20px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 20px 60px rgba(0,0,0,.5);aspect-ratio:16/9;min-height:400px}
+.slideshow-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 56px;opacity:0;transform:scale(.96);transition:all .5s cubic-bezier(.16,1,.3,1);pointer-events:none;text-align:center}
+.slideshow-slide.active{opacity:1;transform:scale(1);pointer-events:auto}
+.slide-num{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;color:rgba(240,200,80,.4);margin-bottom:24px}
+.slide-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;margin-bottom:20px;max-width:600px;line-height:1.3}
+.slide-body{font-size:15px;color:#BCC3CC;line-height:1.9;max-width:600px}
+.slide-body ul{text-align:left;padding-left:24px;margin:10px 0}
+.slide-body li{font-size:15px;color:#BCC3CC;line-height:1.9;padding:4px 0}
+.slideshow-dots{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.slideshow-dot{width:8px;height:8px;border-radius:50%;background:rgba(240,200,80,.2);cursor:pointer;transition:all .3s;border:none}
+.slideshow-dot.active{background:#F0C850;width:24px;border-radius:4px}
+.slideshow-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:rgba(10,14,39,.7);border:1px solid rgba(240,200,80,.15);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#8890B0;font-size:18px;transition:all .3s}
+.slideshow-nav:hover{color:#F0C850;border-color:rgba(240,200,80,.4);background:rgba(20,24,50,.9)}
+.slideshow-prev{left:-22px}
+.slideshow-next{right:-22px}
+/* PPT链接按钮 */
+.ai-chat-section{padding:40px 0 60px;z-index:2;position:relative}
+.ai-chat-card{background:#181E40;border-radius:18px;border:1px solid rgba(240,200,80,.1);overflow:hidden;max-width:680px;margin:0 auto;box-shadow:0 4px 30px rgba(0,0,0,.3)}
+.ai-chat-header{background:linear-gradient(135deg,rgba(91,155,213,.25),rgba(108,92,231,.18));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.1)}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ai-info{flex:1}
+.ai-name{font-size:14px;font-weight:500;color:#E8ECF1}
+.ai-status{font-size:11px;color:#4CAF50;display:flex;align-items:center;gap:5px}
+.ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block}
+.ai-chat-body{padding:16px 24px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.ai-msg{display:flex;gap:10px;align-items:flex-start}
+.msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.msg-bubble{background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)}
+.ai-chat-input{padding:14px 20px;border-top:1px solid rgba(240,200,80,.1);display:flex;gap:10px;background:rgba(5,8,25,.8)}
+.ai-chat-input input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(240,200,80,.18);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;font-family:inherit;outline:none;transition:all .3s}
+.ai-chat-input input::placeholder{color:#555D80}
+.ai-chat-input input:focus{border-color:rgba(240,200,80,.4);background:rgba(255,255,255,.1)}
+.send-btn{background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .3s;flex-shrink:0}
+.send-btn:hover{opacity:.9;transform:scale(1.08)}
+.content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.content-image svg{display:block;width:100%}
+.image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:16px}
+.lesson-nav{display:flex;justify-content:space-between;align-items:center;padding:0;z-index:2;position:relative;margin-top:20px}
+.lesson-nav a{display:inline-flex;align-items:center;gap:8px;color:#8890B0;text-decoration:none;font-size:13px;padding:10px 20px;border-radius:24px;border:1px solid rgba(240,200,80,.12);transition:all .35s}
+.lesson-nav a:hover{color:#F0C850;border-color:rgba(240,200,80,.3);background:rgba(240,200,80,.06)}
+.lesson-nav .nav-center{color:#555D80;font-size:12px;letter-spacing:1px;text-decoration:none}
+.lesson-nav .disabled{color:#555D80;pointer-events:none;border-color:rgba(240,200,80,.05);opacity:.4}
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+@media(max-width:768px){
+.article-section{padding-top:80px}
+.content-block{padding:22px 20px}
+.lesson-title{font-size:clamp(1.5rem,5vw,2rem)}
+.footer-grid{flex-direction:column;text-align:center}
+.lesson-nav{flex-wrap:wrap;gap:8px;justify-content:center}
+}
+</style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar-menu" id="sidebarMenu">
+<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
+<div class="sidebar-items">
+<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
+<a href="全部课程.html" class="sidebar-item active"><span class="si-icon">&#9783;</span>课程</a>
+<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
+<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
+</div>
+<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+</nav>
+<main>
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div>
+<div class="grain-overlay"></div>
+<section class="article-section">
+<div class="max-w-4xl mx-auto px-8">
+<div class="breadcrumb"><a href="index.html">首页</a><span>/</span><a href="课程_AI原理实战.html">AI原理实战</a><span>/</span><span>神经网络的基本结构</span></div>
+<div class="lesson-meta">LESSON 03</div>
+<h1 class="lesson-title">神经网络的基本结构</h1>
+<p class="lesson-subtitle">神经元、层与激活函数</p>
+<div class="article-body">
+<div class="content-block"><p>人脑有大约860亿个神经元，它们之间通过突触连接形成复杂的信号传递网络。人工神经元被简化到了极致：接收多个数值输入，每个输入乘以权重表示该输入的重要性，全加起来加偏置项表示神经元被激活的难易度，然后通过激活函数得到输出。单个神经元做的就是一个加权求和再非线性变换——微小而简单的数学运算。但当几百万个这样的神经元按照层级结构连在一起时，前一层每个神经元的输出都成为后一层每个神经元的输入，你就得到了一个神经网络。这个网络整体上可以实现极其复杂的变换：从784个像素值到"这张图里有83%的概率是数字7"。</p></div>
+<div class="content-image" style="background:transparent;border-radius:16px;overflow:hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300"><defs><radialGradient id="n1" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(91,155,213,0.53)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><rect width="800" height="300" fill="#111835"/><rect width="800" height="300" fill="url(#n1)"/>
+<text x="400" y="25" text-anchor="middle" fill="rgba(240,200,80,0.85)" font-size="11" font-family="Space Grotesk,sans-serif" letter-spacing="3">NEURAL NETWORK STRUCTURE</text>
+<!-- Input layer --><circle cx="80" cy="70" r="12" fill="none" stroke="rgba(91,155,213,0.85)" stroke-width="1.5"/><circle cx="80" cy="70" r="4" fill="rgba(91,155,213,0.85)"/><circle cx="80" cy="110" r="12" fill="none" stroke="rgba(91,155,213,0.85)" stroke-width="1.5"/><circle cx="80" cy="110" r="4" fill="rgba(91,155,213,0.85)"/><circle cx="80" cy="150" r="12" fill="none" stroke="rgba(91,155,213,0.85)" stroke-width="1.5"/><circle cx="80" cy="150" r="4" fill="rgba(91,155,213,0.85)"/><circle cx="80" cy="190" r="12" fill="none" stroke="rgba(91,155,213,0.85)" stroke-width="1.5"/><circle cx="80" cy="190" r="4" fill="rgba(91,155,213,0.85)"/><circle cx="80" cy="230" r="12" fill="none" stroke="rgba(91,155,213,0.85)" stroke-width="1.5"/><circle cx="80" cy="230" r="4" fill="rgba(91,155,213,0.85)"/>
+<!-- Hidden layer 1 --><circle cx="280" cy="50" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="280" cy="50" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="280" cy="100" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="280" cy="100" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="280" cy="150" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="280" cy="150" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="280" cy="200" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="280" cy="200" r="4" fill="rgba(108,92,231,0.85)"/>
+<!-- Hidden layer 2 --><circle cx="480" cy="50" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="480" cy="50" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="480" cy="100" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="480" cy="100" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="480" cy="150" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="480" cy="150" r="4" fill="rgba(108,92,231,0.85)"/><circle cx="480" cy="200" r="12" fill="none" stroke="rgba(108,92,231,0.85)" stroke-width="1.5"/><circle cx="480" cy="200" r="4" fill="rgba(108,92,231,0.85)"/>
+<!-- Output layer --><circle cx="680" cy="70" r="12" fill="none" stroke="rgba(240,200,80,0.85)" stroke-width="1.5"/><circle cx="680" cy="70" r="4" fill="rgba(240,200,80,0.85)"/><circle cx="680" cy="110" r="12" fill="none" stroke="rgba(240,200,80,0.85)" stroke-width="1.5"/><circle cx="680" cy="110" r="4" fill="rgba(240,200,80,0.85)"/><circle cx="680" cy="150" r="12" fill="none" stroke="rgba(240,200,80,0.85)" stroke-width="1.5"/><circle cx="680" cy="150" r="4" fill="rgba(240,200,80,0.85)"/>
+<!-- Connections (sample lines) -->
+<line x1="92" y1="70" x2="268" y2="50" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="70" x2="268" y2="100" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="70" x2="268" y2="150" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="70" x2="268" y2="200" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="110" x2="268" y2="50" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="110" x2="268" y2="100" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="110" x2="268" y2="150" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="110" x2="268" y2="200" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="150" x2="268" y2="50" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="150" x2="268" y2="100" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="150" x2="268" y2="150" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="150" x2="268" y2="200" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="190" x2="268" y2="50" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="190" x2="268" y2="100" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="190" x2="268" y2="150" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="190" x2="268" y2="200" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="230" x2="268" y2="50" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="230" x2="268" y2="100" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="230" x2="268" y2="150" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/><line x1="92" y1="230" x2="268" y2="200" stroke="rgba(91,155,213,0.28)" stroke-width="0.5"/>
+<line x1="292" y1="50" x2="468" y2="50" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="50" x2="468" y2="100" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="50" x2="468" y2="150" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="50" x2="468" y2="200" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="100" x2="468" y2="50" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="100" x2="468" y2="100" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="100" x2="468" y2="150" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="100" x2="468" y2="200" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="150" x2="468" y2="50" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="150" x2="468" y2="100" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="150" x2="468" y2="150" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="150" x2="468" y2="200" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="200" x2="468" y2="50" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="200" x2="468" y2="100" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="200" x2="468" y2="150" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/><line x1="292" y1="200" x2="468" y2="200" stroke="rgba(108,92,231,0.21)" stroke-width="0.5"/>
+<line x1="492" y1="50" x2="668" y2="70" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="50" x2="668" y2="110" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="50" x2="668" y2="150" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="100" x2="668" y2="70" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="100" x2="668" y2="110" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="100" x2="668" y2="150" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="150" x2="668" y2="70" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="150" x2="668" y2="110" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="150" x2="668" y2="150" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="200" x2="668" y2="70" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="200" x2="668" y2="110" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/><line x1="492" y1="200" x2="668" y2="150" stroke="rgba(240,200,80,0.21)" stroke-width="0.5"/>
+<text x="80" y="280" text-anchor="middle" fill="rgba(91,155,213,0.85)" font-size="10" font-family="Space Grotesk">输入层 Input</text>
+<text x="280" y="280" text-anchor="middle" fill="rgba(108,92,231,0.85)" font-size="10" font-family="Space Grotesk">隐藏层 Hidden</text>
+<text x="480" y="280" text-anchor="middle" fill="rgba(108,92,231,0.85)" font-size="10" font-family="Space Grotesk">隐藏层 Hidden</text>
+<text x="680" y="280" text-anchor="middle" fill="rgba(240,200,80,0.85)" font-size="10" font-family="Space Grotesk">输出层 Output</text>
+</svg><p class="image-caption">概念图解</p></div>
+<div class="content-block"><h3>从生物神经元到人工神经网络</h3><p>神经网络的前向传播就是从输入一路计算到输出，反向传播是从输出层的误差出发一路回传梯度更新所有参数。训练就是反复做前向和反向——每次参数都变好一点点。推理只做前向——模型不动，快速出结果。</p></div>
+<div class="content-block"><h3>激活函数：让网络真正"多层"起来</h3><p>没有激活函数的话，每一层都只是输入的加权求和。而多层加权求和组合起来本质上还是一个加权求和——一百层的线性网络和一个一层网络在表达能力上是一样的。激活函数打破了这个线性关系——每一层输出不再是输入的简单线性函数，而是一个非线性变换。多层非线性变换堆叠起来，就能逼近任意复杂的函数关系。这就是为什么深度神经网络能够学习从像素到语义、从文字到情感这样高度非线性的复杂映射。</p><p>ReLU（f(x)=max(0,x)）是目前最常用的激活函数——负数变成0，正数保持原样，简单得令人难以置信。但它解决了深层网络训练中最大的技术障碍：梯度消失问题。在ReLU之前，Sigmoid和tanh在输入很大或很小时梯度接近于零，导致深层网络前面几层的参数几乎无法更新。ReLU对于正数输入梯度恒为1——信号顺畅地从输出层传回输入层。Sigmoid（压缩到0~1）常用于输出概率，Softmax（把一组数变成概率分布）是��分类输出的标配。</p></div>
+<div class="content-block"><h3>深入理解与拓展思考</h3><p>学完本节的核心概念后，让我们更进一步地思考这些知识在实际中的应用和延伸。理解概念只是第一步——真正的学习发生在你把这些知识应用到实际问题中的时候。试着把本节学到的每一条原则和你自己的经验联系起来：你以前有没有遇到过相关的问题？如果当时你知道现在学到的这些知识，你会怎么做？这种知识-经验的连接是深度学习最有效的方式。很多同学学完就忘，就是因为缺少了这个内化的过程。</p><p>从更宏观的角度来看，本节的内容是整个课程体系中承上启下的一环。它既建立在你之前学过的知识基础上，又为后续更深入的内容铺设了道路。如果你觉得某些概念还不够清晰，不要着急——很多时候理解会在后面的课程中自然而然地加深。AI领域的学习就像拼图，单独一块可能看不出什么，但当所有碎片都找到它们的位置时，整幅图景会豁然开朗。你只需要保持耐心，稳步前进。</p><p>一个实用的建议：学完本节后花10分钟时间用自己的话写一个简短总结——不超过200字。用自己的语言复述是检验你是否真正理解了的最好方法。如果写不出来或者写得很勉强，那就说明某些地方还需要回头再读一遍。这个习惯如果你能坚持整门课程，学习效果至少提升一倍。同时，完成本节的两个实践任务并认真阅读AI助手的反馈，在实践中加深理解。</p></div>
+<div class="content-block"><h3>学习建议与下一步</h3><p>记住：AI学习中"知道"和"会用"之间的距离比你想象的要大得多。很多人读过无数篇AI教程，但面对实际问题时仍然无从下手——原因就是缺少了"动手"这个关键环节。实践任务不是可选的附加题，而是整个学习过程中必不可少的一部分。每一次动手实践，都是在把你脑子里的抽象概念转化��真正属于你的能力。</p><p>建议你为自己准备一个学习笔记本——不需要花哨，一个简单的电子文档就足够了。每学完一节课记录下三个要点和一个疑问。积少成多，十二节课后你会惊讶于自己积累了多么丰富的知识体系。这些笔记在你后续深入学习和实际应用AI时会成为你最宝贵的参考资料，比任何一本教科书都更有价值，因为那是你自己的思考痕迹。</p><p>最后的忠告：学习AI不是一场短跑而是一场马拉松。不要因为某个概念一时不理解就灰心丧气——即使是最资深的AI工程师也经常面对他们不完全理解的问题。保持好奇心、保持耐心、保持动手实践的习惯——这三个"保持"是你成为AI领域真正行家的不二法门。你已经在这条路上前进了一大步，继续走下去就对了。</p></div>
+
+</div></div></section>
+<section class="ai-chat-section" style="padding:10px 0 30px;"><div class="max-w-4xl mx-auto px-8"><div class="ai-chat-card">
+<div class="ai-chat-header"><div class="ai-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="ai-info"><div class="ai-name">群星 AI 助手</div><div class="ai-status">在线 · 随时为你解答</div></div></div>
+<div class="ai-chat-body" id="aiChatBody"><div class="ai-msg"><div class="msg-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="msg-bubble">你好！关于本节课的内容有任何问题都可以问我。</div></div></div>
+<div class="ai-chat-input"><input type="text" id="aiInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendAiMsg()"><button class="send-btn" onclick="sendAiMsg()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;cursor:pointer;font-size:16px;color:#fff;display:flex;align-items:center;justify-content:center">&#8594;</button></div></div></div></section><section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI原理实战_02_梯度下降_AI如何学习.html">&#8592; 上一课</a><a href="课程_AI原理实战.html" class="nav-center">课程目录</a><a href="课节_AI原理实战_04_反向传播_学习的引擎.html">下一课 &#8594;</a></div></div></section>
+<footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
+</main>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+var c=document.getElementById('starField'),f=document.createDocumentFragment();
+for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+var st=document.createElement('style'),cs='';
+for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+st.textContent=cs;document.head.appendChild(st);
+})();
+// Sidebar menu toggle
+(function(){
+var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
+function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
+function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
+if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
+if(overlay)overlay.addEventListener('click',close);
+})();
+window.initSlideshow=function(id){
+var c=document.getElementById(id);if(!c)return;
+var s=c.querySelectorAll('.slideshow-slide'),d=c.querySelectorAll('.slideshow-dot');
+var p=c.querySelector('.slideshow-prev'),n=c.querySelector('.slideshow-next'),cur=0;
+function go(i){s[cur].classList.remove('active');d[cur].classList.remove('active');cur=(i+s.length)%s.length;s[cur].classList.add('active');d[cur].classList.add('active');}
+if(p)p.addEventListener('click',function(){go(cur-1)});
+if(n)n.addEventListener('click',function(){go(cur+1)});
+d.forEach(function(dd,i){dd.addEventListener('click',function(){go(i)})});
+};
+</script>
+<script src="stars-practice.js"></script>
+<script>StarsPractice.initLesson("神经网络的基本结构");</script>
+</body></html>
