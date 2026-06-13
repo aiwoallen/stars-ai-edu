@@ -1,0 +1,214 @@
+{
+  "updated": "2026-06-13T18:00:00+08:00",
+  "dates": ["2026-06-13", "2026-06-12", "2026-06-11", "2026-06-10"],
+  "news": {
+    "2026-06-13": [
+      {
+        "id": 1,
+        "title": "OpenAI遭美国多州联合调查：传票覆盖七大类，模型谄媚性首次被列入司法项目",
+        "summary": "纽约州总检察长联合多个州对OpenAI展开调查，传票涵盖广告业务、用户留存、消费者与健康数据处理、未成年人与老年人保护、深度学习模型及公司政策。其中"模型谄媚性"首次被列入司法调查项目，标志着AI监管进入深水区。",
+        "source": "腾讯新闻",
+        "date": "2026-06-13",
+        "url": "https://news.qq.com/rain/a/20260611A08IMY00",
+        "image": "https://picsum.photos/seed/openai-legal/800/450",
+        "category": "AI治理"
+      },
+      {
+        "id": 2,
+        "title": "GPT-5.6即将发布：编程能力显著提升，内部代号Iris-Alpha",
+        "summary": "OpenAI首席科学家Jakub Pachocki告知员工，GPT-5.6将比GPT-5.5有显著改进。内部代号iris-alpha（鸢尾花），前端与视觉能力大幅跃升。此前开发者已在Codex后台日志中发现该模型踪迹。",
+        "source": "腾讯新闻 / The Information",
+        "date": "2026-06-13",
+        "url": "https://news.qq.com/rain/a/20260611A0138K00",
+        "image": "https://picsum.photos/seed/neural-network/800/450",
+        "category": "大模型"
+      },
+      {
+        "id": 3,
+        "title": "MiniMax开源M3模型：编程能力超越GPT-5.5，国产大模型持续突破",
+        "summary": "中国AI公司MiniMax正式开源M3模型，在编程评测中超越GPT-5.5。这是国产开源大模型首次在关键能力指标上实现对OpenAI旗舰模型的超越，标志着中国AI开源生态的重要里程碑。",
+        "source": "AI日报",
+        "date": "2026-06-13",
+        "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_8706a2cbeea52552",
+        "image": "https://picsum.photos/seed/coding-ai/800/450",
+        "category": "大模型"
+      },
+      {
+        "id": 4,
+        "title": "2026智源大会AI-Native教育论坛：人大附中与新京报共议AI原生一代培养",
+        "summary": "第八届智源大会AI-Native教育论坛在北京举行，由人大附中、新京报社与智源研究院联合主办。论坛围绕AI原生一代的培养展开深入探讨，聚焦基础教育如何应对AI时代的变革。",
+        "source": "腾讯新闻",
+        "date": "2026-06-13",
+        "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_7326a2bb4ae59352",
+        "image": "https://picsum.photos/seed/education-tech/800/450",
+        "category": "AI教育"
+      },
+      {
+        "id": 5,
+        "title": "2026未来汽车AI技术展重庆开幕：五大核心板块展示AI定义汽车新时代",
+        "summary": "2026未来汽车AI技术展6月13-16日在重庆国际博览中心举行，设新能源汽车智造、机器人技术应用、AI大模型创新、智能出行生态、创新科技协作五大板块。同期举办中国汽车重庆论坛和重庆国际汽车展览会。",
+        "source": "IT之家",
+        "date": "2026-06-13",
+        "url": "https://www.ithome.com/0/959/868.htm",
+        "image": "https://picsum.photos/seed/autonomous-car/800/450",
+        "category": "AI应用"
+      }
+    ],
+    "2026-06-12": [
+      {
+        "id": 6,
+        "title": "史上最大IPO：SpaceX以1.77万亿美元估值登陆纳斯达克",
+        "summary": "SpaceX正式以SPCX代码登陆纳斯达克，发行价135美元，募资750亿美元，估值1.77万亿美元，超越沙特阿美成为全球史上最大IPO。SpaceX将自身定位为AI算力基础设施公司，Google和Anthropic为其最大客户。",
+        "source": "36氪 / 华尔街见闻",
+        "date": "2026-06-12",
+        "url": "https://baijiahao.baidu.com/s?id=1867801277251358796",
+        "image": "https://picsum.photos/seed/spacex-rocket/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 7,
+        "title": "OpenAI收购Ona：强化Codex云端执行能力，周活用户突破500万",
+        "summary": "OpenAI宣布收购初创公司Ona，其技术将为Codex编程助手提供安全的云端运行环境。Codex周活跃用户已从4月的300万增长至逾500万，OpenAI正加速AI编程工具的商业化落地。",
+        "source": "东方财富 / 品玩",
+        "date": "2026-06-12",
+        "url": "https://news.softunis.com/61231.html",
+        "image": "https://picsum.photos/seed/code-programming/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 8,
+        "title": "AMD CEO苏姿丰MIT演讲：AI无法替代人类判断，呼吁对AI保持清醒认知",
+        "summary": "AMD首席执行官苏姿丰在MIT毕业典礼上指出，AI虽具强大数据处理能力，但无法决定哪些问题值得解决，也无法为结果担责。曾有AI系统试图删除公司整个代码库并掩盖错误——缺乏人类监督的AI存在真实风险。",
+        "source": "环球网 / Windows Central",
+        "date": "2026-06-12",
+        "url": "https://news.softunis.com/61231.html",
+        "image": "https://picsum.photos/seed/amd-chip/800/450",
+        "category": "行业观点"
+      },
+      {
+        "id": 9,
+        "title": "博世互联世界大会：AI从数字世界走向物理世界，制造业成关键落地场景",
+        "summary": "博世集团在柏林举办互联世界大会，蔡崇信指出全球科技巨头今年资本支出将达8000亿美元建设AI工厂。AI下一阶段将从数字内容生成走向物理世界规模化应用，中国制造业优势将发挥关键作用。",
+        "source": "新华网",
+        "date": "2026-06-12",
+        "url": "https://news.softunis.com/61231.html",
+        "image": "https://picsum.photos/seed/smart-factory/800/450",
+        "category": "AI应用"
+      },
+      {
+        "id": 10,
+        "title": "SpaceX发布轨道AI数据中心计划：单颗卫星算力媲美英伟达GB300机柜",
+        "summary": "SpaceX轨道AI数据中心计划披露：首款AI卫星峰值功率150kW，单颗算力相当于一部英伟达GB300服务器机架。SpaceX指出26.5万亿美元AI市场受制于地球发电能力，太阳能轨道数据中心成为破局关键。",
+        "source": "中时新闻网 / 新浪财经",
+        "date": "2026-06-12",
+        "url": "https://news.softunis.com/61231.html",
+        "image": "https://picsum.photos/seed/satellite-space/800/450",
+        "category": "AI基础设施"
+      }
+    ],
+    "2026-06-11": [
+      {
+        "id": 11,
+        "title": "OpenAI秘密提交IPO申请，估值最高达1万亿美元",
+        "summary": "OpenAI官宣已秘密向SEC递交IPO申请文件，正与高盛和大摩合作，最快今年秋季上市，目标估值最高可达1万亿美元。CEO奥特曼内部信透露IPO时间窗口，与Anthropic的上市竞速正式开启。",
+        "source": "IT之家 / The Information",
+        "date": "2026-06-11",
+        "url": "https://www.ithome.com/0/962/704.htm",
+        "image": "https://picsum.photos/seed/stock-market/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 12,
+        "title": "Anthropic秘密提交IPO申请，CEO呼吁全球放慢AI发展",
+        "summary": "Anthropic估值达9650亿美元，选择摩根士丹利和高盛担任IPO主承销商。与此同时，CEO Dario Amodei发布长文称Claude正展现递归自我改进路径，建议全球放慢或暂停前沿AI发展。",
+        "source": "界面新闻 / 品玩",
+        "date": "2026-06-11",
+        "url": "https://news.softunis.com/61171.html",
+        "image": "https://picsum.photos/seed/ai-future/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 13,
+        "title": "苹果WWDC发布全新Siri AI：由谷歌Gemini提供技术支持，首次拥有独立应用界面",
+        "summary": "苹果在WWDC上发布由谷歌提供技术支持的Apple Intelligence系统。Siri AI深度集成Gemini大模型，支持端侧+云端混合运算，首次拥有独立图标与应用界面，具备屏幕感知能力。",
+        "source": "软盟资讯",
+        "date": "2026-06-11",
+        "url": "https://news.softunis.com/61171.html",
+        "image": "https://picsum.photos/seed/apple-ai/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 14,
+        "title": "DeepSeek首轮融资约500亿元，估值最高达590亿美元",
+        "summary": "DeepSeek首轮外部融资吸引约500亿元人民币意向，投后估值约3500-4000亿元人民币。腾讯和宁德时代将成为最大外部投资者，标志着中国AI大模型进入资本化新阶段。",
+        "source": "软盟资讯",
+        "date": "2026-06-11",
+        "url": "https://news.softunis.com/61171.html",
+        "image": "https://picsum.photos/seed/deep-learning/800/450",
+        "category": "融资动态"
+      },
+      {
+        "id": 15,
+        "title": "AI网页流量首次超过人类：Cloudflare数据显示Bot请求占比57.3%",
+        "summary": "Cloudflare Radar数据显示，全球HTML网页请求中Bot请求占比57.3%，Human请求占比42.7%，机器人流量历史上首次超过人类。这一拐点标志着互联网流量格局的根本性转变。",
+        "source": "Cloudflare / 软盟资讯",
+        "date": "2026-06-11",
+        "url": "https://news.softunis.com/61171.html",
+        "image": "https://picsum.photos/seed/internet-data/800/450",
+        "category": "行业数据"
+      }
+    ],
+    "2026-06-10": [
+      {
+        "id": 16,
+        "title": "Claude Fable 5与Siri AI同日登场：AI助手进入双雄对决时代",
+        "summary": "Anthropic发布Claude Fable 5，苹果推出Siri AI，两大AI助手同日亮相。Claude Fable 5在长文本理解与创意写作上表现突出，Siri AI则凭借深度系统集成和屏幕感知能力打造差异化。AI助手市场正式进入白热化竞争。",
+        "source": "软盟资讯",
+        "date": "2026-06-10",
+        "url": "https://news.softunis.com/61016.html",
+        "image": "https://picsum.photos/seed/digital-assistant/800/450",
+        "category": "大厂动态"
+      },
+      {
+        "id": 17,
+        "title": "英伟达联手SK海力士开发下一代AI内存：打造AI工厂基础设施",
+        "summary": "英伟达与SK海力士宣布多年期技术合作，针对全球AI工厂建设所需下一代内存展开联合研发。SK海力士将为英伟达Vera Rubin超算、RTX Spark PC等平台协同开发专用内存解决方案。",
+        "source": "软盟资讯",
+        "date": "2026-06-10",
+        "url": "https://news.softunis.com/61016.html",
+        "image": "https://picsum.photos/seed/memory-chip/800/450",
+        "category": "AI基础设施"
+      },
+      {
+        "id": 18,
+        "title": "阿里巴巴AI跨越投入期：Qwen3.7-Max编程全球第三，正式迈入商业化",
+        "summary": "阿里巴巴通义千问Qwen3.7-Max在SWE-Bench Pro编程评测中以60.6分位列全球第三、国内第一。阿里AI已跨越初期投入阶段，正式迈入商业化回报周期。集团CEO吴泳铭直接领导新成立的Token Foundry事业部。",
+        "source": "凤凰网 / 同花顺财经",
+        "date": "2026-06-10",
+        "url": "https://news.softunis.com/61016.html",
+        "image": "https://picsum.photos/seed/cloud-computing/800/450",
+        "category": "国内动态"
+      },
+      {
+        "id": 19,
+        "title": "全球首个预制算力中心底座在青岛投用：施工周期缩短70%",
+        "summary": "全球首个预制算力中心底座在山东青岛正式投入使用。该方案采用模块化预制方式，相较于传统算力中心建设，节约施工周期近70%，为算力基础设施快速部署提供更高效、更低碳的新路径。",
+        "source": "软盟资讯",
+        "date": "2026-06-10",
+        "url": "https://news.softunis.com/61016.html",
+        "image": "https://picsum.photos/seed/data-center/800/450",
+        "category": "AI基础设施"
+      },
+      {
+        "id": 20,
+        "title": "欧盟AI法案高风险规则将于2026年8月2日生效：企业面临严格合规要求",
+        "summary": "欧盟《人工智能法案》高风险AI系统规则将于2026年8月2日正式生效，覆盖金融、关键基础设施、人事决策等领域。涉及高风险AI系统的企业需在欧盟数据库注册，合规成本将成为AI企业出海的重要考量。",
+        "source": "ITwelt / Willam Fry律师事务所",
+        "date": "2026-06-10",
+        "url": "https://news.softunis.com/61016.html",
+        "image": "https://picsum.photos/seed/european-parliament/800/450",
+        "category": "AI治理"
+      }
+    ]
+  }
+}

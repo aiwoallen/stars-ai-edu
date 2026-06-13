@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 前沿资讯 — 群星</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Noto Sans SC"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Noto Sans SC"', 'sans-serif'],
+      },
+      colors: {
+        deep: { DEFAULT:'#0A0E27', lighter:'#111636', card:'#141832', hover:'#1A2248' },
+        gold: { DEFAULT:'#F0C850', light:'#F8E090', dim:'#A08030' },
+        star: { white:'#E8ECF1', muted:'#8890B0', dim:'#555D80' }
+      }
+    }
+  }
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden;width:100%;max-width:100vw}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(240,200,80,.03),transparent 70%),radial-gradient(ellipse 60% 60% at 0% 30%,rgba(91,155,213,.02),transparent 60%);pointer-events:none;z-index:0}
+
+/* Sidebar */
+.news-sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:rgba(14,18,40,.92);border-right:1px solid rgba(240,200,80,.06);z-index:50;padding:100px 0 40px;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.news-sidebar::-webkit-scrollbar{display:none}
+.news-sidebar .sb-header{padding:0 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);margin-bottom:16px}
+.news-sidebar .sb-logo{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:3px;color:rgba(240,200,80,.5);text-transform:uppercase;margin-bottom:8px}
+.news-sidebar .sb-title{font-size:18px;font-weight:500;color:#E8ECF1;margin-bottom:4px}
+.news-sidebar .sb-sub{font-size:11px;color:#555D80}
+.news-sidebar .sb-back{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(240,200,80,.1);color:#8890B0;font-size:12px;text-decoration:none;margin:0 28px 20px;transition:all .3s}
+.news-sidebar .sb-back:hover{border-color:rgba(240,200,80,.3);color:#F0C850;background:rgba(240,200,80,.04)}
+.news-sidebar .sb-date-group{margin-bottom:6px}
+.news-sidebar .sb-date-label{padding:0 28px;font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(240,200,80,.3);text-transform:uppercase;margin:16px 0 8px}
+.news-sidebar .sb-date-link{display:flex;align-items:center;gap:10px;padding:10px 28px;color:#8890B0;font-size:13px;text-decoration:none;transition:all .3s;border-left:2px solid transparent;cursor:pointer;position:relative}
+.news-sidebar .sb-date-link:hover{color:#E8ECF1;background:rgba(240,200,80,.03)}
+.news-sidebar .sb-date-link.active{color:#F0C850;border-left-color:#F0C850;background:rgba(240,200,80,.05)}
+.news-sidebar .sb-date-link .sb-dot{width:6px;height:6px;border-radius:50%;background:#555D80;flex-shrink:0;transition:all .3s}
+.news-sidebar .sb-date-link.active .sb-dot{background:#F0C850;box-shadow:0 0 8px rgba(240,200,80,.4)}
+.news-sidebar .sb-count{font-size:10px;color:#555D80;margin-left:auto}
+.news-sidebar .sb-date-link.active .sb-count{color:#F0C850}
+
+/* Sidebar toggle (mobile) */
+.sidebar-toggle{display:none;position:fixed;bottom:24px;left:24px;z-index:60;width:48px;height:48px;border-radius:50%;background:rgba(20,24,50,.9);border:1px solid rgba(240,200,80,.15);color:#E8ECF1;font-size:20px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49}
+
+/* Main */
+.news-main{margin-left:260px;min-height:100vh;position:relative;z-index:1}
+.news-hero{padding:100px 60px 60px;border-bottom:1px solid rgba(240,200,80,.06)}
+.news-hero .nh-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:12px}
+.news-hero .nh-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;max-width:800px;line-height:1.3;margin-bottom:16px}
+.news-hero .nh-desc{font-size:15px;color:#8890B0;max-width:600px;line-height:1.7}
+.news-hero .nh-live{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;background:rgba(240,200,80,.06);border:1px solid rgba(240,200,80,.1);font-size:11px;color:#F0C850;margin-top:20px}
+.news-hero .nh-dot{width:8px;height:8px;border-radius:50%;background:#F0C850;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4;box-shadow:0 0 0 0 rgba(240,200,80,.6)}50%{opacity:1;box-shadow:0 0 0 8px rgba(240,200,80,0)}}
+
+/* Date sections */
+.news-date-section{padding:60px}
+.news-date-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid rgba(240,200,80,.06)}
+.news-date-header .ndh-date{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:600;color:#E8ECF1;letter-spacing:1px}
+.news-date-header .ndh-day{font-size:13px;color:#8890B0;padding-top:4px}
+.news-date-header .ndh-line{flex:1;height:1px;background:linear-gradient(to right,rgba(240,200,80,.1),transparent)}
+
+/* News card */
+.news-card-h{display:flex;background:rgba(20,24,50,.5);border:1px solid rgba(240,200,80,.05);border-radius:16px;overflow:hidden;margin-bottom:20px;cursor:pointer;transition:all .45s cubic-bezier(.16,1,.3,1);position:relative}
+.news-card-h:hover{border-color:rgba(240,200,80,.2);background:rgba(24,28,58,.7);box-shadow:0 16px 48px rgba(0,0,0,.3),0 0 24px rgba(240,200,80,.04)}
+.news-card-h .nch-img-wrap{flex:0 0 280px;overflow:hidden;position:relative}
+.news-card-h .nch-img{width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.16,1,.3,1),filter .5s;filter:grayscale(30%) contrast(1.1) brightness(.7)}
+.news-card-h:hover .nch-img{transform:scale(1.06);filter:grayscale(0%) contrast(1.05) brightness(.85)}
+.news-card-h .nch-img-overlay{position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,rgba(14,18,40,.8) 100%)}
+.news-card-h .nch-category{position:absolute;top:12px;left:12px;padding:4px 12px;border-radius:10px;background:rgba(10,14,39,.78);border:1px solid rgba(240,200,80,.15);font-size:10px;font-weight:500;color:#F0C850;letter-spacing:.5px}
+.news-card-h .nch-body{flex:1;padding:24px 28px;display:flex;flex-direction:column;justify-content:center}
+.news-card-h .nch-title{font-size:17px;font-weight:500;color:#E8ECF1;line-height:1.5;margin-bottom:8px;transition:color .4s}
+.news-card-h:hover .nch-title{color:#F0C850}
+.news-card-h .nch-summary{font-size:13px;color:#8890B0;line-height:1.7;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-card-h .nch-meta{display:flex;align-items:center;gap:16px;font-size:11px;color:#555D80}
+.news-card-h .nch-source{display:flex;align-items:center;gap:5px}
+.news-card-h .nch-sdot{width:5px;height:5px;border-radius:50%;background:#5B9BD5}
+.news-card-h .nch-arrow{margin-left:auto;font-size:16px;color:#F0C850;opacity:0;transition:all .4s}
+.news-card-h:hover .nch-arrow{opacity:1}
+
+/* Footer */
+.news-footer{border-top:1px solid rgba(240,200,80,.06);padding:32px 60px;text-align:center;font-size:12px;color:#555D80}
+
+/* Mobile */
+@media(max-width:768px){
+  .news-sidebar{transform:translateX(-100%);width:280px;padding:80px 0 120px}
+  .news-sidebar.open{transform:translateX(0)}
+  .sidebar-toggle{display:flex}
+  .sidebar-overlay{display:none}
+  .sidebar-overlay.open{display:block}
+  .news-main{margin-left:0}
+  .news-hero{padding:80px 24px 40px}
+  .news-date-section{padding:32px 16px}
+  .news-date-header .ndh-date{font-size:22px}
+  .news-card-h{flex-direction:column}
+  .news-card-h .nch-img-wrap{flex:0 0 180px;width:100%}
+  .news-card-h .nch-img{width:100%;height:180px}
+  .news-card-h .nch-img-overlay{background:linear-gradient(to bottom,transparent 40%,rgba(14,18,40,.85) 100%)}
+  .news-card-h .nch-body{padding:18px 20px}
+  .news-card-h .nch-title{font-size:15px}
+  .news-footer{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">&#9776;</button>
+
+<!-- Sidebar -->
+<aside class="news-sidebar" id="newsSidebar">
+  <div class="sb-header">
+    <p class="sb-logo">Intelligence</p>
+    <h2 class="sb-title">AI 资讯档案</h2>
+    <p class="sb-sub">每日更新 · 前沿追踪</p>
+  </div>
+  <a href="index.html" class="sb-back">&#10094; 返回首页</a>
+  <div id="sidebarDates">
+    <!-- Dynamically populated -->
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="news-main">
+  <!-- Hero -->
+  <section class="news-hero">
+    <p class="nh-label">AI Intelligence Archive</p>
+    <h1 class="nh-title">AI 前沿资讯</h1>
+    <p class="nh-desc">每日追踪全球人工智能领域的最新突破、产业动态与深度观点。从大模型发布到行业应用落地，从政策监管到资本动向，不错过每一个改变未来的瞬间。</p>
+    <div class="nh-live">
+      <span class="nh-dot"></span>
+      <span id="heroUpdateLabel">实时更新中</span>
+    </div>
+  </section>
+
+  <!-- News content - populated by JS -->
+  <div id="newsContent">
+    <div style="text-align:center;padding:120px 20px;color:#555D80;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin:0 auto 16px;display:block;opacity:.3">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      正在加载资讯...
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="news-footer">
+    群星 AI 资讯 · 数据来源：36氪 / IT之家 / 软盟资讯 / 新华网 等主流媒体<br>
+    资讯内容仅供参考，原文版权归原作者所有
+  </footer>
+</main>
+
+<!-- ===== ENGINE ===== -->
+<script>
+(function(){
+  var sidebar = document.getElementById('newsSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var toggleBtn = document.getElementById('sidebarToggle');
+  var content = document.getElementById('newsContent');
+  var sidebarDates = document.getElementById('sidebarDates');
+  var heroLabel = document.getElementById('heroUpdateLabel');
+
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('open')}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('open')}
+  if(toggleBtn)toggleBtn.addEventListener('click',function(){sidebar.classList.contains('open')?closeSidebar():openSidebar()});
+  if(overlay)overlay.addEventListener('click',closeSidebar);
+
+  // Month names
+  var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+  var GRADIENTS = [
+    'linear-gradient(135deg, #1a1a5e 0%, #2d1060 50%, #0e2e4e 100%)',
+    'linear-gradient(135deg, #143860 0%, #1a4a2a 50%, #2d1060 100%)',
+    'linear-gradient(135deg, #2d1060 0%, #3a1858 50%, #1a1a5e 100%)',
+    'linear-gradient(135deg, #0e2e4e 0%, #154a2a 50%, #143860 100%)',
+    'linear-gradient(135deg, #1c3520 0%, #2a4a18 50%, #0e2e4e 100%)',
+    'linear-gradient(135deg, #2a1040 0%, #1c0a40 50%, #2d1060 100%)'
+  ];
+
+  function getGradient(i) { return GRADIENTS[i % GRADIENTS.length]; }
+
+  function formatDateCN(dateStr) {
+    var parts = dateStr.split('-');
+    var y = parts[0], m = parseInt(parts[1]), d = parseInt(parts[2]);
+    return y + '年' + m + '月' + d + '日';
+  }
+
+  function formatDay(dateStr) {
+    var parts = dateStr.split('-');
+    var d = parseInt(parts[2]);
+    var weekdays = ['日','一','二','三','四','五','六'];
+    var dt = new Date(parseInt(parts[0]), parseInt(parts[1])-1, d);
+    return '周' + weekdays[dt.getDay()];
+  }
+
+  // Build sidebar
+  function buildSidebar(dates) {
+    var html = '';
+    var lastMonth = '';
+    dates.forEach(function(dateStr) {
+      var parts = dateStr.split('-');
+      var m = parseInt(parts[1]);
+      var d = parseInt(parts[2]);
+      var monthLabel = m + '月';
+      if (monthLabel !== lastMonth) {
+        html += '<p class="sb-date-label">' + parts[0] + '年 ' + monthLabel + '</p>';
+        lastMonth = monthLabel;
+      }
+      html += '<a class="sb-date-link" href="#date-' + dateStr + '" data-date="' + dateStr + '">';
+      html += '<span class="sb-dot"></span>';
+      html += '<span>' + d + '日 ' + formatDay(dateStr) + '</span>';
+      html += '<span class="sb-count" id="count-' + dateStr + '"></span>';
+      html += '</a>';
+    });
+    sidebarDates.innerHTML = html;
+
+    // Click handlers
+    sidebarDates.querySelectorAll('.sb-date-link').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById('date-' + this.getAttribute('data-date'));
+        if (target) {
+          target.scrollIntoView({behavior:'smooth',block:'start'});
+          if (window.innerWidth <= 768) closeSidebar();
+        }
+      });
+    });
+  }
+
+  // Build news cards
+  function buildNewsCards(newsByDate, dates) {
+    var html = '';
+    dates.forEach(function(dateStr) {
+      var items = newsByDate[dateStr];
+      if (!items || !items.length) return;
+
+      html += '<section class="news-date-section" id="date-' + dateStr + '">';
+      html += '<div class="news-date-header">';
+      html += '<span class="ndh-date">' + formatDateCN(dateStr) + '</span>';
+      html += '<span class="ndh-day">' + formatDay(dateStr) + '</span>';
+      html += '<span class="ndh-line"></span>';
+      html += '</div>';
+
+      items.forEach(function(item, i) {
+        html += '<article class="news-card-h" data-date="' + dateStr + '" data-index="' + i + '" data-url="' + (item.url || '') + '" title="点击查看原文" style="cursor:pointer">';
+        html += '<div class="nch-img-wrap" style="background:' + getGradient(i) + ';">';
+        html += '<img class="nch-img" src="' + (item.image || '') + '" alt="' + (item.title || '') + '" loading="lazy" onerror="this.style.opacity=\'0.15\'">';
+        html += '<div class="nch-img-overlay"></div>';
+        html += '<span class="nch-category">' + (item.category || 'AI资讯') + '</span>';
+        html += '</div>';
+        html += '<div class="nch-body">';
+        html += '<h3 class="nch-title">' + (item.title || '') + '</h3>';
+        html += '<p class="nch-summary">' + (item.summary || '') + '</p>';
+        html += '<div class="nch-meta">';
+        html += '<span class="nch-source"><span class="nch-sdot"></span>' + (item.source || '') + '</span>';
+        html += '<span>' + (item.date || '') + '</span>';
+        html += '<span class="nch-arrow">&#10140;</span>';
+        html += '</div>';
+        html += '</div>';
+        html += '</article>';
+      });
+
+      html += '</section>';
+    });
+
+    content.innerHTML = html;
+
+    // Native <a> overlay on each card - most reliable link handling
+    content.querySelectorAll('.news-card-h').forEach(function(card) {
+      var u = card.getAttribute('data-url');
+      if (u && u !== '#') {
+        var link = document.createElement('a');
+        link.href = u;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.style.cssText = 'position:absolute;inset:0;z-index:2;';
+        link.setAttribute('aria-label', '新闻链接');
+        card.style.position = 'relative';
+        card.appendChild(link);
+      }
+    });
+
+    // Update counts in sidebar
+    dates.forEach(function(dateStr) {
+      var countEl = document.getElementById('count-' + dateStr);
+      if (countEl && newsByDate[dateStr]) {
+        countEl.textContent = newsByDate[dateStr].length + '条';
+      }
+    });
+
+    // GSAP animations - set hidden immediately, then reveal on scroll
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.set('.news-card-h', { opacity: 0, y: 24 });
+      gsap.to('.news-card-h', {
+        scrollTrigger: {
+          trigger: '.news-date-section',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        },
+        opacity: 1,
+        y: 0,
+        duration: .55,
+        stagger: .07,
+        ease: 'power2.out'
+      });
+    }
+  }
+
+  // ScrollSpy: highlight active sidebar link
+  function initScrollSpy() {
+    var links = sidebarDates.querySelectorAll('.sb-date-link');
+    if (!links.length) return;
+
+    var sections = [];
+    links.forEach(function(link) {
+      var id = link.getAttribute('data-date');
+      var el = document.getElementById('date-' + id);
+      if (el) sections.push({id:id,el:el,link:link});
+    });
+
+    function update() {
+      var scrollY = window.scrollY + 120;
+      var active = null;
+      sections.forEach(function(s) {
+        if (s.el.offsetTop <= scrollY) active = s;
+      });
+      links.forEach(function(l){l.classList.remove('active')});
+      if (active) active.link.classList.add('active');
+    }
+
+    window.addEventListener('scroll', update, {passive:true});
+    update();
+  }
+
+  // Embedded fallback data (used when news.json cannot be fetched)
+  var EMBEDDED_DATA = {
+    "updated": "2026-06-13T18:00:00+08:00",
+    "dates": ["2026-06-13", "2026-06-12", "2026-06-11", "2026-06-10"],
+    "news": {
+      "2026-06-13": [
+        {"id":1,"title":"OpenAI遭美国多州联合调查：传票覆盖七大类","summary":"纽约州总检察长联合多个州对OpenAI展开调查，传票涵盖广告业务、用户留存、消费者与健康数据处理、未成年人与老年人保护等七大类。模型谄媚性首次被列入司法调查项目。","source":"腾讯新闻","date":"2026-06-13","url":"https://news.qq.com/rain/a/20260611A08IMY00","image":"https://picsum.photos/seed/openai-legal/800/450","category":"AI治理"},
+        {"id":2,"title":"GPT-5.6即将发布：内部代号Iris-Alpha","summary":"OpenAI首席科学家Jakub Pachocki告知员工GPT-5.6将比GPT-5.5有显著改进，前端与视觉能力大幅跃升。开发者已在Codex后台日志中发现该模型踪迹。","source":"The Information","date":"2026-06-13","url":"https://news.qq.com/rain/a/20260611A0138K00","image":"https://picsum.photos/seed/neural-network/800/450","category":"大模型"},
+        {"id":3,"title":"MiniMax开源M3模型：编程能力超越GPT-5.5","summary":"中国AI公司MiniMax正式开源M3模型，在编程评测中超越GPT-5.5。这是国产开源大模型首次在关键能力指标上实现对OpenAI旗舰模型的超越。","source":"AI日报","date":"2026-06-13","url":"https://so.html5.qq.com/page/real/search_news?docid=70000021_8706a2cbeea52552","image":"https://picsum.photos/seed/coding-ai/800/450","category":"大模型"},
+        {"id":4,"title":"2026未来汽车AI技术展重庆开幕","summary":"2026未来汽车AI技术展6月13-16日在重庆国际博览中心举行，设新能源汽车智造、机器人技术应用、AI大模型创新等五大核心板块。同期举办中国汽车重庆论坛和重庆国际汽车展览会。","source":"IT之家","date":"2026-06-13","url":"https://www.ithome.com/0/959/868.htm","image":"https://picsum.photos/seed/autonomous-car/800/450","category":"AI应用"}
+      ],
+      "2026-06-12": [
+        {"id":5,"title":"史上最大IPO：SpaceX以1.77万亿美元估值登陆纳斯达克","summary":"SpaceX正式以SPCX代码登陆纳斯达克，发行价135美元，募资750亿美元，估值1.77万亿美元，超越沙特阿美成为全球史上最大IPO。Google和Anthropic为其最大客户。","source":"36氪 / 华尔街见闻","date":"2026-06-12","url":"https://baijiahao.baidu.com/s?id=1867801277251358796","image":"https://picsum.photos/seed/spacex-rocket/800/450","category":"大厂动态"},
+        {"id":6,"title":"AMD CEO苏姿丰MIT演讲：AI无法替代人类判断","summary":"AMD首席执行官苏姿丰在MIT毕业典礼上指出AI虽具强大数据处理能力，但无法决定哪些问题值得解决。曾有AI系统试图删除公司整个代码库并掩盖错误。","source":"环球网","date":"2026-06-12","url":"https://news.softunis.com/61231.html","image":"https://picsum.photos/seed/amd-chip/800/450","category":"行业观点"},
+        {"id":7,"title":"SpaceX发布轨道AI数据中心计划","summary":"SpaceX轨道AI数据中心计划披露：首款AI卫星算力相当于一部英伟达GB300服务器机架。SpaceX指出26.5万亿美元AI市场受制于地球发电能力。","source":"中时新闻网","date":"2026-06-12","url":"https://news.softunis.com/61231.html","image":"https://picsum.photos/seed/satellite-space/800/450","category":"AI基础设施"},
+        {"id":8,"title":"博世互联世界大会：AI从数字走向物理世界","summary":"蔡崇信指出全球科技巨头今年资本支出将达8000亿美元建设AI工厂。AI下一阶段将从数字内容生成走向物理世界规模化应用。","source":"新华网","date":"2026-06-12","url":"https://news.softunis.com/61231.html","image":"https://picsum.photos/seed/smart-factory/800/450","category":"AI应用"}
+      ],
+      "2026-06-11": [
+        {"id":9,"title":"OpenAI秘密提交IPO申请，估值最高达1万亿美元","summary":"OpenAI官宣已秘密向SEC递交IPO申请文件，正与高盛和大摩合作，最快今年秋季上市。CEO奥特曼内部信透露IPO时间窗口。","source":"IT之家","date":"2026-06-11","url":"https://www.ithome.com/0/962/704.htm","image":"https://picsum.photos/seed/stock-market/800/450","category":"大厂动态"},
+        {"id":10,"title":"苹果WWDC发布全新Siri AI：由谷歌Gemini提供技术支持","summary":"苹果发布由谷歌Gemini大模型支持的Siri AI，支持端侧+云端混合运算，首次拥有独立图标与应用界面，具备屏幕感知能力。","source":"软盟资讯","date":"2026-06-11","url":"https://news.softunis.com/61171.html","image":"https://picsum.photos/seed/apple-ai/800/450","category":"大厂动态"},
+        {"id":11,"title":"DeepSeek首轮融资约500亿元","summary":"DeepSeek首轮外部融资吸引约500亿元人民币意向，投后估值约3500-4000亿元人民币。腾讯和宁德时代将成为最大外部投资者。","source":"界面新闻","date":"2026-06-11","url":"https://news.softunis.com/61171.html","image":"https://picsum.photos/seed/deep-learning/800/450","category":"融资动态"},
+        {"id":12,"title":"AI网页流量首次超过人类：Bot请求占比57.3%","summary":"Cloudflare Radar数据显示全球HTML网页请求中Bot请求占比57.3%，Human请求占比42.7%，机器人流量历史上首次超过人类。","source":"Cloudflare","date":"2026-06-11","url":"https://news.softunis.com/61171.html","image":"https://picsum.photos/seed/internet-data/800/450","category":"行业数据"}
+      ],
+      "2026-06-10": [
+        {"id":13,"title":"Claude Fable 5与Siri AI同日登场","summary":"Anthropic发布Claude Fable 5，苹果推出Siri AI，两大AI助手同日亮相。AI助手市场正式进入白热化竞争阶段。","source":"软盟资讯","date":"2026-06-10","url":"https://news.softunis.com/61016.html","image":"https://picsum.photos/seed/digital-assistant/800/450","category":"大厂动态"},
+        {"id":14,"title":"阿里巴巴AI跨越投入期：Qwen3.7-Max编程全球第三","summary":"阿里巴巴通义千问Qwen3.7-Max在SWE-Bench Pro编程评测中以60.6分位列全球第三、国内第一。阿里AI正式迈入商业化回报周期。","source":"凤凰网","date":"2026-06-10","url":"https://news.softunis.com/61016.html","image":"https://picsum.photos/seed/cloud-computing/800/450","category":"国内动态"},
+        {"id":15,"title":"欧盟AI法案高风险规则将于2026年8月2日生效","summary":"欧盟《人工智能法案》高风险AI系统规则将于8月2日正式生效，覆盖金融、关键基础设施、人事决策等领域。企业需在欧盟数据库注册。","source":"ITwelt","date":"2026-06-10","url":"https://news.softunis.com/61016.html","image":"https://picsum.photos/seed/european-parliament/800/450","category":"AI治理"}
+      ]
+    }
+  };
+
+  // Load data
+  fetch('news.json')
+    .then(function(r){if(!r.ok)throw Error('HTTP '+r.status);return r.json()})
+    .then(function(data){
+      var dates = data.dates || Object.keys(data.news).sort().reverse();
+      var newsByDate = data.news;
+
+      if (data.updated) {
+        heroLabel.textContent = '更新于 ' + data.updated.replace('T',' ').substring(0,16);
+      }
+
+      buildSidebar(dates);
+      buildNewsCards(newsByDate, dates);
+      setTimeout(initScrollSpy, 300);
+    })
+    .catch(function(err){
+      console.warn('News fetch failed, using embedded data:', err.message);
+      var dates = EMBEDDED_DATA.dates;
+      var newsByDate = EMBEDDED_DATA.news;
+      heroLabel.textContent = '离线模式 · 缓存数据';
+      buildSidebar(dates);
+      buildNewsCards(newsByDate, dates);
+      setTimeout(initScrollSpy, 300);
+    });
+
+})();
+</script>
+</body>
+</html>
