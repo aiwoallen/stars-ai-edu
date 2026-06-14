@@ -81,8 +81,6 @@ tailwind.config = {
   .hero-title{font-size:clamp(2.6rem,5.5vw,4.2rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.15;max-width:800px;margin:0 auto 20px;position:relative}
   .hero-subtitle{font-size:16px;color:#8890B0;font-weight:300;max-width:560px;margin:0 auto 48px;position:relative;line-height:1.8}
 
-  /* Bottom TabBar - Mobile only */
-  
   .site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
   .footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
   .footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
@@ -93,7 +91,7 @@ tailwind.config = {
   @media(max-width:1024px){.bento-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:768px){
     
-    body{padding-bottom:72px}
+    
     .hero-section{padding-top:100px;padding-bottom:48px}.hero-title{font-size:clamp(2rem,7vw,2.8rem)}.hero-subtitle{font-size:14px;max-width:340px}
     .bento-grid{grid-template-columns:1fr}.section-spacer{padding:48px 0}
     .card-img{height:130px}
@@ -101,6 +99,27 @@ tailwind.config = {
     .footer-links{gap:20px}
   }
 
+/* ---- Icon Sidebar Nav ---- */
+.icon-nav{position:fixed;left:0;top:0;bottom:0;width:60px;z-index:180;display:flex;flex-direction:column;align-items:center;padding:20px 0;background:rgba(14,18,40,.94);border-right:1px solid rgba(240,200,80,.06)}
+.icon-nav .in-logo{font-family:"Space Grotesk",sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px;writing-mode:vertical-lr;margin-bottom:20px}
+.icon-nav .in-items{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.icon-nav .in-item{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#8890B0;text-decoration:none;transition:all .25s;position:relative}
+.icon-nav .in-item:hover{color:#E8ECF1;background:rgba(240,200,80,.04)}
+.icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
+.icon-nav .in-item svg{width:18px;height:18px}
+.icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
+.icon-nav .in-item.logged-in::before{content:"";position:absolute;top:6px;right:10px;width:5px;height:5px;border-radius:50%;background:#60d080;border:1px solid #0E1232}
+body.has-icon-nav{padding-left:60px}
+@media(max-width:640px){
+  .icon-nav{top:auto;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;padding:0 8px;border-right:none;border-top:1px solid rgba(240,200,80,.06);justify-content:center;gap:0}
+  .icon-nav .in-logo{display:none}
+  .icon-nav .in-items{flex-direction:row;gap:2px;padding-top:0}
+  .icon-nav .in-item{width:auto;flex:1;max-width:64px;height:48px;border-radius:10px;flex-direction:column;gap:1px;font-size:9px;color:#8890B0}
+  .icon-nav .in-item::after{content:attr(data-label);font-size:9px;font-weight:500}
+  .icon-nav .in-item svg{width:16px;height:16px}
+  .in-dot{top:4px;right:auto;left:calc(50% + 6px)}
+  body.has-icon-nav{padding-left:0;padding-bottom:56px}
+}
 </style>
 </head>
 <body class="has-icon-nav">
@@ -184,8 +203,6 @@ tailwind.config = {
     </div>
   </div>
 </footer>
-
-<!-- Mobile Bottom TabBar -->
 
 </main>
 
