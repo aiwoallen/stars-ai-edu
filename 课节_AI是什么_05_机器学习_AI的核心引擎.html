@@ -174,13 +174,15 @@ var st=document.createElement('style'),cs='';
 for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
 st.textContent=cs;document.head.appendChild(st);
 })();
-// Sidebar menu toggle
+// Icon-nav active state + login indicator
 (function(){
-var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
-function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
-function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
-if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
-if(overlay)overlay.addEventListener('click',close);
+var links=document.querySelectorAll(".icon-nav .in-item");
+var page=window.location.pathname.split("/").pop();
+links.forEach(function(a){
+  var href=a.getAttribute("href")||"";
+  if(href===page||(page===""&&href==="index.html")){a.classList.add("active")}
+  if(href==="profile.html"){try{var t=JSON.parse(localStorage.getItem("stars_token"));if(t&&t.token)a.classList.add("logged-in")}catch(e){}}
+});
 })();
 window.initSlideshow=function(id){
 var c=document.getElementById(id);if(!c)return;
