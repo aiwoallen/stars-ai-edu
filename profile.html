@@ -436,13 +436,13 @@ body.has-icon-nav{padding-left:60px}
 
         <!-- Stat: 课程数 -->
         <div class="bento-card bento-stat" style="text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div class="stat-num" id="statCourses">6</div>
+          <div class="stat-num" id="statCourses">53</div>
           <div class="stat-label">可学课程</div>
         </div>
 
         <!-- Stat: 课节数 -->
         <div class="bento-card bento-stat" style="text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div class="stat-num" id="statLessons">34</div>
+          <div class="stat-num" id="statLessons">53</div>
           <div class="stat-label">全部课节</div>
         </div>
 
@@ -520,7 +520,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">入门必修</div>
               <div class="course-name">AI 是什么</div>
-              <div class="course-prog" id="cp0">4 课节</div>
+              <div class="course-prog" id="cp0">8 课节</div>
             </div>
           </a>
 
@@ -533,7 +533,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">核心知识</div>
               <div class="course-name">AI 基础知识</div>
-              <div class="course-prog" id="cp1">6 课节</div>
+              <div class="course-prog" id="cp1">9 课节</div>
             </div>
           </a>
 
@@ -546,7 +546,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">实用技能</div>
               <div class="course-name">如何与 AI 对话</div>
-              <div class="course-prog" id="cp2">6 课节</div>
+              <div class="course-prog" id="cp2">9 课节</div>
             </div>
           </a>
 
@@ -559,7 +559,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">创意实战</div>
               <div class="course-name">AI 绘画实战</div>
-              <div class="course-prog" id="cp3">6 课节</div>
+              <div class="course-prog" id="cp3">9 课节</div>
             </div>
           </a>
 
@@ -572,7 +572,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">写作进阶</div>
               <div class="course-name">AI 文案实战</div>
-              <div class="course-prog" id="cp4">6 课节</div>
+              <div class="course-prog" id="cp4">9 课节</div>
             </div>
           </a>
 
@@ -585,7 +585,7 @@ body.has-icon-nav{padding-left:60px}
             <div class="course-card-body">
               <div class="course-tag">技术深潜</div>
               <div class="course-name">AI 原理实战</div>
-              <div class="course-prog" id="cp5">6 课节</div>
+              <div class="course-prog" id="cp5">9 课节</div>
             </div>
           </a>
 
@@ -966,7 +966,7 @@ async function renderProfile(cachedUser){
 
   // Progress bars
   const progress=userData.progress||{};
-  const totals=[4,6,6,6,6,6];
+  const totals=[8,9,9,9,9,9];
   for(let i=0;i<6;i++){
     const done=progress[i]||0;
     const total=totals[i];
