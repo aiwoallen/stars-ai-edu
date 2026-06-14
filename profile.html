@@ -87,6 +87,9 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 .user-name{font-size:22px;font-weight:600;color:#E8ECF1;margin-bottom:6px}
 .user-email{font-size:13px;color:#555D80;margin-bottom:20px}
 .user-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(240,200,80,.08);border:1px solid rgba(240,200,80,.18);border-radius:24px;padding:6px 16px;font-size:12px;color:#F0C850;font-weight:500}
+.user-badge.tag-dev{background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25);color:#A78BFA}
+.user-badge.tag-premium{background:rgba(240,200,80,.12);border-color:rgba(240,200,80,.3);color:#F0C850}
+.user-badge.tag-sub{background:rgba(91,155,213,.1);border-color:rgba(91,155,213,.2);color:#5B9BD5}
 .stat-num{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,3vw,2.6rem);font-weight:700;color:#F0C850;line-height:1;margin-bottom:6px}
 .stat-label{font-size:12px;color:#555D80;letter-spacing:.5px;text-transform:uppercase;font-weight:500}
 .progress-label{font-size:13px;color:#8890B0;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
@@ -159,7 +162,7 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 @media(max-width:768px){
   
   
-  body{padding-bottom:72px}
+  body.has-icon-nav{padding-left:0;padding-bottom:56px}
   .auth-card{padding:36px 24px;margin:16px}
   .profile-bento{grid-template-columns:1fr}
   .bento-avatar,.bento-progress{grid-column:span 1}
@@ -171,40 +174,52 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
   .profile-hero{padding-top:100px;padding-bottom:40px}
 }
 
-.nav-logo{display:none}
-.nav-link{display:none}
-.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
-.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
-.menu-btn img{width:24px;height:24px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
-.sidebar-overlay.open{opacity:1;pointer-events:auto}
-.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
-.sidebar-menu.open{transform:translateX(0)}
-.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
-.sidebar-header img{width:32px;height:32px}
-.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
-.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
-.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
-.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
-.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
-.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+/* ---- Icon Sidebar Nav (Desktop) ---- */
+.icon-nav{position:fixed;left:0;top:0;bottom:0;width:60px;z-index:180;display:flex;flex-direction:column;align-items:center;padding:20px 0;background:rgba(14,18,40,.94);border-right:1px solid rgba(240,200,80,.06)}
+.icon-nav .in-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px;writing-mode:vertical-lr;margin-bottom:20px}
+.icon-nav .in-items{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.icon-nav .in-item{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#8890B0;text-decoration:none;transition:all .25s;position:relative}
+.icon-nav .in-item:hover{color:#E8ECF1;background:rgba(240,200,80,.04)}
+.icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
+.icon-nav .in-item svg{width:18px;height:18px}
+.icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
+body.has-icon-nav{padding-left:60px}
+@media(max-width:640px){
+  .icon-nav{top:auto;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;padding:0 8px;border-right:none;border-top:1px solid rgba(240,200,80,.06);justify-content:center;gap:0}
+  .icon-nav .in-logo{display:none}
+  .icon-nav .in-items{flex-direction:row;gap:2px;padding-top:0}
+  .icon-nav .in-item{width:auto;flex:1;max-width:64px;height:48px;border-radius:10px;flex-direction:column;gap:1px;font-size:9px;color:#8890B0}
+  .icon-nav .in-item::after{content:attr(data-label);font-size:9px;font-weight:500}
+  .icon-nav .in-item svg{width:16px;height:16px}
+  .in-dot{top:4px;right:auto;left:calc(50% + 6px)}
+}
 
 </style>
 </head>
-<body>
-<button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-<nav class="sidebar-menu" id="sidebarMenu">
-<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
-<div class="sidebar-items">
-<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
-<a href="全部课程.html" class="sidebar-item"><span class="si-icon">&#9783;</span>课程</a>
-<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
-<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
-</div>
-<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+<body class="has-icon-nav">
+
+<!-- ===== Icon Sidebar Navigation ===== -->
+<nav class="icon-nav" id="iconNav">
+  <div class="in-logo">群星</div>
+  <div class="in-items">
+    <a href="index.html" class="in-item" data-label="首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </a>
+    <a href="全部课程.html" class="in-item" data-label="课程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </a>
+    <a href="news.html" class="in-item" data-label="资讯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span class="in-dot"></span>
+    </a>
+    <a href="about.html" class="in-item" data-label="关于">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    </a>
+    <a href="profile.html" class="in-item active" data-label="我的">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
 </nav>
-<main style="overflow-x:hidden;width:100%;max-width:100%;min-height:100vh">
 
 <!-- Cosmic Background -->
 <div class="cosmic-bg">
@@ -597,10 +612,6 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
   </div>
 </footer>
 
-<!-- Mobile Bottom TabBar -->
-
-</main>
-
 <!-- Toast -->
 <div class="toast" id="toastEl"></div>
 
@@ -922,7 +933,18 @@ async function renderProfile(cachedUser){
     placeholder.onclick=function(){document.getElementById('avatarInput').click();};
   }
 
-  // Days since join
+  // Tags display
+  var badgeEl=document.querySelector('.user-badge');
+  var tags=userData.tags||[];
+  if(badgeEl){
+    if(tags.length>0){
+      var tagClass=tags.includes('开发者')?'tag-dev':tags.includes('高级订阅')?'tag-premium':tags.includes('订阅')?'tag-sub':'';
+      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>'+tags.join(' / ');
+      badgeEl.className='user-badge '+tagClass;
+    } else {
+      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>探索者';
+    }
+  }
   const joinDate=userData.joinDate?new Date(userData.joinDate):new Date();
   const days=Math.max(1,Math.floor((Date.now()-joinDate.getTime())/(1000*60*60*24))+1);
   document.getElementById('statDays').textContent=days;
@@ -1013,13 +1035,16 @@ document.addEventListener('DOMContentLoaded',async function(){
 });
 </script>
 <script>
-// Sidebar menu toggle
+// Icon-nav active state
 (function(){
-var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
-function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
-function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
-if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
-if(overlay)overlay.addEventListener('click',close);
+var links = document.querySelectorAll('.icon-nav .in-item');
+var page = window.location.pathname.split('/').pop() || 'profile.html';
+links.forEach(function(a){
+  var href = a.getAttribute('href') || '';
+  if (href === page || (page === '' && href === 'index.html')) {
+    a.classList.add('active');
+  }
+});
 })();
 </script>
 </body>
