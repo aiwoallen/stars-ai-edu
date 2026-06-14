@@ -118,6 +118,7 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{border-color:rgba(96,208,128,.3);color:#90e0a0}
 .toast.error{border-color:rgba(255,90,90,.3);color:#ff9090}
+.toast.warning{border-color:rgba(240,200,80,.3);color:#F0C850}
 
 /* ---- Footer ---- */
 .site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
@@ -651,7 +652,13 @@ function getToken(){
   try{return JSON.parse(localStorage.getItem('stars_token'));}catch{return null;}
 }
 function saveToken(token){localStorage.setItem('stars_token',JSON.stringify({token,ts:Date.now()}));}
-function clearToken(){localStorage.removeItem('stars_token');}
+function clearToken(){localStorage.removeItem('stars_token');localStorage.removeItem('stars_user');}
+function getCachedUser(){
+  try{return JSON.parse(localStorage.getItem('stars_user'));}catch{return null;}
+}
+function saveCachedUser(user){
+  try{localStorage.setItem('stars_user',JSON.stringify(user));}catch{}
+}
 
 async function apiFetch(path, options = {}){
   const token = getToken();
@@ -775,6 +782,7 @@ async function handleRegister(){
       body: JSON.stringify({ email, password, nickname })
     });
     saveToken(data.token);
+    saveCachedUser(data.user);
     closeAuth();
     showToast('注册成功，欢迎加入群星！','success');
     renderProfile(data.user);
@@ -802,6 +810,7 @@ async function handleLogin(){
       body: JSON.stringify({ email, password })
     });
     saveToken(data.token);
+    saveCachedUser(data.user);
     closeAuth();
     showToast('登录成功，欢迎回来！','success');
     renderProfile(data.user);
@@ -896,13 +905,18 @@ async function renderProfile(cachedUser){
 
   let userData;
   try{
-    // Fetch full user data from API
     const data = await apiFetch('/auth/me');
     userData = data.user;
+    saveCachedUser(userData);
   } catch(e) {
-    clearToken();
-    renderGuestView();
-    return;
+    // 网络问题不丢 token — 用缓存渲染
+    if(cachedUser){
+      userData = cachedUser;
+      showToast('离线模式·显示缓存数据','warning');
+    } else {
+      showToast('加载失败，请检查网络后刷新','error');
+      return;
+    }
   }
 
   // Name & Email
@@ -1012,11 +1026,16 @@ function gsapAnimateGuest(){
 document.addEventListener('DOMContentLoaded',async function(){
   const token = getToken();
   if(token){
+    const cached = getCachedUser();
     try{
-      await renderProfile();
+      await renderProfile(cached);
     } catch(e) {
-      clearToken();
-      renderGuestView();
+      // 不丢 token — 有缓存就用缓存，否则显示游客+重试按钮
+      if(cached){
+        await renderProfile(cached);
+      } else {
+        renderGuestView();
+      }
     }
   } else {
     renderGuestView();
