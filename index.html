@@ -1045,6 +1045,7 @@ tailwind.config = {
 .icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
 .icon-nav .in-item svg{width:18px;height:18px}
 .icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
+.icon-nav .in-item.logged-in::before{content:'';position:absolute;top:6px;right:10px;width:5px;height:5px;border-radius:50%;background:#60d080;border:1px solid #0E1232}
 /* Page offset for sidebar - push entire page right */
 body.has-icon-nav{padding-left:60px}
 body.has-icon-nav::before{left:60px}
@@ -1642,7 +1643,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 </script>
 
 <script>
-// Icon nav active state detection
+// Icon nav active state + login indicator
 (function(){
   var links = document.querySelectorAll('.icon-nav .in-item');
   var page = window.location.pathname.split('/').pop() || 'index.html';
@@ -1650,6 +1651,13 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     var href = a.getAttribute('href') || '';
     if (href === page || (page === '' && href === 'index.html')) {
       a.classList.add('active');
+    }
+    // 标记已登录状态
+    if (href === 'profile.html') {
+      try {
+        var token = JSON.parse(localStorage.getItem('stars_token'));
+        if (token && token.token) a.classList.add('logged-in');
+      } catch(e) {}
     }
   });
 })();
