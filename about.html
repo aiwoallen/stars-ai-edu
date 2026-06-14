@@ -107,39 +107,43 @@ tailwind.config = {
     .footer-links{gap:20px}
   }
 
-.nav-logo{display:none}
-.nav-link{display:none}
-.menu-btn{position:fixed;top:20px;left:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(10,14,39,.85);border:1px solid rgba(240,200,80,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0}
-.menu-btn:hover{background:rgba(20,25,55,.92);border-color:rgba(240,200,80,.45);transform:scale(1.05)}
-.menu-btn img{width:24px;height:24px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;opacity:0;pointer-events:none;transition:opacity .3s}
-.sidebar-overlay.open{opacity:1;pointer-events:auto}
-.sidebar-menu{position:fixed;top:0;left:0;bottom:0;width:275px;background:rgba(10,14,39,.97);border-right:1px solid rgba(240,200,80,.1);z-index:160;transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
-.sidebar-menu.open{transform:translateX(0)}
-.sidebar-header{padding:36px 28px 24px;border-bottom:1px solid rgba(240,200,80,.08);display:flex;align-items:center;gap:12px}
-.sidebar-header img{width:32px;height:32px}
-.sidebar-header span{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#F0C850;letter-spacing:2px}
-.sidebar-items{flex:1;padding:16px 0;overflow-y:auto}
-.sidebar-item{display:flex;align-items:center;gap:14px;padding:14px 28px;color:#8890B0;text-decoration:none;font-size:14px;transition:all .25s;border-left:3px solid transparent}
-.sidebar-item:hover,.sidebar-item.active{color:#F0C850;background:rgba(240,200,80,.05);border-left-color:#F0C850}
-.sidebar-item .si-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
-.sidebar-footer{padding:20px 28px;border-top:1px solid rgba(240,200,80,.08);font-size:10px;color:#555D80}
+
+
+
+
+
+
+
+
+
+
 
 </style>
 </head>
-<body>
-<button class="menu-btn" id="menuBtn" aria-label="菜单"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none';this.parentElement.innerHTML='&#9737;'"></button>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-<nav class="sidebar-menu" id="sidebarMenu">
-<div class="sidebar-header"><img src="stars_logo.png" alt="群星" onerror="this.style.display='none'"><span>群星</span></div>
-<div class="sidebar-items">
-<a href="index.html" class="sidebar-item"><span class="si-icon">&#9737;</span>首页</a>
-<a href="全部课程.html" class="sidebar-item"><span class="si-icon">&#9783;</span>课程</a>
-<a href="about.html" class="sidebar-item"><span class="si-icon">&#9776;</span>关于</a>
-<a href="profile.html" class="sidebar-item"><span class="si-icon">&#9731;</span>我的</a>
-</div>
-<div class="sidebar-footer">&copy; 2026 群星 AI教育</div>
+<body class="has-icon-nav">
+<!-- ===== Icon Sidebar Navigation ===== -->
+<nav class="icon-nav" id="iconNav">
+  <div class="in-logo">群星</div>
+  <div class="in-items">
+    <a href="index.html" class="in-item" data-label="首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </a>
+    <a href="全部课程.html" class="in-item" data-label="课程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </a>
+    <a href="news.html" class="in-item" data-label="资讯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span class="in-dot"></span>
+    </a>
+    <a href="about.html" class="in-item" data-label="关于">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    </a>
+    <a href="profile.html" class="in-item" data-label="我的">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
 </nav>
+<main>
 
 <div class="cosmic-bg">
   <div class="nebula nebula-1"></div>
@@ -377,13 +381,15 @@ tailwind.config = {
 function switchTab(tab){document.querySelectorAll('.tab-btn,.content-section').forEach(function(el){el.classList.remove('active')});document.getElementById('tab-'+tab).classList.add('active');event.target.classList.add('active')}
 </script>
 <script>
-// Sidebar menu toggle
+<script>
 (function(){
-var btn=document.getElementById('menuBtn'),menu=document.getElementById('sidebarMenu'),overlay=document.getElementById('sidebarOverlay');
-function open(){menu.classList.add('open');overlay.classList.add('open');btn.classList.add('pressed')}
-function close(){menu.classList.remove('open');overlay.classList.remove('open');btn.classList.remove('pressed')}
-if(btn)btn.addEventListener('click',function(){menu.classList.contains('open')?close():open()});
-if(overlay)overlay.addEventListener('click',close);
+var links=document.querySelectorAll('.icon-nav .in-item');
+var page=window.location.pathname.split('/').pop();
+links.forEach(function(a){
+  var href=a.getAttribute('href')||'';
+  if(href===page||(page===''&&href==='index.html')){a.classList.add('active')}
+  if(href==='profile.html'){try{var t=JSON.parse(localStorage.getItem('stars_token'));if(t&&t.token)a.classList.add('logged-in')}catch(e){}}
+});
 })();
 </script>
 </body>
