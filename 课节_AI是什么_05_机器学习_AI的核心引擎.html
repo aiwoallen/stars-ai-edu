@@ -79,8 +79,6 @@ body.has-icon-nav{padding-left:60px}
 .slideshow-nav:hover{color:#F0C850;border-color:rgba(240,200,80,.4);background:rgba(20,24,50,.9)}
 .slideshow-prev{left:-22px}
 .slideshow-next{right:-22px}
-/* PPT链接按钮 */
-
 .content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .content-image svg{display:block;width:100%}
 .image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
@@ -106,7 +104,6 @@ body.has-icon-nav{padding-left:60px}
 </style>
 </head>
 <body class="has-icon-nav">
-<!-- ===== Icon Sidebar Navigation ===== -->
 <nav class="icon-nav" id="iconNav">
   <div class="in-logo">群星</div>
   <div class="in-items">
@@ -158,11 +155,10 @@ body.has-icon-nav{padding-left:60px}
 </svg><p class="image-caption">概念图解</p></div>
 <div class="content-block"><h3>机器学习的三种范式</h3><p>监督学习（Supervised Learning）是应用最广泛、技术最成熟的类型。训练数据中每个样本都有"正确答案"——这封邮件是不是垃圾邮件？这张图片里有没有猫？这个客户的贷款会不会违约？模型的任务是学习"输入→输出"的映射关系。这就好比你在老师的监督下学习——每道题都有标准答案，做错了老师会纠正你。监督学习的两大核心任务是分类（输出离散类别，如是/否）和回归（输出连续值，如房价）。</p><p>无监督学习（Unsupervised Learning）则完全不同——数据没有标注答案。你不知道哪个是猫哪个不是猫，AI的任务是自己在数据中发现结构、模式和规律。最经典的应用是聚类——把客户按消费行为分成几个不同群组，每个群组内在某种意义上是"相似的"。还有降维——把高维复杂数据压缩成我们可以理解的低维表示，方便可视化和分析。</p><p>强化学习（Reinforcement Learning）更像训练宠物——你不会告诉狗"坐下的动作序列是后腿弯曲→重心后移→臀部着地"。你在它做对时给零食奖励，做错时什么都不给。狗自己会总结出"什么行为能得到奖励"。AI Agent在环境中执行动作，环境给奖励或惩罚，AI的目标是找到一个策略使长期累积奖励最大化。AlphaGo就是用强化学习训练出来的——通过和自己下了几百万盘棋来发现最优策略。</p></div>
 <div class="content-block"><h3>一个完整的机器学习项目流程</h3><p>学习机器学习，不只是学算法。更重要的是理解项目的完整流程。第一步是问题定义——你要解决什么问题？分类还是回归？第二步是数据收集——获取相关数据，这是最耗时、最容易被忽视、也最重要的一步。第三步是数据预处理——真实世界的数据往往很"脏"，你需要清理和标准化。第四步是特征工程——从原始数据中提取有意义的特征，好特征往往比复杂算法更能提升表现。第五步是模型训练——选择合适的算法训练模型。第六步是评估和优化——用测试集检验模型表现，不合格就调整。第七步是部署——把训练好的模型投入实际使用。</p><p>数据和特征决定了机器学习的上限，模型和算法只是在逼近这个上限。很多初学者花太多时间在调算法上，却花太少时间在理解和处理数据上。这是AI实践中最有价值的经验之一——在追求复杂模型之前，先把数据搞干净，把特征做扎实。</p></div>
-<div class="content-block"><h3>深入理解与拓展思考</h3><p>学完本节的核心概念后，让我们更进一步地思考这些知识在实际中的应用和延伸。理解概念只是第一步——真正的学习发生在你把这些知识应用到实际问题中的时候。试着把本节学到的每一条原则和你自己的经验联系起来：你以前有没有遇到过相关的问题？如果当时你知道现在学到的这些知识，你会怎么做？这种知识-经验的连接是深度学习最有效的方式。很多同学学完就忘，就是因为缺少了这个内化的过程。</p><p>从更宏观的角度来看，本节的内容是整个课程体系中承上启下的一环。它既建立在你之前学过的知识基础上，又为后续更深入的内容铺设了道路。如果你觉得某些概念还不够清晰，不要着急——很多时候理解会在后面的课程中自然而然地加深。AI领域的学习就像拼图，单独一块可能看不出什么，但当所有碎片都找到它们的位置时，整幅图景会豁然开朗。你只需要保持耐心，稳步前进。</p><p>一个实用的建议：学完本节后花10分钟时间用自己的话写一个简短总结——不超过200字。用自己的语言复述是检验你是否真正理解了的最好方法。如果写不出来或者写得很勉强，那就说明某些地方还需要回头再读一遍。这个习惯如果你能坚持整门课程，学习效果至少提升一倍。同时，完成本节的两个实践任务并认真阅读AI助手的反馈，在实践中加深理解。</p></div>
+<div class="content-block"><h3>深入理解与拓展思考</h3><p>学完本节的核心概念后，让我们更进一步地思考这些知识在实际中的应用和延伸。理解概念只是第一步——真正的学习发生在你把这些知识应用到实际问题中的时候。试着把本节学到的每一条原则和你自己的经验联系起来：你以前有没有遇到过相关的问题？如果当时你知道现在学到的这些知识，你会怎么做？这种知识-经验的连接是深度学习最有效的方式。很多同学学完就忘，就是因为缺少了这个内化的过程。</p><p>从更宏观的角度来看，本节的内容是整个课程体系中承上启下的一环。它既建立在你之前学过的知识基础上，又为后续更深入的内容铺设了道路。如果你觉得某些概念还不够清晰，不要着急——很多时候理解会在后面的课程中自然而然地加深。AI领域的学习就像拼图，单独一块可能看不出什么，但当所有碎片都找到它们的位置时，整幅图景会豁然开朗。你只需要保持耐心，稳步前进。</p><p>一个实用的建议：学完本节后花10分钟时间用自己的话写一个简短总结——不超过200字。用自己的语言复述是检验你是否真正理解了的最好方法。如果写不出来或者写得很勉强，那就说明某些地方还需要回头再读一遍。这个习惯如果你能坚持整门课程，学习效果至少提升一倍。同时，完成本节的两个实践任务，在实践中加深理解。</p></div>
 <div class="content-block"><h3>学习建议与下一步</h3><p>记住：AI学习中"知道"和"会用"之间的距离比你想象的要大得多。很多人读过无数篇AI教程，但面对实际问题时仍然无从下手——原因就是缺少了"动手"这个关键环节。实践任务不是可选的附加题，而是整个学习过程中必不可少的一部分。每一次动手实践，都是在把你脑子里的抽象概念转化��真正属于你的能力。</p><p>建议你为自己准备一个学习笔记本——不需要花哨，一个简单的电子文档就足够了。每学完一节课记录下三个要点和一个疑问。积少成多，十二节课后你会惊讶于自己积累了多么丰富的知识体系。这些笔记在你后续深入学习和实际应用AI时会成为你最宝贵的参考资料，比任何一本教科书都更有价值，因为那是你自己的思考痕迹。</p><p>最后的忠告：学习AI不是一场短跑而是一场马拉松。不要因为某个概念一时不理解就灰心丧气——即使是最资深的AI工程师也经常面对他们不完全理解的问题。保持好奇心、保持耐心、保持动手实践的习惯——这三个"保持"是你成为AI领域真正行家的不二法门。你已经在这条路上前进了一大步，继续走下去就对了。</p></div>
 
-</div></div></section>
-<section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI是什么_04_AI能做什么不能做什么.html">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_06_深度学习与神经网络入门.html">下一课 &#8594;</a></div></div></section>
+</div></div></section><section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI是什么_04_AI能做什么不能做什么.html">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_06_深度学习与神经网络入门.html">下一课 &#8594;</a></div></div></section>
 <footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
 </main>
 <script>
@@ -176,12 +172,12 @@ st.textContent=cs;document.head.appendChild(st);
 })();
 // Icon-nav active state + login indicator
 (function(){
-var links=document.querySelectorAll(".icon-nav .in-item");
-var page=window.location.pathname.split("/").pop();
+var links=document.querySelectorAll('.icon-nav .in-item');
+var page=window.location.pathname.split('/').pop();
 links.forEach(function(a){
-  var href=a.getAttribute("href")||"";
-  if(href===page||(page===""&&href==="index.html")){a.classList.add("active")}
-  if(href==="profile.html"){try{var t=JSON.parse(localStorage.getItem("stars_token"));if(t&&t.token)a.classList.add("logged-in")}catch(e){}}
+  var href=a.getAttribute('href')||'';
+  if(href===page||(page===''&&href==='index.html')){a.classList.add('active')}
+  if(href==='profile.html'){try{var t=JSON.parse(localStorage.getItem('stars_token'));if(t&&t.token)a.classList.add('logged-in')}catch(e){}}
 });
 })();
 window.initSlideshow=function(id){

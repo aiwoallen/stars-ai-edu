@@ -79,8 +79,6 @@ body.has-icon-nav{padding-left:60px}
 .slideshow-nav:hover{color:#F0C850;border-color:rgba(240,200,80,.4);background:rgba(20,24,50,.9)}
 .slideshow-prev{left:-22px}
 .slideshow-next{right:-22px}
-/* PPT链接按钮 */
-
 .content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .content-image svg{display:block;width:100%}
 .image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
@@ -106,7 +104,6 @@ body.has-icon-nav{padding-left:60px}
 </style>
 </head>
 <body class="has-icon-nav">
-<!-- ===== Icon Sidebar Navigation ===== -->
 <nav class="icon-nav" id="iconNav">
   <div class="in-logo">群星</div>
   <div class="in-items">
@@ -157,8 +154,7 @@ body.has-icon-nav{padding-left:60px}
 <div class="content-block"><h3>AI三要素：数据、算法、算力</h3><p>任何AI系统都由三个核心要素支撑，缺一不可。理解这三要素，你就理解了AI运作的基本逻辑。数据（Data）是AI的"学习材料"——就像一个人要学好英语需要读大量的英文文章，AI要识别猫就需要看大量的猫图片。数据的质量和数量直接决定了AI的上限。没有高质量的数据，再好的算法也无从发挥。谷歌之所以能在AI领域领先，很大程度上是因为它拥有全球最大的搜索数据库。</p><p>算法（Algorithm）是AI的"学习方法"。算法决定了AI怎么从数据中提取有用的信息。同样的数据，用不同的算法可能会得到截然不同的结果。算法的进步是推动AI浪潮的核心动力——从简单的线性回归到复杂的Transformer架构，每一步算法突破都带来了革命性的变化。算力（Computing Power）是AI的"学习体能"。有了好的数据和算法，还需要足够的计算能力来跑完整个学习过程。这也是为什么AI大爆发发生在最近十年——因为GPU（图形处理器）的快速发展让大规模并行计算成为可能。训练一个ChatGPT级别的模型，需要的算力相当于几万台电脑同时工作好几个月，电费就要花掉几百万美元。</p><div class="highlight-box"><p>记住这个公式：高质量数据 + 优秀算法 + 充足算力 = 强大的AI系统。三个要素中任何一个短板，都会限制AI的表现。这就像一辆车——数据是汽油，算法是引擎设计，算力是引擎的马力。</p></div></div>
 <div class="content-block"><h3>传统编程 vs 机器学习：AI革命的起点</h3><p>理解这个对比，是理解AI的关键一步。传统编程的逻辑是"你告诉电脑每一步该怎么做"——你把规则写进程序，输入数据，得到结果。比如计算器——你写好加减乘除的规则，输入数字，它输出计算结果。机器学习把这个过程颠倒过来："你给电脑看大量例子，让它自己找出规则"。你输入数据和对应的正确结果，让算法自动发现输入和输出之间的映射关系。</p><p>举个例子说明两者的区别。假设你想让电脑识别照片里有没有猫。传统编程的方法：你写一套复杂的规则——"如果有三角形耳朵+胡须+圆眼睛=猫"。但问题是，不同品种的猫耳朵形状不一样，不同角度的照片看起来完全不同，猫趴着和站着形态也不同——你永远写不完所有规则。机器学习的方法：你收集一万张猫的照片和一万张非猫的照片，标注好，然后全部喂给一个机器学习算法。算法会自动从这些例子中提取出"猫的共同特征"。这个从"人写规则"到"机器从数据中自己学规则"的转变，就是AI革命的核心。</p></div>
 
-</div></div></section>
-<section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a class="disabled">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_02_AI简史_从图灵到达特茅斯.html">下一课 &#8594;</a></div></div></section>
+</div></div></section><section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a class="disabled">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_02_AI简史_从图灵到达特茅斯.html">下一课 &#8594;</a></div></div></section>
 <footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
 </main>
 <script>
@@ -172,12 +168,12 @@ st.textContent=cs;document.head.appendChild(st);
 })();
 // Icon-nav active state + login indicator
 (function(){
-var links=document.querySelectorAll(".icon-nav .in-item");
-var page=window.location.pathname.split("/").pop();
+var links=document.querySelectorAll('.icon-nav .in-item');
+var page=window.location.pathname.split('/').pop();
 links.forEach(function(a){
-  var href=a.getAttribute("href")||"";
-  if(href===page||(page===""&&href==="index.html")){a.classList.add("active")}
-  if(href==="profile.html"){try{var t=JSON.parse(localStorage.getItem("stars_token"));if(t&&t.token)a.classList.add("logged-in")}catch(e){}}
+  var href=a.getAttribute('href')||'';
+  if(href===page||(page===''&&href==='index.html')){a.classList.add('active')}
+  if(href==='profile.html'){try{var t=JSON.parse(localStorage.getItem('stars_token'));if(t&&t.token)a.classList.add('logged-in')}catch(e){}}
 });
 })();
 window.initSlideshow=function(id){
