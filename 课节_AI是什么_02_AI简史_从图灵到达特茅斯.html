@@ -80,24 +80,20 @@ body.has-icon-nav{padding-left:60px}
 .slideshow-prev{left:-22px}
 .slideshow-next{right:-22px}
 /* PPT链接按钮 */
-.ai-chat-section{padding:40px 0 60px;z-index:2;position:relative}
-.ai-chat-card{background:#181E40;border-radius:18px;border:1px solid rgba(240,200,80,.1);overflow:hidden;max-width:680px;margin:0 auto;box-shadow:0 4px 30px rgba(0,0,0,.3)}
-.ai-chat-header{background:linear-gradient(135deg,rgba(91,155,213,.25),rgba(108,92,231,.18));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.1)}
-.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.ai-info{flex:1}
-.ai-name{font-size:14px;font-weight:500;color:#E8ECF1}
-.ai-status{font-size:11px;color:#4CAF50;display:flex;align-items:center;gap:5px}
-.ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block}
-.ai-chat-body{padding:16px 24px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.ai-msg{display:flex;gap:10px;align-items:flex-start}
-.msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.msg-bubble{background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)}
-.ai-chat-input{padding:14px 20px;border-top:1px solid rgba(240,200,80,.1);display:flex;gap:10px;background:rgba(5,8,25,.8)}
-.ai-chat-input input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(240,200,80,.18);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;font-family:inherit;outline:none;transition:all .3s}
-.ai-chat-input input::placeholder{color:#555D80}
-.ai-chat-input input:focus{border-color:rgba(240,200,80,.4);background:rgba(255,255,255,.1)}
-.send-btn{background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .3s;flex-shrink:0}
-.send-btn:hover{opacity:.9;transform:scale(1.08)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .content-image svg{display:block;width:100%}
 .image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
@@ -178,10 +174,7 @@ body.has-icon-nav{padding-left:60px}
 <div class="content-block"><h3>2012年至今：深度学习的复兴</h3><p>真正的转机发生在2012年。这一年，多伦多大学杰弗里·辛顿带领的研究团队使用卷积神经网络在ImageNet图像识别竞赛中以压倒性优势击败了所有传统方法——错误率从26%骤降到15%。这不是微小的领先，而是代际性的技术跨越。为什么这次不同？三个因素同时成熟了：GPU让大规模并行计算变得便宜高效，互联网的爆发式增长创造了前所未有的海量数据，ReLU、Dropout等算法创新让训练深层网络变得可行。接下来的故事你都知道——2016年AlphaGo击败李世石，2022年底ChatGPT横空出世两个月内达到一亿用户，成为人类历史上增长最快的消费级应用。</p><p>现在回头看AI的70年历史，你会发现一个规律：每一次AI寒冬之后，技术反而变得更加成熟和务实。现在的AI繁荣建立在三个坚实支柱上——大数据、强算力、好算法——这比之前任何一次AI热潮都要稳固。我们可能正处于AI历史中最重要的转折点。但历史也告诉我们：不要过度乐观。务实、持续地推进技术发展，比任何一次"革命性"的宣言都更有价值。</p></div>
 
 </div></div></section>
-<section class="ai-chat-section" style="padding:10px 0 30px;"><div class="max-w-4xl mx-auto px-8"><div class="ai-chat-card">
-<div class="ai-chat-header"><div class="ai-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="ai-info"><div class="ai-name">群星 AI 助手</div><div class="ai-status">在线 · 随时为你解答</div></div></div>
-<div class="ai-chat-body" id="aiChatBody"><div class="ai-msg"><div class="msg-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff">+</div><div class="msg-bubble">你好！关于本节课的内容有任何问题都可以问我。</div></div></div>
-<div class="ai-chat-input"><input type="text" id="aiInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendAiMsg()"><button class="send-btn" onclick="sendAiMsg()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;cursor:pointer;font-size:16px;color:#fff;display:flex;align-items:center;justify-content:center">&#8594;</button></div></div></div></section><section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI是什么_01_什么是人工智能.html">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_03_AI的分类_弱AI、强AI与超AI.html">下一课 &#8594;</a></div></div></section>
+<section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav"><a href="课节_AI是什么_01_什么是人工智能.html">&#8592; 上一课</a><a href="课程_AI是什么.html" class="nav-center">课程目录</a><a href="课节_AI是什么_03_AI的分类_弱AI、强AI与超AI.html">下一课 &#8594;</a></div></div></section>
 <footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
 </main>
 <script>
