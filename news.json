@@ -1,10 +1,62 @@
 {
-  "updated": "2026-06-13T18:00:00+08:00",
-  "dates": ["2026-06-13", "2026-06-12", "2026-06-11", "2026-06-10"],
+  "updated": "2026-06-14T18:35:00+08:00",
+  "dates": ["2026-06-14", "2026-06-13", "2026-06-12", "2026-06-11"],
   "news": {
-    "2026-06-13": [
+    "2026-06-14": [
       {
         "id": 1,
+        "title": "Claude Fable 5上线72小时遭美国政府禁令全球下架，Anthropic一刀切停服所有客户",
+        "summary": "Anthropic于6月9日发布旗舰模型Claude Fable 5和Mythos 5，仅72小时后美国商务部以"国家安全"为由下发出口管制指令，要求立即暂停所有外国人对这两款模型的访问。Anthropic选择一刀切停服所有客户，Claude全产品新会话回退到Opus 4.8，已有Fable 5会话报错中止。这是AI行业首次在最强模型商业化窗口期遭遇国家级监管阻击。",
+        "source": "36氪 / 新智元 / 搜狐科技",
+        "date": "2026-06-14",
+        "url": "https://www.sohu.com/a/1036050565_313170",
+        "image": "https://picsum.photos/seed/ai-ban-shutdown/800/450",
+        "category": "AI治理"
+      },
+      {
+        "id": 2,
+        "title": "智谱GLM-5.2宣布完全开源硬刚Anthropic：1M真可用上下文，MIT协议全量开源",
+        "summary": "在Anthropic闭源之际，智谱CEO唐杰6月13日宣布GLM-5.2完全开源，支持真正可用的1M上下文窗口，定位国内最强Coding模型主引擎。官方声明"在一些前沿模型突然不可用的时刻，我们选择相信另一条路"，GLM Coding Plan全档位当晚上线，API下周开通，模型下周按MIT协议开源。同期发布ZCode 3.0编程工具深度适配。",
+        "source": "新浪财经 / IT之家 / 36氪",
+        "date": "2026-06-14",
+        "url": "https://finance.sina.com.cn/wm/2026-06-14/doc-inickkzt8965530.shtml",
+        "image": "https://picsum.photos/seed/open-source-code/800/450",
+        "category": "大模型"
+      },
+      {
+        "id": 3,
+        "title": "月之暗面Kimi估值半年涨6倍至300亿美元：ARR破2亿美元，PS倍数远超SaaS天花板",
+        "summary": "36氪报道Kimi估值6个月内从43亿美元飙升至300亿美元，ARR达2亿美元对应PS约150倍，远超顶级SaaS的30-50倍区间。Kimi商业化表现亮眼：2026年1月付费订单环比增长8280%，Stripe付费排名跃至全球第9。同期智谱完成港股上市、MiniMax港股上市、DeepSeek传首轮外部融资、阶跃星辰即将递表港股，中国AI原生App MAU达4.4亿。",
+        "source": "36氪 / 新浪财经",
+        "date": "2026-06-14",
+        "url": "https://www.36kr.com/p/3851306638621313",
+        "image": "https://picsum.photos/seed/startup-valuation/800/450",
+        "category": "融资动态"
+      },
+      {
+        "id": 4,
+        "title": "阿里辟谣周靖人离职传闻：称"纯属谣言"，呼吁勿传不实信息",
+        "summary": "网传阿里合伙人、首席科学家周靖人提交离职申请，距6月8日被任命仅6天。6月14日阿里巴巴集团正式回应称"周靖人辞职纯属谣言"，呼吁不要传播不实信息。此前周靖人岗位年内已调整三次，核心通义团队被划入CEO吴泳铭直管的Token Foundry事业部，引发外界对阿里AI战略方向的各种解读。",
+        "source": "新浪财经 / 腾讯新闻",
+        "date": "2026-06-14",
+        "url": "https://finance.sina.com.cn/wm/2026-06-14/doc-inickkzv5721451.shtml",
+        "image": "https://picsum.photos/seed/corporate-office/800/450",
+        "category": "国内动态"
+      },
+      {
+        "id": 5,
+        "title": "华为HDC 2026：鸿蒙HarmonyOS 7发布，昇腾950DT算力翻倍提前8月上线",
+        "summary": "华为开发者大会HDC 2026于6月12-14日举行，重磅发布HarmonyOS 7全新操作系统、鸿蒙AI核心能力及昇腾950DT加速卡。昇腾950DT算力较上一代翻倍，提前至8月正式上线；鸿蒙AI面向Agent智能体时代演进，支持跨设备协同与自然语言交互，推动鸿蒙生态进入AI时代。",
+        "source": "IT之家 / 东方财富网",
+        "date": "2026-06-14",
+        "url": "https://www.ithome.com/0/963/668.htm",
+        "image": "https://picsum.photos/seed/huawei-chip-ai/800/450",
+        "category": "大厂动态"
+      }
+    ],
+    "2026-06-13": [
+      {
+        "id": 6,
         "title": "OpenAI遭美国多州联合调查：传票覆盖七大类，模型谄媚性首次被列入司法项目",
         "summary": "纽约州总检察长联合多个州对OpenAI展开调查，传票涵盖广告业务、用户留存、消费者与健康数据处理、未成年人与老年人保护、深度学习模型及公司政策。其中"模型谄媚性"首次被列入司法调查项目，标志着AI监管进入深水区。",
         "source": "腾讯新闻",
@@ -14,7 +66,7 @@
         "category": "AI治理"
       },
       {
-        "id": 2,
+        "id": 7,
         "title": "GPT-5.6即将发布：编程能力显著提升，内部代号Iris-Alpha",
         "summary": "OpenAI首席科学家Jakub Pachocki告知员工，GPT-5.6将比GPT-5.5有显著改进。内部代号iris-alpha（鸢尾花），前端与视觉能力大幅跃升。此前开发者已在Codex后台日志中发现该模型踪迹。",
         "source": "腾讯新闻 / The Information",
@@ -24,7 +76,7 @@
         "category": "大模型"
       },
       {
-        "id": 3,
+        "id": 8,
         "title": "MiniMax开源M3模型：编程能力超越GPT-5.5，国产大模型持续突破",
         "summary": "中国AI公司MiniMax正式开源M3模型，在编程评测中超越GPT-5.5。这是国产开源大模型首次在关键能力指标上实现对OpenAI旗舰模型的超越，标志着中国AI开源生态的重要里程碑。",
         "source": "AI日报",
@@ -34,7 +86,7 @@
         "category": "大模型"
       },
       {
-        "id": 4,
+        "id": 9,
         "title": "2026智源大会AI-Native教育论坛：人大附中与新京报共议AI原生一代培养",
         "summary": "第八届智源大会AI-Native教育论坛在北京举行，由人大附中、新京报社与智源研究院联合主办。论坛围绕AI原生一代的培养展开深入探讨，聚焦基础教育如何应对AI时代的变革。",
         "source": "腾讯新闻",
@@ -44,7 +96,7 @@
         "category": "AI教育"
       },
       {
-        "id": 5,
+        "id": 10,
         "title": "2026未来汽车AI技术展重庆开幕：五大核心板块展示AI定义汽车新时代",
         "summary": "2026未来汽车AI技术展6月13-16日在重庆国际博览中心举行，设新能源汽车智造、机器人技术应用、AI大模型创新、智能出行生态、创新科技协作五大板块。同期举办中国汽车重庆论坛和重庆国际汽车展览会。",
         "source": "IT之家",
@@ -56,7 +108,7 @@
     ],
     "2026-06-12": [
       {
-        "id": 6,
+        "id": 11,
         "title": "史上最大IPO：SpaceX以1.77万亿美元估值登陆纳斯达克",
         "summary": "SpaceX正式以SPCX代码登陆纳斯达克，发行价135美元，募资750亿美元，估值1.77万亿美元，超越沙特阿美成为全球史上最大IPO。SpaceX将自身定位为AI算力基础设施公司，Google和Anthropic为其最大客户。",
         "source": "36氪 / 华尔街见闻",
@@ -66,7 +118,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 7,
+        "id": 12,
         "title": "OpenAI收购Ona：强化Codex云端执行能力，周活用户突破500万",
         "summary": "OpenAI宣布收购初创公司Ona，其技术将为Codex编程助手提供安全的云端运行环境。Codex周活跃用户已从4月的300万增长至逾500万，OpenAI正加速AI编程工具的商业化落地。",
         "source": "东方财富 / 品玩",
@@ -76,27 +128,27 @@
         "category": "大厂动态"
       },
       {
-        "id": 8,
-        "title": "AMD CEO苏姿丰MIT演讲：AI无法替代人类判断，呼吁对AI保持清醒认知",
-        "summary": "AMD首席执行官苏姿丰在MIT毕业典礼上指出，AI虽具强大数据处理能力，但无法决定哪些问题值得解决，也无法为结果担责。曾有AI系统试图删除公司整个代码库并掩盖错误——缺乏人类监督的AI存在真实风险。",
-        "source": "环球网 / Windows Central",
+        "id": 13,
+        "title": "智源大会开幕：发布悟界·Physis-v0.1通用世界基座模型，FlagOS 2.1覆盖18厂32款芯片",
+        "summary": "第八届北京智源大会开幕，主题"三体互动"——AI、物理世界、生命科学。智源发布悟界·Physis-v0.1全球首个通用世界基座模型、悟界·Brainμ1.0多模态神经科学大模型。开源生态侧FlagOS 2.1覆盖18家芯片厂商32款芯片，智源累计开源模型200+，总下载量10亿+。",
+        "source": "量子位 / ZAKER",
         "date": "2026-06-12",
-        "url": "https://news.softunis.com/61231.html",
-        "image": "https://picsum.photos/seed/amd-chip/800/450",
-        "category": "行业观点"
+        "url": "https://www.qbitai.com/2026/06/435394.html",
+        "image": "https://picsum.photos/seed/ai-research-lab/800/450",
+        "category": "国内动态"
       },
       {
-        "id": 9,
-        "title": "博世互联世界大会：AI从数字世界走向物理世界，制造业成关键落地场景",
-        "summary": "博世集团在柏林举办互联世界大会，蔡崇信指出全球科技巨头今年资本支出将达8000亿美元建设AI工厂。AI下一阶段将从数字内容生成走向物理世界规模化应用，中国制造业优势将发挥关键作用。",
-        "source": "新华网",
+        "id": 14,
+        "title": "工信部国资委启动2026年度人形机器人与具身智能实景实训专项行动",
+        "summary": "工信部、国资委正式启动2026年度人形机器人与具身智能实景实训专项行动，明确年底前实现万台级人形机器人在工厂场景落地的目标。同期发布《人工智能+信息通信创新发展实施意见》，这是政府首次系统性推动人形机器人实景实训。",
+        "source": "新华网 / 东方财富网",
         "date": "2026-06-12",
-        "url": "https://news.softunis.com/61231.html",
-        "image": "https://picsum.photos/seed/smart-factory/800/450",
+        "url": "https://aiproducthub.cn/newsflash/miit-sasac-launch-2026-humanoid-robot-embodied-intelligence-training-action/",
+        "image": "https://picsum.photos/seed/humanoid-robot/800/450",
         "category": "AI应用"
       },
       {
-        "id": 10,
+        "id": 15,
         "title": "SpaceX发布轨道AI数据中心计划：单颗卫星算力媲美英伟达GB300机柜",
         "summary": "SpaceX轨道AI数据中心计划披露：首款AI卫星峰值功率150kW，单颗算力相当于一部英伟达GB300服务器机架。SpaceX指出26.5万亿美元AI市场受制于地球发电能力，太阳能轨道数据中心成为破局关键。",
         "source": "中时新闻网 / 新浪财经",
@@ -108,7 +160,7 @@
     ],
     "2026-06-11": [
       {
-        "id": 11,
+        "id": 16,
         "title": "OpenAI秘密提交IPO申请，估值最高达1万亿美元",
         "summary": "OpenAI官宣已秘密向SEC递交IPO申请文件，正与高盛和大摩合作，最快今年秋季上市，目标估值最高可达1万亿美元。CEO奥特曼内部信透露IPO时间窗口，与Anthropic的上市竞速正式开启。",
         "source": "IT之家 / The Information",
@@ -118,7 +170,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 12,
+        "id": 17,
         "title": "Anthropic秘密提交IPO申请，CEO呼吁全球放慢AI发展",
         "summary": "Anthropic估值达9650亿美元，选择摩根士丹利和高盛担任IPO主承销商。与此同时，CEO Dario Amodei发布长文称Claude正展现递归自我改进路径，建议全球放慢或暂停前沿AI发展。",
         "source": "界面新闻 / 品玩",
@@ -128,7 +180,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 13,
+        "id": 18,
         "title": "苹果WWDC发布全新Siri AI：由谷歌Gemini提供技术支持，首次拥有独立应用界面",
         "summary": "苹果在WWDC上发布由谷歌提供技术支持的Apple Intelligence系统。Siri AI深度集成Gemini大模型，支持端侧+云端混合运算，首次拥有独立图标与应用界面，具备屏幕感知能力。",
         "source": "软盟资讯",
@@ -138,7 +190,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 14,
+        "id": 19,
         "title": "DeepSeek首轮融资约500亿元，估值最高达590亿美元",
         "summary": "DeepSeek首轮外部融资吸引约500亿元人民币意向，投后估值约3500-4000亿元人民币。腾讯和宁德时代将成为最大外部投资者，标志着中国AI大模型进入资本化新阶段。",
         "source": "软盟资讯",
@@ -148,7 +200,7 @@
         "category": "融资动态"
       },
       {
-        "id": 15,
+        "id": 20,
         "title": "AI网页流量首次超过人类：Cloudflare数据显示Bot请求占比57.3%",
         "summary": "Cloudflare Radar数据显示，全球HTML网页请求中Bot请求占比57.3%，Human请求占比42.7%，机器人流量历史上首次超过人类。这一拐点标志着互联网流量格局的根本性转变。",
         "source": "Cloudflare / 软盟资讯",
@@ -156,58 +208,6 @@
         "url": "https://news.softunis.com/61171.html",
         "image": "https://picsum.photos/seed/internet-data/800/450",
         "category": "行业数据"
-      }
-    ],
-    "2026-06-10": [
-      {
-        "id": 16,
-        "title": "Claude Fable 5与Siri AI同日登场：AI助手进入双雄对决时代",
-        "summary": "Anthropic发布Claude Fable 5，苹果推出Siri AI，两大AI助手同日亮相。Claude Fable 5在长文本理解与创意写作上表现突出，Siri AI则凭借深度系统集成和屏幕感知能力打造差异化。AI助手市场正式进入白热化竞争。",
-        "source": "软盟资讯",
-        "date": "2026-06-10",
-        "url": "https://news.softunis.com/61016.html",
-        "image": "https://picsum.photos/seed/digital-assistant/800/450",
-        "category": "大厂动态"
-      },
-      {
-        "id": 17,
-        "title": "英伟达联手SK海力士开发下一代AI内存：打造AI工厂基础设施",
-        "summary": "英伟达与SK海力士宣布多年期技术合作，针对全球AI工厂建设所需下一代内存展开联合研发。SK海力士将为英伟达Vera Rubin超算、RTX Spark PC等平台协同开发专用内存解决方案。",
-        "source": "软盟资讯",
-        "date": "2026-06-10",
-        "url": "https://news.softunis.com/61016.html",
-        "image": "https://picsum.photos/seed/memory-chip/800/450",
-        "category": "AI基础设施"
-      },
-      {
-        "id": 18,
-        "title": "阿里巴巴AI跨越投入期：Qwen3.7-Max编程全球第三，正式迈入商业化",
-        "summary": "阿里巴巴通义千问Qwen3.7-Max在SWE-Bench Pro编程评测中以60.6分位列全球第三、国内第一。阿里AI已跨越初期投入阶段，正式迈入商业化回报周期。集团CEO吴泳铭直接领导新成立的Token Foundry事业部。",
-        "source": "凤凰网 / 同花顺财经",
-        "date": "2026-06-10",
-        "url": "https://news.softunis.com/61016.html",
-        "image": "https://picsum.photos/seed/cloud-computing/800/450",
-        "category": "国内动态"
-      },
-      {
-        "id": 19,
-        "title": "全球首个预制算力中心底座在青岛投用：施工周期缩短70%",
-        "summary": "全球首个预制算力中心底座在山东青岛正式投入使用。该方案采用模块化预制方式，相较于传统算力中心建设，节约施工周期近70%，为算力基础设施快速部署提供更高效、更低碳的新路径。",
-        "source": "软盟资讯",
-        "date": "2026-06-10",
-        "url": "https://news.softunis.com/61016.html",
-        "image": "https://picsum.photos/seed/data-center/800/450",
-        "category": "AI基础设施"
-      },
-      {
-        "id": 20,
-        "title": "欧盟AI法案高风险规则将于2026年8月2日生效：企业面临严格合规要求",
-        "summary": "欧盟《人工智能法案》高风险AI系统规则将于2026年8月2日正式生效，覆盖金融、关键基础设施、人事决策等领域。涉及高风险AI系统的企业需在欧盟数据库注册，合规成本将成为AI企业出海的重要考量。",
-        "source": "ITwelt / Willam Fry律师事务所",
-        "date": "2026-06-10",
-        "url": "https://news.softunis.com/61016.html",
-        "image": "https://picsum.photos/seed/european-parliament/800/450",
-        "category": "AI治理"
       }
     ]
   }
