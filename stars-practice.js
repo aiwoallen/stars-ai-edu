@@ -523,7 +523,7 @@ PRACTICE.sendMessage=function(){
   if(task)systemPrompt+=' 当前任务的评估标准：'+task.evaluator;
   var typing=document.createElement('div');typing.id='typing';typing.innerHTML='<div style=display:flex;gap:10px><div style=width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px>+</div><div style=background:rgba(91,155,213,.15);border-radius:14px;padding:12px 16px;font-size:13px;color:#8890B0>Thinking...</div></div>';
   var msgs=document.getElementById('chatMessages');msgs.appendChild(typing);
-  fetch('https://thestars-ai.vercel.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,systemPrompt:systemPrompt,history:state.chatHistory})})
+  fetch('https://vercel-proxy-nine-jade.vercel.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,systemPrompt:systemPrompt,history:state.chatHistory})})
   .then(function(r){return r.json()}).then(function(d){
     var el=document.getElementById('typing');if(el)el.remove();
     var reply=d.reply||'请检查网络连接后重试。';
