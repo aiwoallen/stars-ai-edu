@@ -954,10 +954,14 @@ async function renderProfile(cachedUser){
   if(badgeEl){
     if(tags.length>0){
       var tagClass=tags.includes('开发者')?'tag-dev':tags.includes('高级订阅')?'tag-premium':tags.includes('订阅')?'tag-sub':'';
-      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>'+tags.join(' / ');
+      // 安全设置：SVG用innerHTML，标签文字用textContent
+      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>';
+      badgeEl.appendChild(document.createTextNode(tags.join(' / ')));
       badgeEl.className='user-badge '+tagClass;
     } else {
-      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>探索者';
+      badgeEl.textContent=''; // 清空
+      badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>';
+      badgeEl.appendChild(document.createTextNode('探索者'));
     }
   }
   const joinDate=userData.joinDate?new Date(userData.joinDate):new Date();

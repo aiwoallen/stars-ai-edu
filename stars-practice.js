@@ -3,6 +3,13 @@
 (function(){
 var PRACTICE = window.StarsPractice = window.StarsPractice || {};
 
+// HTML转义，防止XSS
+function escapeHTML(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 // 课程级配置 (5个任务)
 var COURSE_TASKS = {
   "AI是什么": {
@@ -507,8 +514,28 @@ PRACTICE.startTask=function(taskId){
 
 function addChatMsg(role,content){
   var msgs=document.getElementById('chatMessages');if(!msgs)return;
-  var div=document.createElement('div');div.style.cssText='display:flex;gap:10px;align-items:flex-start;'+(role==='user'?'justify-content:flex-end':'');
-  div.innerHTML=role==='assistant'?'<div style=width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px>+</div><div style=background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)>'+content.replace(/\n/g,'<br>')+'</div>':'<div style=background:rgba(240,200,80,.1);border-radius:14px 14px 4px 14px;padding:12px 16px;font-size:13px;color:#E8ECF1;line-height:1.7;max-width:85%>'+content+'</div>';
+  var div=document.createElement('div');
+  div.style.cssText='display:flex;gap:10px;align-items:flex-start;'+(role==='user'?'justify-content:flex-end':'');
+  
+  if(role==='assistant'){
+    // AI头像
+    var avatar=document.createElement('div');
+    avatar.style.cssText='width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;flex-shrink:0';
+    avatar.textContent='+';
+    div.appendChild(avatar);
+    // 气泡
+    var bubble=document.createElement('div');
+    bubble.style.cssText='background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)';
+    bubble.innerHTML=escapeHTML(content).replace(/\n/g,'<br>');
+    div.appendChild(bubble);
+  } else {
+    // 用户气泡
+    var bubble2=document.createElement('div');
+    bubble2.style.cssText='background:rgba(240,200,80,.1);border-radius:14px 14px 4px 14px;padding:12px 16px;font-size:13px;color:#E8ECF1;line-height:1.7;max-width:85%';
+    bubble2.textContent=content;
+    div.appendChild(bubble2);
+  }
+  
   msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight
 }
 
