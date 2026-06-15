@@ -1786,7 +1786,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 
   // ---- Load news data ----
   function loadNews() {
-    fetch('news.json')
+    fetch('news.json?v=' + Date.now())
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();

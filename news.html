@@ -383,7 +383,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   };
 
   // Load data
-  fetch('news.json')
+  fetch('news.json?v=' + Date.now())
     .then(function(r){if(!r.ok)throw Error('HTTP '+r.status);return r.json()})
     .then(function(data){
       var dates = data.dates || Object.keys(data.news).sort().reverse();
