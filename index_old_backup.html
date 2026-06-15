@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>群星 - AI教学平台</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #0A0E27;
+    --bg-card: #141832;
+    --bg-card-hover: #1A2040;
+    --gold: #F0C850;
+    --gold-light: #F8E090;
+    --blue: #5B9BD5;
+    --blue-light: #8BBFEE;
+    --white: #E8ECF1;
+    --muted: #8890B0;
+    --dim: #555D80;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg-deep);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Star field */
+  .stars-canvas {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.3); }
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(240,200,80,0.6) 0%, transparent 70%);
+    animation: float var(--fdur) linear infinite;
+    animation-delay: var(--fdelay);
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(-10vh) translateX(var(--fx)) scale(1.5); opacity: 0; }
+  }
+
+  /* Layout */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 0;
+    backdrop-filter: blur(20px);
+    background: rgba(10,14,39,0.7);
+    border-bottom: 1px solid rgba(240,200,80,0.1);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+  .logo span { color: var(--white); font-weight: 300; font-size: 14px; margin-left: 8px; letter-spacing: 1px; }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+    letter-spacing: 1px;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links .active { color: var(--gold); }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .hero-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .hero-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+  .hero h1 {
+    font-size: 52px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-bottom: 16px;
+    letter-spacing: 6px;
+  }
+  .hero .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .btn {
+    padding: 12px 36px;
+    border-radius: 24px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-weight: 500;
+  }
+  .btn-primary:hover {
+    background: var(--gold-light);
+    box-shadow: 0 0 30px rgba(240,200,80,0.3);
+    transform: translateY(-2px);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(240,200,80,0.4);
+    color: var(--gold);
+  }
+  .btn-outline:hover {
+    border-color: var(--gold);
+    background: rgba(240,200,80,0.05);
+  }
+
+  /* Section titles */
+  .section-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .section-title h2 {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .section-title .line {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 0 auto;
+  }
+
+  /* Course cards */
+  .courses-section {
+    padding: 80px 0;
+  }
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .course-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    border: 1px solid rgba(240,200,80,0.1);
+    transition: all 0.4s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .course-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(240,200,80,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .course-card:hover::before { opacity: 1; }
+  .course-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(240,200,80,0.3);
+    box-shadow: 0 8px 40px rgba(240,200,80,0.1);
+    background: var(--bg-card-hover);
+  }
+  .course-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .course-card h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .course-card p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .course-tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    background: rgba(240,200,80,0.1);
+    color: var(--gold);
+  }
+  .view-all {
+    text-align: center;
+    margin-top: 16px;
+  }
+  .view-all a {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+  }
+  .view-all a:hover { color: var(--blue-light); }
+
+  /* Why section */
+  .why-section {
+    padding: 80px 0;
+    position: relative;
+  }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .why-card {
+    background: rgba(20,24,50,0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 36px 28px;
+    border: 1px solid rgba(91,155,213,0.15);
+    transition: all 0.3s;
+  }
+  .why-card:hover {
+    border-color: rgba(91,155,213,0.4);
+    background: rgba(20,24,50,0.8);
+  }
+  .why-card .num {
+    font-size: 36px;
+    font-weight: 700;
+    color: rgba(240,200,80,0.2);
+    margin-bottom: 12px;
+  }
+  .why-card h3 {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .why-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* Why us */
+  .whyus-section {
+    padding: 80px 0 100px;
+  }
+  .whyus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .whyus-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 36px 28px;
+    text-align: center;
+    border: 1px solid rgba(240,200,80,0.08);
+    transition: all 0.3s;
+  }
+  .whyus-card:hover {
+    border-color: rgba(240,200,80,0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(240,200,80,0.06);
+  }
+  .whyus-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+  .whyus-card h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .whyus-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Preview (Coming Soon) */
+  .preview-section {
+    padding: 60px 0 80px;
+  }
+  .preview-banner {
+    background: linear-gradient(135deg, rgba(91,155,213,0.12), rgba(108,92,231,0.15));
+    border: 1px solid rgba(240,200,80,0.12);
+    border-radius: 18px;
+    padding: 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(240,200,80,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .preview-banner h3 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .preview-banner p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .preview-tags {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .preview-tag {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(240,200,80,0.08);
+    border: 1px solid rgba(240,200,80,0.2);
+    font-size: 13px;
+    color: var(--gold);
+    transition: all 0.3s;
+  }
+  .preview-tag:hover {
+    background: rgba(240,200,80,0.15);
+    border-color: rgba(240,200,80,0.4);
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid rgba(240,200,80,0.08);
+  }
+  footer .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  footer p {
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  footer a {
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+  }
+  footer a:hover {
+    color: var(--gold);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .course-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-grid { grid-template-columns: repeat(2, 1fr); }
+    .whyus-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  
+  /* AI Chat Box - Deep Tone */
+  .ai-chat-section { padding: 40px 0 60px; position: relative; z-index: 1; }
+  .ai-chat-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    border: 1px solid rgba(240,200,80,0.18);
+    overflow: hidden;
+    max-width: 680px;
+    margin: 0 auto;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  }
+  .ai-chat-header {
+    background: linear-gradient(135deg, rgba(91,155,213,0.28), rgba(108,92,231,0.22));
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(240,200,80,0.15);
+  }
+  .ai-chat-header .ai-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4A8AD4, #5B4BE7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(91,155,213,0.4);
+  }
+  .ai-chat-header .ai-info { flex: 1; }
+  .ai-chat-header .ai-name { font-size: 14px; font-weight: 500; color: var(--white); letter-spacing: 1px; }
+  .ai-chat-header .ai-status { font-size: 11px; color: #4CAF50; display: flex; align-items: center; gap: 5px; }
+  .ai-chat-header .ai-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; display: inline-block; }
+  .ai-chat-body { padding: 20px 24px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+  .ai-chat-body .ai-msg { display: flex; gap: 10px; align-items: flex-start; }
+  .ai-chat-body .ai-msg .msg-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #4A8AD4, #5B4BE7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+    box-shadow: 0 1px 8px rgba(91,155,213,0.35);
+  }
+  .ai-chat-body .ai-msg .msg-bubble {
+    background: rgba(91,155,213,0.18);
+    border-radius: 14px 14px 14px 4px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #C8D0E0;
+    line-height: 1.7;
+    max-width: 85%;
+    border: 1px solid rgba(91,155,213,0.1);
+  }
+  .ai-chat-input {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(240,200,80,0.14);
+    display: flex;
+    gap: 10px;
+    background: rgba(5,8,25,0.8);
+  }
+  .ai-chat-input input {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(240,200,80,0.22);
+    border-radius: 22px;
+    padding: 10px 18px;
+    font-size: 13px;
+    color: var(--white);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .ai-chat-input input::placeholder { color: var(--dim); }
+  .ai-chat-input input:focus { border-color: rgba(240,200,80,0.45); background: rgba(255,255,255,0.14); }
+  .ai-chat-input .send-btn {
+    background: linear-gradient(135deg, #4A8AD4, #5B4BE7);
+    border: none; border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(91,155,213,0.35);
+  }
+  .ai-chat-input .send-btn:hover { opacity: 0.9; transform: scale(1.08); box-shadow: 0 4px 18px rgba(91,155,213,0.5); }
+  @media (max-width: 768px) {
+    .ai-chat-card { border-radius: 14px; }
+    .ai-chat-header { padding: 14px 16px; }
+    .ai-chat-body { padding: 16px; max-height: 260px; }
+    .ai-chat-body .ai-msg .msg-bubble { font-size: 12px; padding: 10px 12px; }
+    .ai-chat-input { padding: 12px 14px; }
+    .ai-chat-input input { font-size: 12px; padding: 8px 14px; }
+  }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 36px; letter-spacing: 3px; }
+    .hero .subtitle { font-size: 15px; }
+    .course-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-grid, .whyus-grid { grid-template-columns: 1fr; }
+    .nav-links { gap: 16px; }
+    .container { padding: 0 20px; }
+    nav { padding: 14px 0; }
+    .logo { font-size: 18px; }
+    .preview-banner { padding: 32px 20px; }
+    .preview-tags { gap: 8px; }
+    .preview-tag { font-size: 11px; padding: 6px 14px; }
+  }
+  @media (max-width: 480px) {
+    .course-grid { grid-template-columns: 1fr; }
+    .hero-buttons { flex-direction: column; align-items: center; }
+    .hero h1 { font-size: 28px; }
+    .btn { padding: 10px 28px; font-size: 13px; }
+    .section-title h2 { font-size: 22px; }
+    .course-card { padding: 24px 16px; }
+    .preview-banner { padding: 24px 16px; }
+    .preview-banner h3 { font-size: 18px; }
+    footer .container { flex-direction: column; gap: 12px; text-align: center; }
+    .logo span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Star field -->
+<div class="stars-canvas" id="stars"></div>
+
+<!-- Floating particles -->
+<div id="particles"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="container">
+    <div class="logo"><img src="stars_logo.png" alt="★" style="height:34px; vertical-align:middle; margin-right:10px;">群星<span>AI EDUCATION</span></div>
+    <div class="nav-links">
+      <a href="#" class="active">首页</a>
+      <a href="全部课程.html">课程</a>
+      <a href="about.html">关于</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-icon">✦</div>
+      <h1>每一颗星辰<br>都是一个起点</h1>
+      <p class="subtitle">在群星，找到你的 AI 第一课</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="location.href='全部课程.html'">开始探索</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hot Courses -->
+<section class="courses-section">
+  <div class="container">
+    <div class="section-title">
+      <h2>热门课程</h2>
+      <div class="line"></div>
+    </div>
+    <div class="course-grid">
+      <div class="course-card" onclick="location.href='课程_AI是什么.html'">
+        <span class="course-icon">🌌</span>
+        <h3>AI 是什么</h3>
+        <p>从零理解人工智能的本质，建立完整的认知框架</p>
+        <span class="course-tag">入门首选</span>
+      </div>
+      <div class="course-card" onclick="location.href='课程_AI基础知识.html'">
+        <span class="course-icon">🔬</span>
+        <h3>AI 基础知识</h3>
+        <p>机器学习与神经网络核心概念，图文并茂讲解</p>
+        <span class="course-tag">必修课</span>
+      </div>
+      <div class="course-card" onclick="location.href='课程_AI绘画实战.html'">
+        <span class="course-icon">🎨</span>
+        <h3>AI 绘画实战</h3>
+        <p>从第一张图到商业变现，完整实战路径</p>
+        <span class="course-tag">最受欢迎</span>
+      </div>
+      <div class="course-card" onclick="location.href='课程_AI原理实战.html'">
+        <span class="course-icon">⚡</span>
+        <h3>AI 原理实战</h3>
+        <p>从零训练第一个模型，动手理解深度学习的本质</p>
+        <span class="course-tag">进阶</span>
+      </div>
+    </div>
+    <div class="course-grid" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="course-card" onclick="location.href='课程_AI文案实战.html'">
+        <span class="course-icon">✍️</span>
+        <h3>AI 文案实战</h3>
+        <p>Prompt 心法与五大场景，让你的文字更有力量</p>
+        <span class="course-tag">实用技能</span>
+      </div>
+      <div class="course-card" onclick="location.href='课程_如何与AI对话.html'">
+        <span class="course-icon">💬</span>
+        <h3>如何与 AI 对话</h3>
+        <p>从注意力机制到沟通艺术，掌握AI时代的核心能力</p>
+        <span class="course-tag">核心能力</span>
+      </div>
+    </div>
+    <div class="view-all">
+      <a href="全部课程.html">查看全部课程 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="ai-chat-section">
+  <div class="container">
+    <div class="section-title">
+      <h2>AI 问答助手</h2>
+      <div class="line"></div>
+    </div>
+    <div class="ai-chat-card">
+      <div class="ai-chat-header">
+        <div class="ai-avatar">✨</div>
+        <div class="ai-info">
+          <div class="ai-name">群星 AI 助手</div>
+          <div class="ai-status">在线 · 随时为你解答</div>
+        </div>
+      </div>
+      <div class="ai-chat-body" id="aiChatBody">
+        <div class="ai-msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">你好！我是群星 AI 助手。关于人工智能学习，任何问题都可以问我。比如："什么是机器学习？"或者"推荐一门适合新手的课程"。</div>
+        </div>
+      </div>
+      <div class="ai-chat-input">
+        <input type="text" id="aiInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter')sendAiMsg()">
+        <button class="send-btn" onclick="sendAiMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why learn AI -->
+<section class="why-section">
+  <div class="container">
+    <div class="section-title">
+      <h2>为什么学 AI？</h2>
+      <div class="line"></div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="num">01</div>
+        <h3>这不是未来，这是现在</h3>
+        <p>AI 正在重塑每一个行业——从医疗到教育，从创作到编程。越早掌握，越早拥有主动权。</p>
+      </div>
+      <div class="why-card">
+        <div class="num">02</div>
+        <h3>门槛从未如此之低</h3>
+        <p>今天的AI工具让任何人都能成为创造者。不需要博士学位，不需要数学天赋，只需要一颗好奇心。</p>
+      </div>
+      <div class="why-card">
+        <div class="num">03</div>
+        <h3>从 0 到 1，我们陪你走</h3>
+        <p>从完全零基础到能独立训练模型、创作AI作品，每一步都有清晰的路径和陪伴。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why 群星 -->
+<section class="whyus-section">
+  <div class="container">
+    <div class="section-title">
+      <h2>为什么在群星学习？</h2>
+      <div class="line"></div>
+    </div>
+    <div class="whyus-grid">
+      <div class="whyus-card">
+        <div class="whyus-icon">⭐</div>
+        <h3>体系化学习路径</h3>
+        <p>从入门到进阶，从理论到实战，每一条路径都经过精心设计，不绕弯路。</p>
+      </div>
+      <div class="whyus-card">
+        <div class="whyus-icon">🔥</div>
+        <h3>实战导向</h3>
+        <p>不是看视频，是真的动手。每个课程都配有实战项目，学完就能做出东西。</p>
+      </div>
+      <div class="whyus-card">
+        <div class="whyus-icon">🌊</div>
+        <h3>持续更新</h3>
+        <p>AI 领域日新月异，我们的课程内容持续迭代，确保你学到的永远不会过时。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Preview - Coming Soon -->
+<section class="preview-section">
+  <div class="container">
+    <div class="preview-banner">
+      <h3>即将推出</h3>
+      <p>创作者社区 · 项目招募 · 更多可能</p>
+      <div class="preview-tags">
+        <span class="preview-tag">创作者社区</span>
+        <span class="preview-tag">项目协作</span>
+        <span class="preview-tag">移动 APP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>© 2026 群星 · AI 教育平台</p>
+    <a href="contact.html">联系我们</a>
+  </div>
+</footer>
+
+<script>
+  // Generate stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 1;
+    star.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      top: ${Math.random() * 100}%;
+      left: ${Math.random() * 100}%;
+      --dur: ${Math.random() * 3 + 2}s;
+      --delay: ${Math.random() * 5}s;
+      background: ${Math.random() > 0.2 ? 'white' : '#F0C850'};
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  // Floating particles
+  const particlesContainer = document.getElementById('particles');
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    particle.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      left: ${Math.random() * 100}%;
+      --fdur: ${Math.random() * 10 + 8}s;
+      --fdelay: ${Math.random() * 10}s;
+      --fx: ${(Math.random() - 0.5) * 200}px;
+    `;
+    particlesContainer.appendChild(particle);
+  }
+</script>
+
+<script>
+  // === AI 代理配置 ===
+  // 本地开发: 自动使用 localhost:8899 (需运行 python proxy_server.py)
+  // 线上部署: 改为 Vercel 代理地址，格式: https://xxx.vercel.app/api/chat
+  const AI_PROXY = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    ? 'http://localhost:8899/api/chat'
+    : 'https://stars-ai-proxy.vercel.app/api/chat';  // Vercel 部署后替换此URL
+
+  async function sendAiMsg() {
+    const input = document.getElementById('aiInput');
+    const body = document.getElementById('aiChatBody');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    // Show user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'ai-msg';
+    userMsg.style.justifyContent = 'flex-end';
+    userMsg.innerHTML = '<div class="msg-bubble" style="background:rgba(240,200,80,0.1);border-radius:14px 14px 4px 14px;">' + msg + '</div>';
+    body.appendChild(userMsg);
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    // Show typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'ai-msg';
+    typing.id = 'typing-msg';
+    typing.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble" style="opacity:0.6;">思考中...</div>';
+    body.appendChild(typing);
+    body.scrollTop = body.scrollHeight;
+
+    try {
+      let reply;
+      
+      if (AI_PROXY) {
+        // 通过安全代理访问（API密钥仅存在于服务端）
+        const resp = await fetch(AI_PROXY, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await resp.json();
+        reply = data.reply;
+      } else {
+        throw new Error('No proxy configured');
+      }
+      
+      typing.remove();
+      
+      if (!reply || reply.length < 2) throw new Error('empty');
+      
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'ai-msg';
+      aiMsg.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble">' + reply.replace(/\n/g, '<br>') + '</div>';
+      body.appendChild(aiMsg);
+    } catch(e) {
+      typing.remove();
+      // 离线模式 - 关键词匹配回复
+      var reply = msg.includes('推荐') || msg.includes('课程') ? '推荐从「AI 是什么」开始，这是入门首选！然后可以学「AI 基础知识」打好基础，再根据兴趣选实战课程。' :
+                  msg.includes('机器学习') ? '机器学习是AI的核心技术。简单说，就是让计算机从数据中自己学习规律，而不是人工编写规则。它分为监督学习、无监督学习和强化学习三大类。' :
+                  msg.includes('你好') || msg.includes('hi') || msg.includes('hello') ? '你好呀！有什么想了解的吗？' :
+                  'AI助手暂时离线，请检查代理服务器是否运行。本地开发请运行: python proxy_server.py';
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'ai-msg';
+      aiMsg.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble">' + reply + '</div>';
+      body.appendChild(aiMsg);
+    }
+    body.scrollTop = body.scrollHeight;
+  }
+</script>
+
+</body>
