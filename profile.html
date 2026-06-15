@@ -848,31 +848,46 @@ function handleLogout(){
 // AVATAR UPLOAD
 // =============================================
 async function handleAvatarUpload(e){
-  const file=e.target.files[0];
+  var file=e.target.files[0];
   if(!file||!file.type.startsWith('image/'))return;
   if(!getToken()){showToast('请先登录','error');return;}
 
-  const reader=new FileReader();
-  reader.onload=async function(ev){
-    const dataUrl=ev.target.result;
-    try{
-      await apiFetch('/user/avatar', {
-        method: 'PUT',
-        body: JSON.stringify({ avatar: dataUrl })
-      });
-      document.getElementById('avatarImg').src=dataUrl;
-      // Remove placeholder if exists
-      const ph=document.querySelector('.avatar-placeholder');
-      if(ph)ph.remove();
-      const avEl=document.getElementById('avatarImg');
-      avEl.style.display='block';
-      showToast('头像已更新','success');
-    } catch(err) {
-      showToast(err.message || '头像上传失败','error');
-    }
-    e.target.value='';
+  showToast('处理中...','');
+
+  // 压缩图片：200×200 JPEG quality 0.7
+  var img=new Image();
+  var url=URL.createObjectURL(file);
+  img.onload=function(){
+    URL.revokeObjectURL(url);
+    var w=img.width,h=img.height;
+    var size=200;
+    var sx=0,sy=0,sw=w,sh=h;
+    if(w>h){sw=h;sx=(w-h)/2}else{sh=w;sy=(h-w)/2}
+    var c=document.createElement('canvas');
+    c.width=size;c.height=size;
+    var ctx=c.getContext('2d');
+    ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);
+    var compressed=c.toDataURL('image/jpeg',0.7);
+    uploadAvatar(compressed);
   };
-  reader.readAsDataURL(file);
+  img.onerror=function(){showToast('图片加载失败','error');};
+  img.src=url;
+}
+
+async function uploadAvatar(dataUrl){
+  try{
+    await apiFetch('/user/avatar',{
+      method:'PUT',
+      body:JSON.stringify({avatar:dataUrl})
+    });
+    document.getElementById('avatarImg').src=dataUrl;
+    document.getElementById('avatarImg').style.display='block';
+    var ph=document.querySelector('.avatar-placeholder');
+    if(ph)ph.remove();
+    showToast('头像已更新','success');
+  }catch(err){
+    showToast(err.message||'头像上传失败','error');
+  }
 }
 
 // =============================================
