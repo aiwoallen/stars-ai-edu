@@ -137,6 +137,59 @@ def group_by_date(items):
     return groups
 
 
+def sanitize_text(text):
+    """清理文本中会破坏 JSON 的内嵌双引号，替换为中文书名号或转义"""
+    if not text:
+        return ""
+    # 替换中文语境下的 ASCII 双引号为中文引号，避免破坏 JSON 结构
+    # 检测模式：CJK字符后的 " 和 " 后的 CJK字符 → 替换为中文引号
+    import unicodedata
+    result = []
+    chars = list(text)
+    i = 0
+    while i < len(chars):
+        if chars[i] == '"':
+            # 检查前后是否为 CJK 上下文
+            prev_cjk = i > 0 and _is_cjk(chars[i-1])
+            next_cjk = i + 1 < len(chars) and _is_cjk(chars[i+1])
+            if prev_cjk and next_cjk:
+                # 闭合引号场景：前CJK后CJK → 可能是中文引用，改用书名号
+                result.append('\u300A')  # 《
+                i += 1
+                # 往前找配对的 "，把前面的也改成书名号
+                continue
+            elif prev_cjk:
+                # 开口引号
+                result.append('\u201C')  # "
+            elif next_cjk:
+                # 闭口引号
+                result.append('\u201D')  # "
+            else:
+                result.append(chars[i])
+        else:
+            result.append(chars[i])
+        i += 1
+
+    sanitized = ''.join(result)
+    # 回退方案：如果还有残留的双引号在中文文本中，转义它们
+    # 使用正则找到所有中文内容中的双引号
+    sanitized = re.sub(
+        r'([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef])"([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef])',
+        r'\1\u201C\2',
+        sanitized
+    )
+    return sanitized
+
+
+def _is_cjk(ch):
+    """判断字符是否为 CJK 字符"""
+    cp = ord(ch)
+    return (0x4E00 <= cp <= 0x9FFF or    # CJK Unified
+            0x3000 <= cp <= 0x303F or    # CJK Symbols
+            0xFF00 <= cp <= 0xFFEF or    # Halfwidth/Fullwidth
+            0x3400 <= cp <= 0x4DBF)      # CJK Extension A
+
+
 def generate_output(grouped):
     """生成 news.json 输出格式"""
     dates = sorted(grouped.keys(), reverse=True)
@@ -149,8 +202,8 @@ def generate_output(grouped):
             img_idx = img_idx % len(IMAGE_SEEDS)
             day_items.append({
                 "id": img_idx + 1,
-                "title": item.get("title", "无标题"),
-                "summary": item.get("summary", ""),
+                "title": sanitize_text(item.get("title", "无标题")),
+                "summary": sanitize_text(item.get("summary", "")),
                 "source": item.get("source", "未知来源"),
                 "date": d,
                 "url": item.get("url", "#"),

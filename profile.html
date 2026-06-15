@@ -4,8 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的 - 群星</title>
+<!-- DNS prefetch for faster external resource resolution -->
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://api.thestars-ai.com">
+<!-- Preconnect for critical origins -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.thestars-ai.com">
+<!-- Google Fonts with display=swap for instant text rendering -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -784,7 +793,7 @@ async function handleRegister(){
     saveCachedUser(data.user);
     closeAuth();
     showToast('注册成功，欢迎加入群星！','success');
-    renderProfile(data.user);
+    renderProfileSync(data.user);
     // 登录后跳回原页面
     setTimeout(function(){
       var redirect = localStorage.getItem('stars_redirect');
@@ -820,7 +829,7 @@ async function handleLogin(){
     saveCachedUser(data.user);
     closeAuth();
     showToast('登录成功，欢迎回来！','success');
-    renderProfile(data.user);
+    renderProfileSync(data.user);
     // 登录后跳回原页面
     setTimeout(function(){
       var redirect = localStorage.getItem('stars_redirect');
@@ -927,8 +936,57 @@ async function saveNickname(){
 }
 
 // =============================================
-// RENDER
+// RENDER — 秒开策略
 // =============================================
+
+// 同步渲染（仅用缓存数据，不发起任何网络请求）
+function renderProfileSync(userData){
+  if(!userData) return;
+  document.getElementById('guestView').style.display='none';
+  document.getElementById('profileView').style.display='block';
+  applyUserData(userData);
+  gsapAnimateProfile();
+}
+
+// 异步渲染（需要网络请求）
+async function renderProfileAsync(){
+  try{
+    const data = await apiFetch('/auth/me');
+    saveCachedUser(data.user);
+    document.getElementById('guestView').style.display='none';
+    document.getElementById('profileView').style.display='block';
+    applyUserData(data.user);
+    gsapAnimateProfile();
+  } catch(e) {
+    showToast('加载失败，请检查网络后刷新','error');
+    renderGuestView();
+  }
+}
+
+// 后台静默刷新（不阻塞UI，静默更新）
+function refreshProfileInBackground(cachedUser){
+  apiFetch('/auth/me').then(function(data){
+    if(data && data.user){
+      saveCachedUser(data.user);
+      applyUserData(data.user);
+    }
+  }).catch(function(){
+    // 静默失败，用户看到的是缓存数据，不影响体验
+    console.log('Background refresh failed, using cached data');
+  });
+}
+
+// 骨架屏（加载中占位）
+function showSkeleton(){
+  document.getElementById('guestView').style.display='none';
+  document.getElementById('profileView').style.display='block';
+  // 简单的骨架脉冲效果
+  var style = document.createElement('style');
+  style.textContent = '@keyframes skPulse{0%,100%{opacity:.3}50%{opacity:.6}}.sk-pulse{animation:skPulse 1.5s ease-in-out infinite}';
+  document.head.appendChild(style);
+}
+
+// 保持向后兼容：原 renderProfile → 异步渲染
 async function renderProfile(cachedUser){
   document.getElementById('guestView').style.display='none';
   document.getElementById('profileView').style.display='block';
@@ -939,7 +997,6 @@ async function renderProfile(cachedUser){
     userData = data.user;
     saveCachedUser(userData);
   } catch(e) {
-    // 网络问题不丢 token — 用缓存渲染
     if(cachedUser){
       userData = cachedUser;
       showToast('离线模式·显示缓存数据','warning');
@@ -948,7 +1005,11 @@ async function renderProfile(cachedUser){
       return;
     }
   }
+  applyUserData(userData);
+}
 
+// 共享：将用户数据应用到 DOM（纯同步、无网络请求）
+function applyUserData(userData){
   // Name & Email
   document.getElementById('profileName').textContent=userData.nickname||'学习者';
   document.getElementById('profileEmail').textContent=userData.email;
@@ -983,12 +1044,11 @@ async function renderProfile(cachedUser){
   if(badgeEl){
     if(tags.length>0){
       var tagClass=tags.includes('开发者')?'tag-dev':tags.includes('高级订阅')?'tag-premium':tags.includes('订阅')?'tag-sub':'';
-      // 安全设置：SVG用innerHTML，标签文字用textContent
       badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>';
       badgeEl.appendChild(document.createTextNode(tags.join(' / ')));
       badgeEl.className='user-badge '+tagClass;
     } else {
-      badgeEl.textContent=''; // 清空
+      badgeEl.textContent='';
       badgeEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>';
       badgeEl.appendChild(document.createTextNode('探索者'));
     }
@@ -1007,12 +1067,10 @@ async function renderProfile(cachedUser){
     const fillEl=document.getElementById('progFill'+i);
     const labelEl=document.getElementById('prog'+i);
     const cpEl=document.getElementById('cp'+i);
-    if(fillEl) setTimeout(()=>{fillEl.style.width=pct+'%';},200+i*80);
+    if(fillEl) setTimeout(function(){fillEl.style.width=pct+'%';},200+i*80);
     if(labelEl) labelEl.textContent=pct+'%';
-    if(cpEl) cpEl.textContent=`${done}/${total} 课节`;
+    if(cpEl) cpEl.textContent=done+'/'+total+' 课节';
   }
-
-  gsapAnimateProfile();
 }
 
 function renderGuestView(){
@@ -1055,21 +1113,21 @@ function gsapAnimateGuest(){
 }
 
 // =============================================
-// INIT
+// INIT — 秒开策略：先渲缓存，后台静默刷新
 // =============================================
-document.addEventListener('DOMContentLoaded',async function(){
+document.addEventListener('DOMContentLoaded',function(){
   const token = getToken();
   if(token){
     const cached = getCachedUser();
-    try{
-      await renderProfile(cached);
-    } catch(e) {
-      // 不丢 token — 有缓存就用缓存，否则显示游客+重试按钮
-      if(cached){
-        await renderProfile(cached);
-      } else {
-        renderGuestView();
-      }
+    if(cached){
+      // 立即用缓存渲染，不等待任何网络请求
+      renderProfileSync(cached);
+      // 后台静默刷新最新数据
+      refreshProfileInBackground(cached);
+    } else {
+      // 无缓存：显示占位骨架，异步加载
+      showSkeleton();
+      renderProfileAsync();
     }
   } else {
     renderGuestView();
