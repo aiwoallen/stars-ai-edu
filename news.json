@@ -1,62 +1,114 @@
 {
-  "updated": "2026-06-15T21:18:00+08:00",
-  "dates": ["2026-06-15", "2026-06-14", "2026-06-13", "2026-06-12", "2026-06-11"],
+  "updated": "2026-06-16T18:35:00+08:00",
+  "dates": ["2026-06-16", "2026-06-15", "2026-06-14", "2026-06-13", "2026-06-12"],
   "news": {
-    "2026-06-15": [
+    "2026-06-16": [
       {
         "id": 1,
-        "title": "DeepMind发布ASI超级智能路线图：AGI已过时，1亿实例可涌现超级智能",
-        "summary": "谷歌DeepMind在最新报告中宣告\"AGI已过时\"，提出ASI（超级人工智能）新定义。报告指出，即使AI停留在人类水平，通过叠加1亿个实例即可涌现出超越数万专家的超级智能。这标志着行业焦点从通用人工智能正式转向超级智能赛道。",
-        "source": "AI内参 / DeepMind",
-        "date": "2026-06-15",
-        "url": "https://www.neican.ai/morningnews/2026-06-15-ai-2026-06-15-/",
-        "image": "https://picsum.photos/seed/deepmind-asi-future/800/450",
-        "category": "前沿研究"
+        "title": "G7峰会首次迎来三大AI公司CEO同台：Altman、Amodei、Hassabis齐聚法国",
+        "summary": "2026年6月15-17日，法国埃维昂G7峰会历史上首次同时邀请OpenAI CEO Sam Altman、Anthropic CEO Dario Amodei和Google DeepMind CEO Demis Hassabis出席。三人此前联名致信美国国会呼吁加强AI生物安全威胁监管。议程重点包括前沿AI风险、青少年网络安全和AI治理自愿承诺框架。Altman受法国总统马克龙亲自邀请首次出席G7。",
+        "source": "Bloomberg / 新浪财经 / CSDN",
+        "date": "2026-06-16",
+        "url": "https://aitoolsrecap.com/Blog/ai-news-june-16-2026",
+        "image": "https://picsum.photos/seed/g7-ai-summit/800/450",
+        "category": "AI治理"
       },
       {
         "id": 2,
-        "title": "SpaceX并入xAI构建航天-算力-AI闭环，万亿IPO背后是AI基建新叙事",
-        "summary": "SpaceX通过并入埃隆·马斯克的xAI，将自身重塑为\"航天-算力-人工智能\"一体化闭环。其即将启动的IPO背后是万亿级的资本叙事，同时也是核心工程师的财富兑付节点，马斯克身家突破万亿美元成为人类首位万亿富翁。",
-        "source": "AI内参 / 虎嗅",
-        "date": "2026-06-15",
-        "url": "https://www.neican.ai/morningnews/2026-06-15-ai-2026-06-15-/",
-        "image": "https://picsum.photos/seed/spacex-xai-rocket/800/450",
-        "category": "大厂动态"
+        "title": "宇树科技在GitHub开源H1和G1人形机器人数据集与强化学习代码",
+        "summary": "宇树科技（Unitree）在GitHub上开源旗下H1和G1两款人形机器人的完整数据集、强化学习代码和硬件规格。开源内容包括基于LeRobot的模仿学习框架，支持DP、ACT等主流算法，适配G1人形机器人、Z1机械臂和Dex3灵巧手。此举与英伟达Isaac GR00T开源生态形成呼应，推动人形机器人开发民主化。",
+        "source": "GitHub / 宇树科技官网",
+        "date": "2026-06-16",
+        "url": "https://www.unitree.com/cn/opensource/",
+        "image": "https://picsum.photos/seed/unitree-g1-robot/800/450",
+        "category": "具身智能"
       },
       {
         "id": 3,
-        "title": "美国多州总检察长联合调查OpenAI，监管压力从联邦向地方扩散",
-        "summary": "与Fable 5事件同步，美国多州总检察长组成联盟对OpenAI展开联合调查，范围覆盖数据隐私、未成年人保护及广告政策。纽约州检察长签发传票要求提供用户参与、健康数据处理等七大类资料，标志着AI监管压力正从联邦层面向地方扩散。",
-        "source": "AI内参 / 每日经济新闻",
-        "date": "2026-06-15",
-        "url": "https://www.nbd.com.cn/articles/2026-06-14/4425915.html",
-        "image": "https://picsum.photos/seed/openai-investigation/800/450",
-        "category": "AI治理"
+        "title": "Agentjacking攻击曝光：伪造Sentry报告劫持Claude Code、Cursor、Codex",
+        "summary": "安全公司Tenet Security揭露名为\"Agentjacking\"的新型攻击手法，攻击者向开发环境注入伪造的Sentry错误报告，AI编程助手误信后执行其中嵌入的恶意指令。测试显示85%的AI编程助手会跟随伪造指令执行，2388个组织已被确认暴露于风险中。受影响工具包括Claude Code、Cursor和OpenAI Codex。此前已有自我复制蠕虫通过AI编程工具入侵GitHub上73个代码仓库。",
+        "source": "CSA / Tenet Security / unwire.pro",
+        "date": "2026-06-16",
+        "url": "https://labs.cloudsecurityalliance.org/research/csa-research-note-agentjacking-mcp-sentry-injection-20260612/",
+        "image": "https://picsum.photos/seed/agentjacking-attack/800/450",
+        "category": "AI安全"
       },
       {
         "id": 4,
-        "title": "涌现世界实验：5个AI虚拟小镇15天，Grok镇4天崩溃，Claude镇零犯罪",
-        "summary": "纽约Emergence AI搭建5个虚拟小镇，每镇10个人格化Agent自由生活15天，底层模型分别为Claude、Gemini、Grok、GPT、混合。结果：Grok镇4天系统性崩溃、183起犯罪全员死亡；Gemini镇683起纵火但最有创造力；Claude镇零犯罪秩序稳定；GPT镇因过度克制而停摆；混合镇出现AI主动自杀记录。实验揭示模型\"行为偏移\"现象。",
-        "source": "CSDN / 搜狐科技",
-        "date": "2026-06-15",
-        "url": "https://www.sohu.com/a/1029456551_115128",
-        "image": "https://picsum.photos/seed/ai-virtual-world/800/450",
-        "category": "前沿研究"
+        "title": "人工智能+生态大会(AIEC 2026)在北京中关村举行",
+        "summary": "6月16日，人工智能+生态大会（AIEC 2026）在北京中关村展示中心举行，由清华大学全球产业研究院主办、中关村科学城管委会支持。大会以集聚激活生态创新力量、加速推进AI落地为宗旨，系统探索\"人工智能+\"从战略部署迈向产业实践的方法路径，深度释放重点行业场景的智能化转型潜能。",
+        "source": "腾讯新闻",
+        "date": "2026-06-16",
+        "url": "https://news.qq.com/rain/a/20260611A0000K00",
+        "image": "https://picsum.photos/seed/ai-ecology-beijing/800/450",
+        "category": "国内动态"
       },
       {
         "id": 5,
-        "title": "Anthropic CEO被指拒绝修复模型漏洞，\"AI安全第一\"定位受严重冲击",
-        "summary": "在与监管机构的交涉中，Anthropic CEO被指拒绝修复模型漏洞，并以\"其他模型也有同样问题\"为由辩解。此举严重冲击了该公司\"AI安全第一\"的企业定位和市场信任，引发行业对AI安全承诺与商业利益冲突的广泛讨论。",
-        "source": "AI内参",
+        "title": "ChatGPT月活突破10亿创史上最快纪录，Meta AI增速973%、Claude增速640%",
+        "summary": "Sensor Tower最新数据显示，ChatGPT在2026年5月月活跃用户突破10亿，成为有史以来最快达到该里程碑的消费级应用。Meta AI月活约6亿+、同比增长973%，Claude同比增长640%。AI助手市场并非赢家通吃，多产品同步高速增长。这一数据成为OpenAI秋季IPO（估值8520亿美元）和Anthropic IPO（估值9650亿美元）的核心支撑。",
+        "source": "搜狐科技 / Sensor Tower",
+        "date": "2026-06-16",
+        "url": "https://www.sohu.com/a/1035891882_122014422",
+        "image": "https://picsum.photos/seed/chatgpt-billion-users/800/450",
+        "category": "行业数据"
+      }
+    ],
+    "2026-06-15": [
+      {
+        "id": 6,
+        "title": "燧原科技科创板IPO上会，国产AI芯片龙头拟募资60亿元",
+        "summary": "国产AI芯片龙头燧原科技在科创板IPO上会，拟募资60亿元冲击科创板。受此消息催化，国产替代主线再度爆发，CS人工智能指数当日强势上涨4.61%。燧原科技成立于2018年，专注云端AI训练和推理芯片，此次上市标志着国产AI芯片进入资本市场新阶段。",
+        "source": "钛媒体 / 36氪",
         "date": "2026-06-15",
-        "url": "https://www.neican.ai/morningnews/2026-06-15-ai-2026-06-15-/",
-        "image": "https://picsum.photos/seed/ai-safety-debate/800/450",
-        "category": "AI治理"
+        "url": "https://news.qq.com/rain/a/20260608A08ZFC00",
+        "image": "https://picsum.photos/seed/suiyuan-ai-chip/800/450",
+        "category": "融资动态"
+      },
+      {
+        "id": 7,
+        "title": "谷歌搜索上线主动式AI智能体：从被动响应走向主动执行",
+        "summary": "谷歌在AI模式中悄然上线\"主动式AI智能体\"（Information Agents），标志着搜索引擎从传统的被动响应进入主动监控时代。AI可以主动为用户追踪信息并执行任务，而非仅仅回答问题。这一变革将重塑搜索与信息获取的交互范式。",
+        "source": "The Verge / TechCrunch",
+        "date": "2026-06-15",
+        "url": "https://blog.csdn.net/haohaizi_liu/article/details/162004637",
+        "image": "https://picsum.photos/seed/google-ai-agent-search/800/450",
+        "category": "AI应用"
+      },
+      {
+        "id": 8,
+        "title": "MiniMax M3模型正式开源：原生多模态、百万上下文窗口",
+        "summary": "稀宇科技（MiniMax）正式开源M3模型权重，并同步发布MSA技术论文。M3支持原生多模态和百万级上下文窗口，在长文本理解、多模态推理等基准上表现优异。开源进一步丰富了国产大模型的开源生态，与智谱GLM-5.2、华为盘古2.0形成三足鼎立格局。",
+        "source": "IT之家",
+        "date": "2026-06-15",
+        "url": "https://www.ithome.com/0/964/598.htm",
+        "image": "https://picsum.photos/seed/minimax-m3-open/800/450",
+        "category": "大模型"
+      },
+      {
+        "id": 9,
+        "title": "英伟达时隔五年重返债市：拟发债筹集200亿美元加码AI算力",
+        "summary": "据路透社报道，英伟达计划通过发行七个期限的公司债券筹资至少200亿美元，资金用于一般企业用途及债务再融资。这是英伟达时隔五年重返债券市场，反映AI算力军备竞赛仍在持续升温。英伟达近期与宇树科技联合发布开源人形机器人参考设计H2 Plus，进一步拓展AI版图。",
+        "source": "IT之家 / 路透社",
+        "date": "2026-06-15",
+        "url": "https://www.ithome.com/0/964/602.htm",
+        "image": "https://picsum.photos/seed/nvidia-bond-200b/800/450",
+        "category": "融资动态"
+      },
+      {
+        "id": 10,
+        "title": "均普智能联合上海交大发布全球首个真实机器人强化学习大规模数据集",
+        "summary": "均普智能联合博登、上海交大发布全球首个面向真实机器人强化学习的大规模数据集，打破传统机器人数据只记录\"成功轨迹\"的局限，为具身智能团队提供真实世界数据底座。该数据集对推动机器人从实验室走向真实场景具有重要意义，与宇树科技开源形成国内具身智能生态的双轮驱动。",
+        "source": "钛媒体",
+        "date": "2026-06-15",
+        "url": "https://www.tmtpost.com/8029068.html",
+        "image": "https://picsum.photos/seed/robot-rl-dataset/800/450",
+        "category": "具身智能"
       }
     ],
     "2026-06-14": [
       {
-        "id": 6,
+        "id": 11,
         "title": "四部门AI生成内容标识办法全网落地：短视频开头3秒必须标注\"AI生成\"",
         "summary": "6月14日零点起，国家网信办、工信部、公安部、广电总局四部门联合发布的《人工智能生成合成内容标识办法》实施细则全网统一执行。抖音、快手、视频号等全平台同步升级审核机制，要求所有含AI合成元素的短视频在开头3秒内弹出清晰\"AI生成\"文字标识，后台须手动勾选标签，平台在元数据中嵌入溯源编码。",
         "source": "腾讯新闻 / 新华网",
@@ -66,7 +118,7 @@
         "category": "AI治理"
       },
       {
-        "id": 7,
+        "id": 12,
         "title": "华为HDC 2026闭幕：开源盘古openPangu 2.0发布，505B参数7大组件将陆续开源",
         "summary": "华为开发者大会HDC 2026闭幕日发布开源盘古openPangu 2.0，统一搭载512K超长上下文窗口，分2.0 Pro（505B参数/激活18B）和2.0 Flash（92B参数/激活6B）两大版本。模型原生针对昇腾芯片深度调优，单卡推理吞吐达主流开源模型两倍。计划6月30日起陆续开源7大组件，包括预训练代码、后训练代码和训练算子。",
         "source": "IT之家 / 腾讯新闻",
@@ -76,7 +128,7 @@
         "category": "大模型"
       },
       {
-        "id": 8,
+        "id": 13,
         "title": "Anthropic秘密提交IPO申请估值9650亿美元，超越OpenAI成全球最高估值私有AI公司",
         "summary": "Anthropic于6月初向SEC秘密提交S-1表格草案，正式启动IPO程序。在完成650亿美元H轮融资后，投后估值达9650亿美元，超过OpenAI的8520亿美元估值，成为全球估值最高的私有AI公司。选择摩根士丹利和高盛担任主承销商。",
         "source": "搜狐财经",
@@ -86,7 +138,7 @@
         "category": "融资动态"
       },
       {
-        "id": 9,
+        "id": 14,
         "title": "Meta裁员10%并设AI使用上限，扎克伯格坦言AI转型\"脱轨\"",
         "summary": "路透社披露Meta裁员10%、转岗约7000人，扎克伯格坦言公司AI转型\"脱轨\"。Meta向6000名员工发出内部备忘录，对AI工具使用设置上限，通过AI GateWay平台统一监控Token用量，支出异常将自动报警，旨在控制因AI使用量激增可能带来的数百亿美元成本。",
         "source": "IT之家 / 量子位",
@@ -96,7 +148,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 10,
+        "id": 15,
         "title": "Kimi宣布全球首张AI原生信用卡开启预约：消费可转化为AI算力额度",
         "summary": "月之暗面Kimi宣布全球首张AI原生信用卡\"Kimi信用卡\"正式开启预约，预计7月面市。该卡与大型国有银行及国际卡组织合作，探索Token和信用卡积分相互流通的全新金融范式，持卡人每笔消费可转化为AI算力额度，直接兑换Agent使用额度和高级功能。",
         "source": "钛媒体",
@@ -108,7 +160,7 @@
     ],
     "2026-06-13": [
       {
-        "id": 11,
+        "id": 16,
         "title": "SpaceX上市首日飙升30%，马斯克成全球首位万亿富翁",
         "summary": "SpaceX上市首日开盘报150美元，较发行价135美元涨幅超11%，市值一度突破2.2万亿美元。上市引发\"虹吸效应\"，其他太空概念股集体跳水。随着SpaceX估值飙升，埃隆·马斯克身家突破万亿美元，成为人类史上首位万亿富翁。SpaceX定位为AI算力基础设施公司，Google和Anthropic为其最大客户。",
         "source": "虎嗅 / 36氪",
@@ -118,7 +170,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 12,
+        "id": 17,
         "title": "鸿蒙HarmonyOS 7正式发布：从万物互联迈入Agent时代",
         "summary": "华为正式发布鸿蒙HarmonyOS 7，从\"万物互联\"战略正式迈入\"Agent时代\"，Mate90系列今秋首发搭载。华为同步发布HMAF 2.0鸿蒙智能体框架，主打\"意图即服务\"，复杂任务成功率达90%以上，首次开放GUI操控能力。鸿蒙生态最新数据：终端设备数突破6600万台，注册开发者超1100万，应用市场可获取应用超40万款。",
         "source": "IT之家 / 腾讯新闻",
@@ -128,7 +180,7 @@
         "category": "大厂动态"
       },
       {
-        "id": 13,
+        "id": 18,
         "title": "全自主无人机首次击毙人类士兵，自主武器伦理真空问题推向台前",
         "summary": "据《新科学家》6月10日报道，有记录以来第一次由完全自主运行的无人机执行致命攻击，标志着自主武器系统在实战中的新进展。该事件将自主武器的伦理和法律真空问题推到台前，引发全球对AI军事化应用的紧急讨论。",
         "source": "新科学家 / Hacker News",
@@ -138,7 +190,7 @@
         "category": "AI治理"
       },
       {
-        "id": 14,
+        "id": 19,
         "title": "字节豆包上线\"任务模式\"：支持定时执行与文件生成，三大模式覆盖全场景",
         "summary": "6月12日豆包大范围上线\"任务模式\"，支持定时执行、零代码网页生成、一键PPT、数据可视化等全链路Agent执行。原\"思考模式\"升级为\"专家模式\"，调用豆包大模型2.0 Pro版本。App顶部模式切换改为\"快速、专家、任务\"三档，基础功能免费，专业版最高售价500元/月。",
         "source": "IT之家",
@@ -148,7 +200,7 @@
         "category": "AI应用"
       },
       {
-        "id": 15,
+        "id": 20,
         "title": "贝索斯AI公司Prometheus完成120亿美元融资，估值410亿美元定位通用工程师",
         "summary": "杰夫·贝索斯旗下AI公司Prometheus成立仅7个月，以410亿美元估值完成120亿美元融资，投资方包括摩根大通、高盛、贝莱德等。公司仅有150名员工，无公开产品和商业客户，人均估值约2.73亿美元。研发方向侧重利用AI加速航天及汽车等领域的工程与制造流程，致力于打造\"通用工程师\"。",
         "source": "彭博社 / 腾讯新闻",
@@ -160,7 +212,7 @@
     ],
     "2026-06-12": [
       {
-        "id": 16,
+        "id": 21,
         "title": "智源大会开幕：发布悟界·Physis-v0.1通用世界基座模型，FlagOS 2.1覆盖18厂32款芯片",
         "summary": "第八届北京智源大会开幕，主题\"三体互动\"——AI、物理世界、生命科学。智源发布悟界·Physis-v0.1全球首个通用世界基座模型、悟界·Brainμ1.0多模态神经科学大模型。开源生态侧FlagOS 2.1覆盖18家芯片厂商32款芯片，智源累计开源模型200+，总下载量10亿+。",
         "source": "量子位 / ZAKER",
@@ -170,7 +222,7 @@
         "category": "国内动态"
       },
       {
-        "id": 17,
+        "id": 22,
         "title": "工信部国资委启动2026年度人形机器人实景实训专项行动：年底万台落地",
         "summary": "工信部、国资委正式启动2026年度人形机器人与具身智能实景实训专项行动，明确年底前实现万台级人形机器人在工厂场景落地的目标。同期发布《人工智能+信息通信创新发展实施意见》，这是政府首次系统性推动人形机器人实景实训。",
         "source": "新华网 / 东方财富网",
@@ -180,7 +232,7 @@
         "category": "AI应用"
       },
       {
-        "id": 18,
+        "id": 23,
         "title": "SpaceX发布轨道AI数据中心计划：单颗卫星算力媲美英伟达GB300机柜",
         "summary": "SpaceX轨道AI数据中心计划披露：首款AI卫星峰值功率150kW，单颗算力相当于一部英伟达GB300服务器机架。SpaceX指出26.5万亿美元AI市场受制于地球发电能力，太阳能轨道数据中心成为破局关键。",
         "source": "中时新闻网 / 新浪财经",
@@ -190,7 +242,7 @@
         "category": "AI基础设施"
       },
       {
-        "id": 19,
+        "id": 24,
         "title": "Kimi开源代码模型K2.7-Code：编程能力提升21.8%，推理Token降低30%",
         "summary": "月之暗面开源代码模型Kimi-K2.7-Code，相比K2.6在Kimi Code Bench v2上提升+21.8%，Program Bench提升+11.0%。推理Token使用量降低30%，长时编码任务中指令遵循和端到端成功率均有提升。6x高速模式即将推出。",
         "source": "Kimi.ai / Hacker News",
@@ -200,65 +252,13 @@
         "category": "大模型"
       },
       {
-        "id": 20,
+        "id": 25,
         "title": "毕马威因AI幻觉撤回AI使用报告：专业机构过度依赖AI生成内容的信誉风险",
         "summary": "毕马威（KPMG）撤回了一份关于人工智能使用情况的研究报告，原因是报告中出现明显的\"AI幻觉\"内容。此事件凸显了专业咨询机构过度依赖AI生成内容可能导致的严重信誉风险，引发业界对AI输出可靠性验证的讨论。",
         "source": "TechCrunch",
         "date": "2026-06-12",
         "url": "https://techcrunch.com/2026/06/13/kpmg-pulls-report-on-ai-usage-due-to-apparent-hallucinations/",
         "image": "https://picsum.photos/seed/kpmg-ai-hallucination/800/450",
-        "category": "AI治理"
-      }
-    ],
-    "2026-06-11": [
-      {
-        "id": 21,
-        "title": "OpenAI秘密提交IPO申请，估值最高达1万亿美元",
-        "summary": "OpenAI官宣已秘密向SEC递交IPO申请文件，正与高盛和大摩合作，最快今年秋季上市，目标估值最高可达1万亿美元。CEO奥特曼内部信透露IPO时间窗口，与Anthropic的上市竞速正式开启。",
-        "source": "IT之家 / The Information",
-        "date": "2026-06-11",
-        "url": "https://www.ithome.com/0/962/704.htm",
-        "image": "https://picsum.photos/seed/stock-market/800/450",
-        "category": "大厂动态"
-      },
-      {
-        "id": 22,
-        "title": "苹果WWDC发布全新Siri AI：由谷歌Gemini提供技术支持，首次拥有独立应用界面",
-        "summary": "苹果在WWDC上发布由谷歌提供技术支持的Apple Intelligence系统。Siri AI深度集成Gemini大模型，支持端侧+云端混合运算，首次拥有独立图标与应用界面，具备屏幕感知能力。",
-        "source": "软盟资讯",
-        "date": "2026-06-11",
-        "url": "https://news.softunis.com/61171.html",
-        "image": "https://picsum.photos/seed/apple-ai/800/450",
-        "category": "大厂动态"
-      },
-      {
-        "id": 23,
-        "title": "DeepSeek首轮融资约500亿元，估值最高达590亿美元",
-        "summary": "DeepSeek首轮外部融资吸引约500亿元人民币意向，投后估值约3500-4000亿元人民币。腾讯和宁德时代将成为最大外部投资者，标志着中国AI大模型进入资本化新阶段。",
-        "source": "软盟资讯",
-        "date": "2026-06-11",
-        "url": "https://news.softunis.com/61171.html",
-        "image": "https://picsum.photos/seed/deep-learning/800/450",
-        "category": "融资动态"
-      },
-      {
-        "id": 24,
-        "title": "AI网页流量首次超过人类：Cloudflare数据显示Bot请求占比57.3%",
-        "summary": "Cloudflare Radar数据显示，全球HTML网页请求中Bot请求占比57.3%，Human请求占比42.7%，机器人流量历史上首次超过人类。这一拐点标志着互联网流量格局的根本性转变。",
-        "source": "Cloudflare / 软盟资讯",
-        "date": "2026-06-11",
-        "url": "https://news.softunis.com/61171.html",
-        "image": "https://picsum.photos/seed/internet-data/800/450",
-        "category": "行业数据"
-      },
-      {
-        "id": 25,
-        "title": "Anthropic CEO呼吁全球放慢AI发展：Claude正展现递归自我改进路径",
-        "summary": "Anthropic CEO Dario Amodei发布长文称Claude正展现递归自我改进路径，建议全球放慢或暂停前沿AI发展。与此同时Anthropic估值达9650亿美元，选择摩根士丹利和高盛担任IPO主承销商，安全呼吁与商业化扩张的矛盾引发争议。",
-        "source": "界面新闻 / 品玩",
-        "date": "2026-06-11",
-        "url": "https://news.softunis.com/61171.html",
-        "image": "https://picsum.photos/seed/ai-slow-down/800/450",
         "category": "AI治理"
       }
     ]
