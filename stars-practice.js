@@ -449,12 +449,34 @@ function getCourseRewards(name){return state.rewardData[name]||{stars:0,complete
 function completeTask(name,taskId){var r=getCourseRewards(name);if(r.completed.includes(taskId))return;r.completed.push(taskId);r.stars=r.completed.length;if(!r.unlockedAt)r.unlockedAt=Date.now();state.rewardData[name]=r;saveRewards();if(state.isLessonMode&&r.stars>=2||!state.isLessonMode&&r.stars>=5){showCelebration(name,r.stars)}}
 
 function injectPracticeBox(tasks,isLesson){
-  var el=document.createElement('section');el.className=isLesson?'article-section':'content-section';
-  el.innerHTML='<div class="max-w-6xl mx-auto px-8"><p class="section-label">AI Practice Lab</p><h2 class="section-heading">AI实践工坊</h2><p style="font-size:14px;color:#A0A8B8;margin-bottom:36px">完成练习任务，获得星座徽章奖励</p><div class="practice-grid" id="practiceGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"></div><div class="star-display" id="starDisplay" style="text-align:center;margin-top:28px"></div></div>';
+  // Remove any existing practice box first (avoid duplicates)
+  var existing = document.getElementById('practiceWorkshop');
+  if (existing) {
+    if (existing.parentNode) existing.parentNode.removeChild(existing);
+  }
+
+  var el=document.createElement('section');
+  el.id = 'practiceWorkshop';
+  el.style.cssText = 'position:relative;z-index:2;padding:72px 0 80px';
+  el.innerHTML='<div class="max-w-6xl mx-auto px-8" style="max-width:72rem;margin:0 auto;padding:0 2rem"><p style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:rgba(240,200,80,.5);margin-bottom:16px">Practice Lab</p><h2 style="font-size:clamp(1.8rem,3vw,2.4rem);font-weight:500;color:#F0C850;letter-spacing:1px;margin-bottom:8px">AI 实践工坊</h2><p style="font-size:14px;color:#A0A8B8;margin-bottom:40px;font-weight:300">完成练习任务，获得星座徽章奖励</p><div class="practice-grid" id="practiceGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"></div><div class="star-display" id="starDisplay" style="text-align:center;margin-top:28px"></div></div>';
+
+  // Robust insertion: try multiple targets
+  var inserted = false;
   if(isLesson){
-    var nav=document.querySelector('.lesson-nav');if(nav){nav.parentNode.insertBefore(el,nav)}
+    var nav=document.querySelector('.lesson-nav');
+    if(nav){nav.parentNode.insertBefore(el,nav);inserted=true}
   }else{
-    var modules=document.getElementById('modules');if(modules){modules.parentNode.insertBefore(el,modules.nextSibling)}else{var last=document.querySelector('.content-section:last-of-type');if(last)last.parentNode.insertBefore(el,last)}
+    var modules=document.getElementById('modules');
+    if(modules){
+      modules.parentNode.insertBefore(el,modules.nextSibling);
+      inserted=true;
+    }
+  }
+  // Fallback: append after footer or body
+  if(!inserted){
+    var footer=document.querySelector('.site-footer,footer');
+    if(footer){footer.parentNode.insertBefore(el,footer)}
+    else{document.body.appendChild(el)}
   }
   renderTasks(tasks);updateStarDisplay()
 }
@@ -464,18 +486,20 @@ function renderTasks(tasks){
   var r=getCourseRewards(state.courseName);
   g.innerHTML=tasks.map(function(t,i){
     var done=r.completed.includes(t.id);
-    var bc=done?'rgba(76,175,80,.3)':'rgba(240,200,80,.12)';
-    var nc=done?'#4CAF50':'rgba(240,200,80,.45)';
-    var db=done?'<span style="font-size:11px;color:#4CAF50;background:rgba(76,175,80,.1);padding:4px 12px;border-radius:12px">done</span>':'';
-    return '<div class="practice-card" data-taskid="'+t.id+'" style="background:#181E40;border:1px solid '+bc+';border-radius:18px;padding:28px;cursor:pointer;transition:all .45s">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
-      '<span style="font-family:Space Grotesk,sans-serif;font-size:28px;font-weight:700;color:'+nc+'">'+String(i+1).padStart(2,'0')+'</span>'+db+'</div>'+
-      '<h4 style="font-size:16px;font-weight:500;color:#E8ECF1;margin-bottom:8px">'+t.title+'</h4>'+
-      '<p style="font-size:13px;color:#BCC3CC;line-height:1.6">'+t.desc+'</p></div>';
+    var bc=done?'rgba(76,175,80,.3)':'rgba(240,200,80,.1)';
+    var bg=done?'rgba(20,24,50,.7)':'rgba(20,24,50,.55)';
+    var nc=done?'#4CAF50':'rgba(240,200,80,.5)';
+    var db=done?'<span style="font-size:10px;color:#4CAF50;background:rgba(76,175,80,.08);padding:4px 12px;border-radius:16px;letter-spacing:1px;font-weight:500">COMPLETED</span>':'';
+    var shadow=done?'0 4px 20px rgba(76,175,80,.08)':'0 4px 24px rgba(0,0,0,.25)';
+    return '<div class="practice-card" data-taskid="'+t.id+'" style="background:'+bg+';border:1px solid '+bc+';border-radius:22px;padding:32px;cursor:pointer;transition:all .4s cubic-bezier(.16,1,.3,1);box-shadow:'+shadow+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'+
+      '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:36px;font-weight:600;color:'+nc+';line-height:1">'+String(i+1).padStart(2,'0')+'</span>'+db+'</div>'+
+      '<h4 style="font-size:16px;font-weight:500;color:#E8ECF1;margin-bottom:8px;letter-spacing:.3px">'+t.title+'</h4>'+
+      '<p style="font-size:13px;color:#8890B0;line-height:1.7;font-weight:300">'+t.desc+'</p></div>';
   }).join('');
   g.querySelectorAll('.practice-card').forEach(function(card){
-    card.addEventListener('mouseenter',function(){this.style.borderColor='rgba(240,200,80,.3)';this.style.transform='translateY(-2px)'});
-    card.addEventListener('mouseleave',function(){this.style.border='';this.style.transform='none'});
+    card.addEventListener('mouseenter',function(){this.style.borderColor='rgba(240,200,80,.3)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.35)'});
+    card.addEventListener('mouseleave',function(){this.style.borderColor='';this.style.transform='';this.style.boxShadow=''});
     card.addEventListener('click',function(){PRACTICE.startTask(this.dataset.taskid)});
   });
 }
@@ -502,7 +526,7 @@ PRACTICE.startTask=function(taskId){
   if(!tasks)return;var task=tasks.find(function(t){return t.id===taskId});if(!task)return;
   var chatPanel=document.getElementById('practiceChatPanel');if(!chatPanel){
     chatPanel=document.createElement('div');chatPanel.id='practiceChatPanel';
-    chatPanel.innerHTML='<div style=background:#181E40;border-radius:18px;border:1px solid rgba(240,200,80,.1);padding:0;margin-top:28px;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.3)><div style=background:linear-gradient(135deg,rgba(91,155,213,.25),rgba(108,92,231,.18));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.1)><div style=width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px>+</div><div><div style=font-size:14px;font-weight:500;color:#E8ECF1>Practice Coach</div><div style=font-size:11px;color:#4CAF50>Ready</div></div><button id=closePractice style=margin-left:auto;background:none;border:none;color:#8890B0;cursor:pointer;font-size:18px>&times;</button></div><div id=chatMessages style=padding:16px 24px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:12px></div><div style=padding:14px 20px;border-top:1px solid rgba(240,200,80,.1);display:flex;gap:10px;background:rgba(5,8,25,.8)><input id=chatInput type=text placeholder=输入你的回答... style=flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(240,200,80,.18);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;outline:none onkeydown=if(event.key===%22Enter%22)PRACTICE.sendMessage()><button id=chatSend style=width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);border:none;cursor:pointer;color:#fff;font-size:16px>&#8594;</button></div></div>';
+    chatPanel.innerHTML='<div style=background:#141832;border-radius:20px;border:1px solid rgba(240,200,80,.1);padding:0;margin-top:28px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.4)><div style=background:linear-gradient(135deg,rgba(240,200,80,.1),rgba(240,200,80,.04));padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(240,200,80,.08)><div style=width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(240,200,80,.3),rgba(240,200,80,.1));display:flex;align-items:center;justify-content:center;color:#F0C850;font-size:16px;font-weight:700>AI</div><div><div style=font-size:14px;font-weight:500;color:#E8ECF1>AI 教练</div><div style=font-size:11px;color:rgba(240,200,80,.6)>在线指导中</div></div><button id=closePractice style=margin-left:auto;background:none;border:none;color:#8890B0;cursor:pointer;font-size:18px;transition:color .3s;onmouseenter=this.style.color=\"#F0C850\";onmouseleave=this.style.color=\"#8890B0\">&times;</button></div><div id=chatMessages style=padding:16px 24px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:12px></div><div style=padding:14px 20px;border-top:1px solid rgba(240,200,80,.08);display:flex;gap:10px;background:rgba(5,8,25,.9)><input id=chatInput type=text placeholder=输入你的回答... style=flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(240,200,80,.15);border-radius:22px;padding:10px 18px;font-size:13px;color:#E8ECF1;outline:none onkeydown=if(event.key===%22Enter%22)PRACTICE.sendMessage()><button id=chatSend style=width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#F0C850,#F8E090);border:none;cursor:pointer;color:#0A0E27;font-size:16px;font-weight:700>&#8594;</button></div></div>';
     var grid=document.getElementById('practiceGrid');if(grid)grid.parentNode.insertBefore(chatPanel,grid.nextSibling);
     document.getElementById('closePractice').addEventListener('click',function(){chatPanel.style.display='none'});
     document.getElementById('chatSend').addEventListener('click',function(){PRACTICE.sendMessage()})
@@ -520,12 +544,12 @@ function addChatMsg(role,content){
   if(role==='assistant'){
     // AI头像
     var avatar=document.createElement('div');
-    avatar.style.cssText='width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;flex-shrink:0';
-    avatar.textContent='+';
+    avatar.style.cssText='width:28px;height:28px;border-radius:12px;background:linear-gradient(135deg,rgba(240,200,80,.3),rgba(240,200,80,.1));display:flex;align-items:center;justify-content:center;color:#F0C850;font-size:12px;font-weight:700;flex-shrink:0';
+    avatar.textContent='AI';
     div.appendChild(avatar);
     // 气泡
     var bubble=document.createElement('div');
-    bubble.style.cssText='background:rgba(91,155,213,.15);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(91,155,213,.08)';
+    bubble.style.cssText='background:rgba(240,200,80,.06);border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:13px;color:#C8D0E0;line-height:1.7;max-width:85%;border:1px solid rgba(240,200,80,.08)';
     bubble.innerHTML=escapeHTML(content).replace(/\n/g,'<br>');
     div.appendChild(bubble);
   } else {
@@ -548,7 +572,7 @@ PRACTICE.sendMessage=function(){
   var task=tasks?tasks.find(function(t){return t.id===state.activeTaskId}):null;
   var systemPrompt=(state.isLessonMode?LESSON_TASKS:COURSE_TASKS)[state.courseName]?.aiPrompt||'你是一位专业导师。';
   if(task)systemPrompt+=' 当前任务的评估标准：'+task.evaluator;
-  var typing=document.createElement('div');typing.id='typing';typing.innerHTML='<div style=display:flex;gap:10px><div style=width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B9BD5,#6C5CE7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px>+</div><div style=background:rgba(91,155,213,.15);border-radius:14px;padding:12px 16px;font-size:13px;color:#8890B0>Thinking...</div></div>';
+  var typing=document.createElement('div');typing.id='typing';typing.innerHTML='<div style=display:flex;gap:10px><div style=width:28px;height:28px;border-radius:12px;background:linear-gradient(135deg,rgba(240,200,80,.3),rgba(240,200,80,.1));display:flex;align-items:center;justify-content:center;color:#F0C850;font-size:12px;font-weight:700>AI</div><div style=background:rgba(240,200,80,.06);border-radius:14px;padding:12px 16px;font-size:13px;color:#8890B0;border:1px solid rgba(240,200,80,.06)">正在思考...</div></div>';
   var msgs=document.getElementById('chatMessages');msgs.appendChild(typing);
   fetch('https://thestars-ai.vercel.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,systemPrompt:systemPrompt,history:state.chatHistory})})
   .then(function(r){return r.json()}).then(function(d){
