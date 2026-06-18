@@ -476,7 +476,7 @@ function renderPosts(posts) {
         ${(post.author_tags || []).length > 0
           ? (post.author_tags || []).map(tag => {
               const cls = tag === '开发者' ? 'tag-dev' : tag === '高级订阅' ? 'tag-premium' : 'tag-sub';
-              return `<span class="author-tag ${cls}">${tag}</span>`;
+              return `<span class="author-tag ${cls}" style="margin-left:6px">${tag}</span>`;
             }).join('')
           : ''}
         <span class="post-time" style="margin-left:auto">${formatTime(post.created_at)}</span>
