@@ -1081,14 +1081,15 @@ tailwind.config = {
     padding: 48px 36px;
     position: relative;
     overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s cubic-bezier(0.16,1,0.3,1), border-color 0.5s, background 0.5s;
     cursor: default;
   }
+  a.coming-panel { display: block; cursor: pointer; }
   .coming-panel:hover {
     border-color: rgba(240,200,80,0.22);
     background: rgba(26,34,72,0.65);
     box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-    transform: translateY(-3px);
+    transform: translate3d(0,-3px,0);
   }
   .coming-panel::before {
     content: '';
@@ -1257,7 +1258,10 @@ body.has-icon-nav::before{left:60px}
     <a href="全部课程.html" class="in-item" data-label="课程">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
     </a>
-    <a href="news.html" class="in-item" data-label="资讯">
+        <a href="community.html" class="in-item" data-label="社区">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="7" cy="15" r="2.5"/><path d="M5.5 18.5c.5-1.5 2-3 3.5-3.5M16 12c1.5.5 3 2 3.5 3.5M11 14c-1 1-2 1.5-3.5 1"/></svg>
+    </a>
+<a href="news.html" class="in-item" data-label="资讯">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       <span class="in-dot"></span>
     </a>
