@@ -473,12 +473,14 @@ function renderPosts(posts) {
           <div class="post-avatar">${(post.author_nickname || post.author_email || '?')[0].toUpperCase()}</div>
           <span class="author-name">${post.author_nickname || post.author_email || '匿名'}</span>
         </a>
-        ${(post.author_tags || []).map(tag => {
-          const cls = tag === '开发者' ? 'tag-dev' : tag === '高级订阅' ? 'tag-premium' : 'tag-sub';
-          return `<span class="author-tag ${cls}">${tag}</span>`;
-        }).join('')}
-        <a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-badge profile" style="margin-left:auto">主页</a>
-        <span class="post-time">${formatTime(post.created_at)}</span>
+        <span class="post-time" style="margin-left:auto">${formatTime(post.created_at)}</span>
+        ${(post.author_tags || []).length > 0
+          ? (post.author_tags || []).map(tag => {
+              const cls = tag === '开发者' ? 'tag-dev' : tag === '高级订阅' ? 'tag-premium' : 'tag-sub';
+              return `<span class="author-tag ${cls}">${tag}</span>`;
+            }).join('')
+          : `<a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-badge profile">主页</a>`
+        }
       </div>
       ${post.content ? `<div class="post-content">${escapeHtml(post.content)}</div>` : ''}
       ${post.images && post.images.length > 0 ? `
