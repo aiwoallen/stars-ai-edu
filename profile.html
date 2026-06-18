@@ -1043,6 +1043,18 @@ function applyUserData(userData){
   // Tags display
   var badgeEl=document.querySelector('.user-badge');
   var tags=userData.tags||[];
+  // 自动初始化标签：特定账号默认开发者标签
+  if(tags.length===0 && userData.email==='star_group2011@163.com'){
+    // 异步设置开发者标签
+    fetch(API_BASE+'/api/user/tags',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken().token},
+      body:JSON.stringify({tags:['开发者']})
+    }).then(function(r){return r.json()}).then(function(d){
+      if(d.tags) userData.tags=d.tags;
+    }).catch(function(){});
+    tags=['开发者'];
+  }
   if(badgeEl){
     if(tags.length>0){
       var tagClass=tags.includes('开发者')?'tag-dev':tags.includes('高级订阅')?'tag-premium':tags.includes('订阅')?'tag-sub':'';

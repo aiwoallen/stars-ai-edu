@@ -85,14 +85,20 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 .posts-container{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 24px 100px}
 .post-card{background:#141832;border:1px solid rgba(240,200,80,.08);border-radius:20px;padding:28px;margin-bottom:16px;transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
 .post-card:hover{border-color:rgba(240,200,80,.18);box-shadow:0 8px 40px rgba(0,0,0,.3)}
-.post-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .post-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,rgba(240,200,80,.2),rgba(91,155,213,.15));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#F0C850;flex-shrink:0}
-.post-author{font-size:14px;font-weight:500;color:#E8ECF1;display:inline-flex;align-items:center;gap:8px}
-  .post-author .author-name{cursor:pointer;transition:color .3s}
-  .post-author .author-name:hover{color:#F0C850}
+.post-author{font-size:14px;font-weight:500;color:#E8ECF1;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .post-author .author-link{display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:color .3s;text-decoration:none;color:inherit}
+  .post-author .author-link:hover{color:#F0C850}
+  .post-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,rgba(240,200,80,.2),rgba(91,155,213,.15));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#F0C850;flex-shrink:0; transition:transform .3s}
+  .author-link:hover .post-avatar{transform:scale(1.08)}
   .author-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:48px;font-size:11px;font-weight:500;letter-spacing:.3px;cursor:pointer;transition:all .3s}
   .author-badge:hover{transform:translateY(-1px)}
   .author-badge.profile{background:rgba(240,200,80,.1);color:#F0C850;border:1px solid rgba(240,200,80,.2)}
+  .author-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:48px;font-size:10px;font-weight:500;letter-spacing:.3px}
+  .author-tag.tag-dev{background:rgba(108,92,231,.15);color:#A78BFA;border:1px solid rgba(108,92,231,.25)}
+  .author-tag.tag-sub{background:rgba(91,155,213,.12);color:#5B9BD5;border:1px solid rgba(91,155,213,.2)}
+  .author-tag.tag-premium{background:rgba(240,200,80,.12);color:#F0C850;border:1px solid rgba(240,200,80,.25)}
 .post-time{font-size:11px;color:#555D80;margin-left:auto}
 .post-content{font-size:14px;color:#E8ECF1;line-height:1.7;margin-bottom:16px;word-break:break-word}
 .post-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:16px}
@@ -463,11 +469,15 @@ function renderPosts(posts) {
   container.innerHTML = posts.map((post, idx) => `
     <div class="post-card" id="post-${post.id}" style="opacity:0;transform:translateY(20px)">
       <div class="post-header">
-        <div class="post-avatar">${(post.author_nickname || post.author_email || '?')[0].toUpperCase()}</div>
-        <span class="post-author">
+        <a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-link">
+          <div class="post-avatar">${(post.author_nickname || post.author_email || '?')[0].toUpperCase()}</div>
           <span class="author-name">${post.author_nickname || post.author_email || '匿名'}</span>
-          <a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-badge profile">主页</a>
-        </span>
+        </a>
+        ${(post.author_tags || []).map(tag => {
+          const cls = tag === '开发者' ? 'tag-dev' : tag === '高级订阅' ? 'tag-premium' : 'tag-sub';
+          return `<span class="author-tag ${cls}">${tag}</span>`;
+        }).join('')}
+        <a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-badge profile" style="margin-left:auto">主页</a>
         <span class="post-time">${formatTime(post.created_at)}</span>
       </div>
       ${post.content ? `<div class="post-content">${escapeHtml(post.content)}</div>` : ''}
