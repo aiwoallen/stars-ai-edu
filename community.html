@@ -293,17 +293,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function checkAuth() {
   const token = localStorage.getItem('stars_token');
-  if (token) {
-    fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
-      .then(r => r.json())
-      .then(data => {
-        if (data.user) {
-          currentUser = data.user;
-          document.getElementById('userName').textContent = data.user.nickname || data.user.email;
-        }
-      })
-      .catch(() => {});
-  }
+  if (!token) return;
+  fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(r => r.json())
+    .then(data => {
+      if (data.user) {
+        currentUser = data.user;
+        document.getElementById('userName').textContent = data.user.nickname || data.user.email;
+      } else {
+        // token 无效，清除
+        localStorage.removeItem('stars_token');
+        currentUser = null;
+      }
+    })
+    .catch(() => {
+      // 网络错误，不清除 token，下次再试
+    });
 }
 
 // ========== Image Handling ==========
@@ -360,8 +365,10 @@ async function createPost() {
     showToast('请输入内容或添加图片', 'error');
     return;
   }
-  if (!currentUser) {
+  const token = localStorage.getItem('stars_token');
+  if (!token) {
     showToast('请先登录', 'error');
+    setTimeout(() => { window.location.href = 'profile.html'; }, 1500);
     return;
   }
 
