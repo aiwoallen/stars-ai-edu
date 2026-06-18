@@ -277,6 +277,22 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 
 <script src="auth-guard.js"></script>
 <script>
+// ========== Token Helpers ==========
+function getToken() {
+  try {
+    const raw = localStorage.getItem('stars_token');
+    if (!raw) return null;
+    // profile.html 存的是 JSON {token, ts}，尝试解析
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.token) return parsed.token;
+    // 兼容纯字符串格式
+    return raw;
+  } catch {
+    // 不是 JSON，直接返回原值
+    return localStorage.getItem('stars_token');
+  }
+}
+
 // ========== State ==========
 const API = 'https://api.thestars-ai.com';
 let currentUser = null;
@@ -292,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkAuth() {
-  const token = localStorage.getItem('stars_token');
+  const token = getToken();
   if (!token) return;
   fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
     .then(r => r.json())
@@ -301,14 +317,11 @@ function checkAuth() {
         currentUser = data.user;
         document.getElementById('userName').textContent = data.user.nickname || data.user.email;
       } else {
-        // token 无效，清除
         localStorage.removeItem('stars_token');
         currentUser = null;
       }
     })
-    .catch(() => {
-      // 网络错误，不清除 token，下次再试
-    });
+    .catch(() => {});
 }
 
 // ========== Image Handling ==========
@@ -365,7 +378,7 @@ async function createPost() {
     showToast('请输入内容或添加图片', 'error');
     return;
   }
-  const token = localStorage.getItem('stars_token');
+  const token = getToken();
   if (!token) {
     showToast('请先登录', 'error');
     setTimeout(() => { window.location.href = 'profile.html'; }, 1500);
@@ -377,7 +390,6 @@ async function createPost() {
   btn.textContent = '发布中...';
 
   try {
-    const token = localStorage.getItem('stars_token');
     const res = await fetch(API + '/api/community/posts', {
       method: 'POST',
       headers: {
