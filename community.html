@@ -87,7 +87,12 @@ body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:
 .post-card:hover{border-color:rgba(240,200,80,.18);box-shadow:0 8px 40px rgba(0,0,0,.3)}
 .post-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .post-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,rgba(240,200,80,.2),rgba(91,155,213,.15));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#F0C850;flex-shrink:0}
-.post-author{font-size:14px;font-weight:500;color:#E8ECF1}
+.post-author{font-size:14px;font-weight:500;color:#E8ECF1;display:inline-flex;align-items:center;gap:8px}
+  .post-author .author-name{cursor:pointer;transition:color .3s}
+  .post-author .author-name:hover{color:#F0C850}
+  .author-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:48px;font-size:11px;font-weight:500;letter-spacing:.3px;cursor:pointer;transition:all .3s}
+  .author-badge:hover{transform:translateY(-1px)}
+  .author-badge.profile{background:rgba(240,200,80,.1);color:#F0C850;border:1px solid rgba(240,200,80,.2)}
 .post-time{font-size:11px;color:#555D80;margin-left:auto}
 .post-content{font-size:14px;color:#E8ECF1;line-height:1.7;margin-bottom:16px;word-break:break-word}
 .post-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:16px}
@@ -459,7 +464,10 @@ function renderPosts(posts) {
     <div class="post-card" id="post-${post.id}" style="opacity:0;transform:translateY(20px)">
       <div class="post-header">
         <div class="post-avatar">${(post.author_nickname || post.author_email || '?')[0].toUpperCase()}</div>
-        <span class="post-author">${post.author_nickname || post.author_email || '匿名'}</span>
+        <span class="post-author">
+          <span class="author-name">${post.author_nickname || post.author_email || '匿名'}</span>
+          <a href="profile.html?user=${encodeURIComponent(post.author_email || '')}" class="author-badge profile">主页</a>
+        </span>
         <span class="post-time">${formatTime(post.created_at)}</span>
       </div>
       ${post.content ? `<div class="post-content">${escapeHtml(post.content)}</div>` : ''}
