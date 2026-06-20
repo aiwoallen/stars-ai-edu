@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI蒸馏 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script>tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.55) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.nav-pill{display:none}
+.nav-logo{display:none}
+.nav-link{display:none}
+.icon-nav{position:fixed;left:0;top:0;bottom:0;width:60px;z-index:180;display:flex;flex-direction:column;align-items:center;padding:20px 0;background:rgba(14,18,40,.94);border-right:1px solid rgba(240,200,80,.06)}
+.icon-nav .in-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px;writing-mode:vertical-lr;margin-bottom:20px}
+.icon-nav .in-items{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.icon-nav .in-item{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#8890B0;text-decoration:none;transition:all .25s;position:relative}
+.icon-nav .in-item:hover{color:#E8ECF1;background:rgba(240,200,80,.04)}
+.icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
+.icon-nav .in-item svg{width:18px;height:18px}
+.icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
+.icon-nav .in-item.logged-in::before{content:'';position:absolute;top:6px;right:10px;width:5px;height:5px;border-radius:50%;background:#60d080;border:1px solid #0E1232}
+body.has-icon-nav{padding-left:60px}
+@media(max-width:640px){
+  .icon-nav{top:auto;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;padding:0 8px;border-right:none;border-top:1px solid rgba(240,200,80,.06);justify-content:center;gap:0}
+  .icon-nav .in-logo{display:none}
+  .icon-nav .in-items{flex-direction:row;gap:2px;padding-top:0}
+  .icon-nav .in-item{width:auto;flex:1;max-width:64px;height:48px;border-radius:10px;flex-direction:column;gap:1px;font-size:9px;color:#8890B0}
+  .icon-nav .in-item::after{content:attr(data-label);font-size:9px;font-weight:500}
+  .icon-nav .in-item svg{width:16px;height:16px}
+  .in-dot{top:4px;right:auto;left:calc(50% + 6px)}
+  body.has-icon-nav{padding-left:0;padding-bottom:56px}
+}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:16px}
+.section-heading{font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;margin-bottom:12px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:40px}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.hero-section{position:relative;z-index:2;padding-top:150px;padding-bottom:60px}
+.hero-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,14,39,.3) 0%,rgba(10,14,39,.85) 80%)}
+.hero-content{position:relative;z-index:1;max-width:900px}
+.hero-icon{font-size:clamp(3rem,6vw,5rem);display:block;margin-bottom:24px;color:#F0C850;line-height:1}
+.hero-title{font-size:clamp(2.4rem,5vw,3.4rem);font-weight:500;color:#E8ECF1;letter-spacing:2px;margin-bottom:16px}
+.hero-subtitle{font-size:15px;color:#A0A8B8;font-weight:300;margin-bottom:12px}
+.hero-overview{font-size:14px;color:#A0A8B8;line-height:1.9;max-width:640px;margin-bottom:36px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.btn-gold{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:48px;font-size:14px;font-weight:500;text-decoration:none;color:#0A0E27;background:linear-gradient(135deg,#F0C850,#F8E090);transition:all .4s}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(240,200,80,.25)}
+.btn-outline{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:48px;font-size:14px;font-weight:500;text-decoration:none;color:#F0C850;background:transparent;border:1px solid rgba(240,200,80,.25);transition:all .4s}
+.btn-outline:hover{background:rgba(240,200,80,.08);border-color:rgba(240,200,80,.45)}
+.content-section{position:relative;z-index:2;padding:80px 0}
+.content-section.alt{background:#0A0E27}
+.goals-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.goal-card{background:#181E40;border:1px solid rgba(240,200,80,.12);border-radius:18px;padding:28px 22px;transition:all .45s;position:relative;overflow:hidden}
+.goal-card:hover{border-color:rgba(240,200,80,.2);transform:translateY(-3px)}
+.goal-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle at top right,rgba(240,200,80,.06) 0%,transparent 70%);pointer-events:none}
+.goal-num{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:rgba(240,200,80,.5);margin-bottom:14px;line-height:1}
+.goal-text{font-size:14px;color:#F0F2F5;line-height:1.7}
+.modules-list{display:flex;flex-direction:column;gap:14px}
+.module-item{display:flex;align-items:flex-start;gap:24px;background:#181E40;border:1px solid rgba(240,200,80,.1);border-radius:16px;padding:24px 28px;text-decoration:none;transition:all .45s;position:relative;overflow:hidden;color:inherit}
+.module-item:hover{border-color:rgba(240,200,80,.18);transform:translateX(5px);background:#1C2246}
+.module-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,rgba(240,200,80,.5) 0%,rgba(240,200,80,0) 100%);opacity:0;transition:opacity .4s}
+.module-item:hover::before{opacity:1}
+.module-num{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:rgba(240,200,80,.45);line-height:1;min-width:40px;flex-shrink:0}
+.module-item:hover .module-num{color:rgba(240,200,80,.6)}
+.module-info{flex:1;min-width:0}
+.module-title{font-size:16px;font-weight:500;color:#E8ECF1;margin-bottom:6px}
+.module-item:hover .module-title{color:#F0C850}
+.module-desc{font-size:13px;color:#BCC3CC;line-height:1.6}
+.module-arrow{color:rgba(240,200,80,.4);font-size:18px;flex-shrink:0;align-self:center;transition:all .3s}
+.module-item:hover .module-arrow{color:#F0C850;transform:translateX(4px)}
+.cta-card{background:linear-gradient(135deg,rgba(240,200,80,.05),rgba(108,92,231,.06));border:1px solid rgba(240,200,80,.1);border-radius:24px;padding:56px 40px;text-align:center;position:relative;overflow:hidden}
+.cta-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(240,200,80,.03) 0%,transparent 60%)}
+.cta-title{font-size:22px;font-weight:500;color:#F0C850;margin-bottom:12px;position:relative}
+.cta-sub{font-size:14px;color:#A0A8B8;margin-bottom:28px;position:relative}
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+@media(max-width:1024px){.goals-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+.hero-section{padding-top:100px;padding-bottom:40px}.goals-grid{grid-template-columns:1fr}
+.module-item{padding:20px;gap:16px}.module-num{font-size:26px}
+.footer-grid{flex-direction:column;text-align:center}
+}</style>
+</head>
+<body class="has-icon-nav"><nav class="icon-nav" id="iconNav">
+  <div class="in-logo">群星</div>
+  <div class="in-items">
+    <a href="index.html" class="in-item" data-label="首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </a>
+    <a href="全部课程.html" class="in-item" data-label="课程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </a>
+    <a href="community.html" class="in-item" data-label="社区">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="7" cy="15" r="2.5"/><path d="M5.5 18.5c.5-1.5 2-3 3.5-3.5M16 12c1.5.5 3 2 3.5 3.5M11 14c-1 1-2 1.5-3.5 1"/></svg>
+    </a>
+    <a href="news.html" class="in-item" data-label="资讯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span class="in-dot"></span>
+    </a>
+    <a href="profile.html" class="in-item" data-label="我的">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+</nav><main>
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div><div class="grain-overlay"></div>
+<section class="hero-section">
+<div class="hero-bg" style="background:linear-gradient(135deg,rgba(108,92,231,.12) 0%,rgba(10,14,39,.9) 50%,rgba(240,200,80,.06) 100%)"></div>
+<div class="max-w-6xl mx-auto px-8"><div class="hero-content">
+<div class="breadcrumb"><a href="advance.html">进阶内容</a><span>/</span><span>AI蒸馏</span></div>
+<span class="hero-icon">&#128293;</span><h1 class="hero-title">AI蒸馏</h1>
+<p class="hero-subtitle">知识蒸馏：大模型的瘦身术与小模型的逆袭</p><p class="hero-overview">一个GPT-4级别的模型需要几千张GPU训练数月——但你手中的手机也能跑AI，靠的就是知识蒸馏。这门课程将带你深入模型压缩与知识迁移的核心技术，从Teacher-Student框架到自蒸馏，从软标签的温度魔法到特征层的知识萃取。</p>
+<div class="hero-ctas">
+<a href="#modules" class="btn-gold">开始学习</a>
+<a href="#modules" class="btn-outline">浏览课程大纲</a></div></div></div>
+</section>
+<section class="content-section" style="padding-top:0">
+<div class="max-w-6xl mx-auto px-8">
+<p class="section-label">Learning Goals</p><h2 class="section-heading">学习目标</h2>
+<div class="goals-grid" style="margin-top:28px"><div class="goal-card"><div class="goal-num">01</div><div class="goal-text">深入理解知识蒸馏的核心原理与Teacher-Student框架</div></div><div class="goal-card"><div class="goal-num">02</div><div class="goal-text">掌握软标签、温度参数与KL散度等关键概念</div></div><div class="goal-card"><div class="goal-num">03</div><div class="goal-text">学会区分并应用离线蒸馏、在线蒸馏与自蒸馏策略</div></div><div class="goal-card"><div class="goal-num">04</div><div class="goal-text">理解特征蒸馏与数据蒸馏的前沿技术路线</div></div></div></div></section>
+<section class="content-section alt" id="modules">
+<div class="max-w-6xl mx-auto px-8">
+<p class="section-label">Curriculum</p><h2 class="section-heading">课程大纲</h2>
+<p style="font-size:14px;color:#A0A8B8;margin-bottom:36px">共 9 课时，从基础概念到前沿实践，全面掌握AI蒸馏技术</p>
+<div class="modules-list"><a href="课节_AI蒸馏_01_知识蒸馏概述_大模型的瘦身术.html" class="module-item"><div class="module-num">01</div><div class="module-info"><div class="module-title">知识蒸馏概述：大模型的瘦身术</div><div class="module-desc">为什么要蒸馏？从小模型到大智慧的进化之路</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_02_Teacher_Student框架.html" class="module-item"><div class="module-num">02</div><div class="module-info"><div class="module-title">Teacher-Student框架：师徒之间的智慧传承</div><div class="module-desc">教师网络与学生网络的协作机制</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_03_软标签与温度参数.html" class="module-item"><div class="module-num">03</div><div class="module-info"><div class="module-title">软标签与温度参数：知识的"暗物质"</div><div class="module-desc">为何硬标签不够用？Softmax温度的秘密</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_04_蒸馏损失函数.html" class="module-item"><div class="module-num">04</div><div class="module-info"><div class="module-title">蒸馏损失函数：KL散度与交叉熵的博弈</div><div class="module-desc">如何量化学到了多少知识</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_05_蒸馏策略全解析.html" class="module-item"><div class="module-num">05</div><div class="module-info"><div class="module-title">蒸馏策略全解析：离线、在线与自蒸馏</div><div class="module-desc">不同场景下的蒸馏方案选择</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_06_特征蒸馏.html" class="module-item"><div class="module-num">06</div><div class="module-info"><div class="module-title">特征蒸馏：中间层的知识萃取</div><div class="module-desc">不止于输出——从隐藏层迁移暗知识</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_07_数据蒸馏.html" class="module-item"><div class="module-num">07</div><div class="module-info"><div class="module-title">数据蒸馏：数据集的小型化魔法</div><div class="module-desc">用1%的数据训练出100%的效果</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_08_大语言模型蒸馏实战.html" class="module-item"><div class="module-num">08</div><div class="module-info"><div class="module-title">大语言模型蒸馏实战：从GPT到MiniLM</div><div class="module-desc">将巨型语言模型压缩为可部署形态</div></div><span class="module-arrow">&#8594;</span></a><a href="课节_AI蒸馏_09_蒸馏前沿与未来展望.html" class="module-item"><div class="module-num">09</div><div class="module-info"><div class="module-title">蒸馏前沿与未来展望</div><div class="module-desc">多模态蒸馏、联邦蒸馏与AGI时代的模型压缩</div></div><span class="module-arrow">&#8594;</span></a></div></div></section>
+<section class="content-section">
+<div class="max-w-4xl mx-auto px-8"><div class="cta-card">
+<p class="section-label" style="margin:0 auto">Start Learning</p>
+<h3 class="cta-title">准备好探索知识蒸馏的世界了吗？</h3><p class="cta-sub">从第一课开始，掌握大模型瘦身的核心技术</p>
+<a href="课节_AI蒸馏_01_知识蒸馏概述_大模型的瘦身术.html" class="btn-gold">开始第一课</a></div></div>
+</section>
+<footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
+</main>
+<script src="auth-guard.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+var c=document.getElementById('starField'),f=document.createDocumentFragment();
+for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+var st=document.createElement('style'),cs='';
+for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+st.textContent=cs;document.head.appendChild(st);
+})();
+(function(){
+var links=document.querySelectorAll('.icon-nav .in-item');
+var page=window.location.pathname.split('/').pop();
+links.forEach(function(a){
+  var href=a.getAttribute('href')||'';
+  if(href===page||(page===''&&href==='index.html')){a.classList.add('active')}
+  if(href==='profile.html'){try{var t=JSON.parse(localStorage.getItem('stars_token'));if(t&&t.token)a.classList.add('logged-in')}catch(e){}}
+});
+})();
+window.initSlideshow=function(id){
+var c=document.getElementById(id);if(!c)return;
+var s=c.querySelectorAll('.slideshow-slide'),d=c.querySelectorAll('.slideshow-dot');
+var p=c.querySelector('.slideshow-prev'),n=c.querySelector('.slideshow-next'),cur=0;
+function go(i){s[cur].classList.remove('active');d[cur].classList.remove('active');cur=(i+s.length)%s.length;s[cur].classList.add('active');d[cur].classList.add('active');}
+if(p)p.addEventListener('click',function(){go(cur-1)});
+if(n)n.addEventListener('click',function(){go(cur+1)});
+d.forEach(function(dd,i){dd.addEventListener('click',function(){go(i)})});
+};
+</script>
+<script src="stars-practice.js"></script>
+<script>StarsPractice.init({course:'AI蒸馏'});</script>
+</body></html>

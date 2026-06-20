@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher-Student框架 - AI蒸馏 - 群星</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['"Noto Sans SC"','"Space Grotesk"','system-ui','sans-serif'],display:['"Space Grotesk"','"Noto Sans SC"','sans-serif']},colors:{deep:{DEFAULT:'#0A0E27',card:'#141832',hover:'#1A2248'},gold:{DEFAULT:'#F0C850',light:'#F8E090',dim:'#A08030'},star:{white:'#E8ECF1',muted:'#8890B0',dim:'#555D80'}}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC','Space Grotesk',system-ui,sans-serif;background:#0A0E27;color:#E8ECF1;overflow-x:hidden}
+.cosmic-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);opacity:.13}
+.nebula-1{width:800px;height:800px;background:radial-gradient(circle,rgba(91,155,213,.55) 0%,transparent 70%);top:-10%;left:-15%}
+.nebula-2{width:600px;height:600px;background:radial-gradient(circle,rgba(240,200,80,.14) 0%,transparent 70%);top:55%;right:-10%}
+.nebula-3{width:500px;height:500px;background:radial-gradient(circle,rgba(108,92,231,.2) 0%,transparent 70%);bottom:5%;left:25%}
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;border-radius:50%;background:#fff}
+.grain-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+.icon-nav{position:fixed;left:0;top:0;bottom:0;width:60px;z-index:180;display:flex;flex-direction:column;align-items:center;padding:20px 0;background:rgba(14,18,40,.94);border-right:1px solid rgba(240,200,80,.06)}
+.icon-nav .in-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px;writing-mode:vertical-lr;margin-bottom:20px}
+.icon-nav .in-items{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.icon-nav .in-item{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#8890B0;text-decoration:none;transition:all .25s;position:relative}
+.icon-nav .in-item:hover{color:#E8ECF1;background:rgba(240,200,80,.04)}
+.icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
+.icon-nav .in-item svg{width:18px;height:18px}
+.icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
+.icon-nav .in-item.logged-in::before{content:'';position:absolute;top:6px;right:10px;width:5px;height:5px;border-radius:50%;background:#60d080;border:1px solid #0E1232}
+body.has-icon-nav{padding-left:60px}
+@media(max-width:640px){
+  .icon-nav{top:auto;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;padding:0 8px;border-right:none;border-top:1px solid rgba(240,200,80,.06);justify-content:center;gap:0}
+  .icon-nav .in-logo{display:none}
+  .icon-nav .in-items{flex-direction:row;gap:2px;padding-top:0}
+  .icon-nav .in-item{width:auto;flex:1;max-width:64px;height:48px;border-radius:10px;flex-direction:column;gap:1px;font-size:9px;color:#8890B0}
+  .icon-nav .in-item::after{content:attr(data-label);font-size:9px;font-weight:500}
+  .icon-nav .in-item svg{width:16px;height:16px}
+  .in-dot{top:4px;right:auto;left:calc(50% + 6px)}
+  body.has-icon-nav{padding-left:0;padding-bottom:56px}
+}
+.article-section{position:relative;z-index:2;padding-top:150px;padding-bottom:80px}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#555D80;margin-bottom:12px;flex-wrap:wrap}
+.breadcrumb a{color:#8890B0;text-decoration:none;transition:color .3s}
+.breadcrumb a:hover{color:#F0C850}
+.lesson-meta{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.55);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.lesson-meta::before{content:'';width:24px;height:1px;background:rgba(240,200,80,.3)}
+.lesson-title{font-size:clamp(2rem,4vw,2.8rem);font-weight:500;color:#E8ECF1;letter-spacing:1px;line-height:1.25;margin-bottom:24px;max-width:900px}
+.lesson-subtitle{font-size:15px;color:#8890B0;line-height:1.7;margin-bottom:40px;max-width:700px}
+.article-body{max-width:800px;margin:0 auto}
+.content-block{background:#181E40;border:1px solid rgba(240,200,80,.08);border-left:3px solid rgba(240,200,80,.25);border-radius:0 16px 16px 0;padding:32px 36px;margin-bottom:20px;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.content-block:hover{border-left-color:rgba(240,200,80,.45);border-color:rgba(240,200,80,.12)}
+.content-block h3{font-size:18px;font-weight:500;color:#F0C850;margin-bottom:14px;line-height:1.4}
+.content-block p{font-size:15px;color:#BCC3CC;line-height:1.9;margin-bottom:12px}
+.content-block p:last-child{margin-bottom:0}
+.content-block .highlight-box{background:rgba(240,200,80,.06);border:1px solid rgba(240,200,80,.15);border-radius:12px;padding:18px 22px;margin:16px 0}
+.content-block .highlight-box p{font-size:14px;color:#F0C850;line-height:1.8;margin:0}
+.content-block code{background:rgba(240,200,80,.1);padding:2px 8px;border-radius:4px;font-size:13px;color:#F8E090;font-family:'Cascadia Code','Consolas',monospace}
+.content-block ul,.content-block ol{padding-left:24px;margin:10px 0}
+.content-block li{font-size:15px;color:#BCC3CC;line-height:1.8;padding:3px 0}
+.content-image{margin:28px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(240,200,80,.12);box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.content-image svg{display:block;width:100%}
+.image-caption{font-size:11px;color:#555D80;text-align:center;padding:8px 16px;background:rgba(10,14,39,.7);letter-spacing:.5px}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(240,200,80,.45);margin-bottom:16px}
+.lesson-nav{display:flex;justify-content:space-between;align-items:center;padding:0;z-index:2;position:relative;margin-top:20px}
+.lesson-nav a{display:inline-flex;align-items:center;gap:8px;color:#8890B0;text-decoration:none;font-size:13px;padding:10px 20px;border-radius:24px;border:1px solid rgba(240,200,80,.12);transition:all .35s}
+.lesson-nav a:hover{color:#F0C850;border-color:rgba(240,200,80,.3);background:rgba(240,200,80,.06)}
+.lesson-nav .nav-center{color:#555D80;font-size:12px;letter-spacing:1px;text-decoration:none}
+.lesson-nav .disabled{color:#555D80;pointer-events:none;border-color:rgba(240,200,80,.05);opacity:.4}
+.site-footer{padding:48px 0;border-top:1px solid rgba(240,200,80,.06);z-index:2;position:relative}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px}
+.footer-links{display:flex;gap:28px}
+.footer-links a,.footer-copy{font-size:11px;color:#555D80;text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:#F0C850}
+@media(max-width:768px){
+.article-section{padding-top:80px}
+.content-block{padding:22px 20px}
+.lesson-title{font-size:clamp(1.5rem,5vw,2rem)}
+.footer-grid{flex-direction:column;text-align:center}
+.lesson-nav{flex-wrap:wrap;gap:8px;justify-content:center}
+}
+</style>
+</head>
+<body class="has-icon-nav">
+<nav class="icon-nav" id="iconNav">
+  <div class="in-logo">群星</div>
+  <div class="in-items">
+    <a href="index.html" class="in-item" data-label="首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </a>
+    <a href="全部课程.html" class="in-item" data-label="课程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </a>
+    <a href="community.html" class="in-item" data-label="社区">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="7" cy="15" r="2.5"/><path d="M5.5 18.5c.5-1.5 2-3 3.5-3.5M16 12c1.5.5 3 2 3.5 3.5M11 14c-1 1-2 1.5-3.5 1"/></svg>
+    </a>
+    <a href="news.html" class="in-item" data-label="资讯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span class="in-dot"></span>
+    </a>
+    <a href="profile.html" class="in-item" data-label="我的">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+</nav>
+<main>
+<div class="cosmic-bg"><div class="nebula nebula-1"></div><div class="nebula nebula-2"></div><div class="nebula nebula-3"></div></div>
+<div class="star-field" id="starField"></div>
+<div class="grain-overlay"></div>
+<section class="article-section">
+<div class="max-w-4xl mx-auto px-8">
+<div class="breadcrumb"><a href="index.html">首页</a><span>/</span><a href="advance.html">进阶内容</a><span>/</span><a href="课程_AI蒸馏.html">AI蒸馏</a><span>/</span><span>Teacher-Student框架</span></div>
+<div class="lesson-meta">LESSON 02</div>
+<h1 class="lesson-title">Teacher-Student框架：师徒之间的智慧传承</h1>
+<p class="lesson-subtitle">教师网络如何将"暗知识"传递给学生网络</p>
+<div class="article-body">
+
+<div class="content-block">
+<p>在上一课中，我们建立了知识蒸馏的宏观图景：一个庞大的教师模型通过输出"软标签"来指导一个小型学生模型的学习。但这幅图景中有一个关键的工程问题尚未回答：<strong>教师和学生之间到底是如何"通信"的？</strong>训练循环长什么样？教师模型需要参与反向传播吗？如果有两个损失函数——模仿教师的损失和真实标签的损失——它们如何平衡？</p>
+<p>要回答这些问题，我们需要走进Teacher-Student框架的内部。你可能会惊讶地发现，这个框架的精妙之处不在于它有多复杂，而在于它用极简的机制达成了深刻的泛化效果。就像围棋——规则只有寥寥数条，却演绎出无限变化。在本文中，我们将用伪代码和具体案例，一步步拆解这场"师徒之间的智慧传承"。</p>
+<p>在开始之前，请记住两条金科玉律：（1）<strong>教师模型在整个蒸馏过程中参数是冻结的</strong>——它只做前向推理，不参与反向传播；（2）<strong>学生模型同时受到两个信号的引导</strong>——一个是来自教师输出的"暗知识（软标签）"，另一个是来自真实标注的"明知识（硬标签）"。</p>
+</div>
+
+<div class="content-image" style="background:transparent;border-radius:16px;overflow:hidden">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141832"/>
+      <stop offset="100%" stop-color="#0A0E27"/>
+    </linearGradient>
+    <linearGradient id="lossGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F0C850" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#F0C850" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="studentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5B9BD5" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#5B9BD5" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="glowBox">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+  <rect width="800" height="300" fill="url(#bgGrad2)" rx="12"/>
+
+  <!-- Data Input -->
+  <rect x="30" y="20" width="140" height="35" rx="8" fill="#181E40" stroke="#8890B0" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="100" y="42" text-anchor="middle" fill="#E8ECF1" font-size="12" font-family="'Noto Sans SC',sans-serif">输入数据 x</text>
+
+  <!-- Arrows from input to Teacher and Student -->
+  <line x1="170" y1="37" x2="220" y2="37" stroke="#8890B0" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="100" y1="55" x2="100" y2="95" stroke="#8890B0" stroke-width="1" stroke-opacity="0.3"/>
+
+  <!-- Teacher Model -->
+  <rect x="220" y="15" width="180" height="100" rx="12" fill="#181E40" stroke="#F0C850" stroke-width="1.5" stroke-opacity="0.5"/>
+  <text x="310" y="45" text-anchor="middle" fill="#F0C850" font-size="14" font-weight="600" font-family="'Space Grotesk',sans-serif">TEACHER</text>
+  <text x="310" y="65" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">预训练 · 参数冻结</text>
+  <text x="310" y="95" text-anchor="middle" fill="#F0C850" font-size="10" font-family="'Space Grotesk',sans-serif">Softmax(z/T)</text>
+  <text x="310" y="108" text-anchor="middle" fill="#A08030" font-size="9" font-family="'Noto Sans SC',sans-serif">仅前向推理</text>
+
+  <!-- Student Model -->
+  <rect x="30" y="100" width="180" height="120" rx="12" fill="#181E40" stroke="#5B9BD5" stroke-width="1.5" stroke-opacity="0.5"/>
+  <text x="120" y="130" text-anchor="middle" fill="#5B9BD5" font-size="14" font-weight="600" font-family="'Space Grotesk',sans-serif">STUDENT</text>
+  <text x="120" y="150" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">小型网络 · 从头训练</text>
+  <text x="120" y="180" text-anchor="middle" fill="#5B9BD5" font-size="10" font-family="'Space Grotesk',sans-serif">Softmax(z/T)</text>
+  <text x="120" y="200" text-anchor="middle" fill="#7BA8D8" font-size="9" font-family="'Noto Sans SC',sans-serif">参与反向传播</text>
+
+  <!-- Soft Labels from Teacher -->
+  <path d="M310 115 L310 145 L240 145" stroke="#F0C850" stroke-width="1.5" stroke-opacity="0.6" fill="none" marker-end="url(#arrowGold)"/>
+  <defs><marker id="arrowGold" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#F0C850" fill-opacity="0.6"/></marker></defs>
+
+  <!-- Student Predictions output -->
+  <line x1="210" y1="160" x2="455" y2="160" stroke="#5B9BD5" stroke-width="1" stroke-opacity="0.4"/>
+
+  <!-- Distillation Loss -->
+  <rect x="460" y="80" width="160" height="80" rx="10" fill="rgba(240,200,80,0.05)" stroke="#F0C850" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="540" y="108" text-anchor="middle" fill="#F0C850" font-size="13" font-weight="600" font-family="'Space Grotesk',sans-serif">L_distill</text>
+  <text x="540" y="130" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">KL(Teacher || Student)</text>
+  <text x="540" y="148" text-anchor="middle" fill="#A08030" font-size="9" font-family="'Noto Sans SC',sans-serif">蒸馏损失</text>
+
+  <!-- Student Loss -->
+  <rect x="460" y="180" width="160" height="65" rx="10" fill="rgba(91,155,213,0.05)" stroke="#5B9BD5" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="540" y="205" text-anchor="middle" fill="#5B9BD5" font-size="13" font-weight="600" font-family="'Space Grotesk',sans-serif">L_student</text>
+  <text x="540" y="225" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">CrossEntropy(y, y_true)</text>
+  <text x="540" y="240" text-anchor="middle" fill="#A08030" font-size="9" font-family="'Noto Sans SC',sans-serif">学生损失</text>
+
+  <!-- Input arrows to losses -->
+  <line x1="455" y1="120" x2="460" y2="120" stroke="#F0C850" stroke-width="1" stroke-opacity="0.4"/>
+  <line x1="455" y1="200" x2="460" y2="210" stroke="#5B9BD5" stroke-width="1" stroke-opacity="0.4"/>
+
+  <!-- Combined Loss -->
+  <rect x="650" y="130" width="130" height="80" rx="10" fill="rgba(240,200,80,0.08)" stroke="#F0C850" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="715" y="158" text-anchor="middle" fill="#F0C850" font-size="13" font-weight="600" font-family="'Space Grotesk',sans-serif">L_total</text>
+  <text x="715" y="178" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">α·L_student</text>
+  <text x="715" y="195" text-anchor="middle" fill="#8890B0" font-size="10" font-family="'Noto Sans SC',sans-serif">+ (1-α)·L_distill</text>
+
+  <!-- Arrows to combined -->
+  <line x1="620" y1="120" x2="650" y2="145" stroke="#F0C850" stroke-width="1" stroke-opacity="0.4"/>
+  <line x1="620" y1="210" x2="650" y2="185" stroke="#5B9BD5" stroke-width="1" stroke-opacity="0.4"/>
+
+  <!-- Backprop arrow -->
+  <path d="M715 210 L715 260 L120 260 L120 220" stroke="#F0C850" stroke-width="1.5" stroke-opacity="0.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrowGold)"/>
+  <text x="420" y="275" text-anchor="middle" fill="#A08030" font-size="9" font-family="'Noto Sans SC',sans-serif">反向传播（仅更新Student参数）</text>
+
+  <!-- Bottom annotation -->
+  <text x="400" y="295" text-anchor="middle" fill="#555D80" font-size="10" font-family="'Noto Sans SC',sans-serif">Teacher-Student训练框架：教师冻结仅前向推理，学生接受双重损失信号</text>
+</svg>
+<p class="image-caption">图2：Teacher-Student框架的完整训练流程——双损失函数（蒸馏损失 + 学生损失）共同指导Student的参数更新</p>
+</div>
+
+<div class="content-block">
+<h3>教师网络：站在巨人的肩膀上</h3>
+<p>教师网络（Teacher Network）是蒸馏过程的起点，也是一个"不求有功但求无过"的角色。它的职责非常简单：<strong>给定输入x，输出一个经过"软化"的概率分布</strong>。这里"软化"是关键词——通过温度参数T（Temperature，下一课详细展开），我们让softmax输出的概率分布更加平滑，从而暴露出那些在硬标签中被淹没的类别间关系。</p>
+<p>教师模型的三个关键特征：</p>
+<ol>
+  <li><strong>预训练完成</strong>：教师是在大规模数据上充分训练的成熟模型，其泛化能力已经经过验证。它不需要在蒸馏过程中继续学习——它的知识是"成品"。</li>
+  <li><strong>参数冻结（Frozen）</strong>：在整个蒸馏训练循环中，教师模型的权重不发生任何变化。它只执行前向传播（forward pass），计算<code>softmax(z_teacher / T)</code>，然后将结果传递给损失函数。这一步至关重要：如果教师也跟着更新，那就像老师一边教学生一边自己也在改口——学生永远不知道该相信哪个版本的老师。</li>
+  <li><strong>规模优势</strong>：教师通常比学生大一个数量级以上。这不是偶然的——只有足够大的模型才能学到足够丰富的类间关系。一个仅有100万参数的教师，其"暗知识"的密度可能不足以指导学生。</li>
+</ol>
+<div class="highlight-box">
+  <p>工程提示：在实践中，教师模型的选择是一个需要权衡的问题。过大的教师（如GPT-4级别）虽然"知识渊博"，但其推理成本可能让蒸馏过程变得不切实际——你需要在每一次训练迭代中等待教师完成推理。通常，教师规模是学生的3-10倍是一个较为合理的区间。</p>
+</div>
+</div>
+
+<div class="content-block">
+<h3>学生网络：从一张白纸开始</h3>
+<p>学生网络（Student Network）是蒸馏的真正目标。与教师不同，学生是一张"白纸"——它的权重是随机初始化的（或使用预训练权重作为起点，但这不是必需的），需要在蒸馏过程中从头学习。</p>
+<p>学生模型的设计通常遵循以下原则：<strong>参数少、层数浅、推理快</strong>。典型的做法包括减少Transformer的层数（如从12层减至6层）、减小隐藏维度（如从768减至384）、或使用更高效的架构（如MobileNet替代ResNet）。但有一个经常被忽视的关键点：<strong>学生模型必须有足够的"容量"来吸收教师的知识</strong>。如果学生太小，就像一个三岁孩子试图理解微积分——无论老师怎么教，信息都会因为"管道太窄"而丢失。</p>
+<p>学生模型的训练信号来自两个方向：一方面是<strong>蒸馏损失（Distillation Loss）</strong>——学生输出与教师软标签之间的KL散度（Kullback-Leibler Divergence），这一项让学生模仿教师的"思维方式"；另一方面是<strong>学生损失（Student Loss）</strong>——学生输出与真实硬标签之间的交叉熵，这一项确保学生仍然"认得正确答案"。最终的损失函数是两者的加权组合：</p>
+<div class="highlight-box">
+  <p>L_total = α · L_student + (1 - α) · L_distill</p>
+  <p>其中α ∈ [0, 1] 是平衡系数。当α = 0时，学生完全模仿教师；当α = 1时，退化为普通的监督学习。论文中的典型取值为α = 0.1，即蒸馏损失的权重远高于真实标签损失——这意味着"跟老师学"比"看答案学"更重要。</p>
+</div>
+</div>
+
+<div class="content-block">
+<h3>训练循环：伪代码视角</h3>
+<p>下面通过一段结构化的伪代码，展示Teacher-Student蒸馏训练的核心循环。虽然我们不会在这里运行真实代码，但这个逻辑框架足以让你理解每一行背后发生的事情：</p>
+<div class="highlight-box">
+  <p><code># 初始化</code><br>
+  <code>teacher = load_pretrained("bert-large")   # 教师模型，参数冻结</code><br>
+  <code>student = init_small_model()               # 学生模型，随机初始化</code><br>
+  <code>teacher.eval()                             # 教师设为评估模式</code><br>
+  <code>T = 4.0                                   # 温度参数</code><br>
+  <code>alpha = 0.1                               # 损失平衡系数</code><br><br>
+  <code>for x, y_true in dataloader:</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;# 教师前向传播（无梯度）</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;with torch.no_grad():</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;teacher_logits = teacher(x)</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;soft_labels = softmax(teacher_logits / T)</code><br><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;# 学生前向传播</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;student_logits = student(x)</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;student_soft = softmax(student_logits / T)</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;student_hard = softmax(student_logits)  # T=1用于硬标签损失</code><br><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;# 计算双重损失</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;L_distill = KL_div(soft_labels, student_soft) * T**2</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;L_student = CrossEntropy(student_hard, y_true)</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;L_total = alpha * L_student + (1-alpha) * L_distill</code><br><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;# 反向传播（仅更新学生参数）</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;L_total.backward()</code><br>
+  <code>&nbsp;&nbsp;&nbsp;&nbsp;optimizer.step()</code></p>
+</div>
+<p>注意上面一个关键细节：<strong>L_distill乘以了T²</strong>。这是因为在除以温度T之后，梯度的幅度会被缩放。乘以T²是为了保持梯度量级的一致性，确保蒸馏损失不会因为温度增大而在优化中"失声"。这是Hinton原论文中的一个技术细节，许多初学者容易忽略。</p>
+</div>
+
+<div class="content-block">
+<h3>深入理解与拓展思考</h3>
+<p>Teacher-Student框架的优雅之处在于，它将"知识传递"这个看似玄学的概念转化为一个清晰的工程优化问题。但这里有几个值得深思的开放问题：</p>
+<p><strong>教师一定要比学生大吗？</strong>直觉上是的——一个"平庸"的教师能教出"卓越"的学生吗？但近年来的研究发现，在某些情况下，一个和学生同等规模甚至更小的教师，通过特殊的蒸馏策略（如在线蒸馏、自蒸馏），也能取得良好的效果。这说明蒸馏的核心不在于"绝对知识量"，而在于"知识结构"的传递效率。</p>
+<p><strong>不同架构之间能蒸馏吗？</strong>这是一个非常实际的问题。比如，我们能否用一个Transformer教师去蒸馏一个CNN学生？答案是肯定的，但需要额外的"对齐"策略——因为Transformer和CNN的中间表示（hidden representations）可能处于完全不同的特征空间中。一些方法会在中间层添加额外的对齐损失，强制学生在内部也表示出与教师相似的特征模式。</p>
+<p><strong>温度参数T是什么？</strong>我们在上面反复提到了温度参数T。简单地说，T越大，softmax输出的概率分布越"平坦"（各概率趋于均匀），暴露更多暗知识；T越小，分布越"尖锐"（趋于one-hot），接近硬标签。T的选择是蒸馏效果的关键——这就是下一课的核心议题。</p>
+</div>
+
+<div class="content-block">
+<h3>学习建议与下一步</h3>
+<p>这一课我们建立起了Teacher-Student框架的完整图景。你不需要现在就能背诵伪代码——更重要的是理解"为什么"：为什么教师必须冻结、为什么需要双重损失、为什么KL散度比简单的MSE更适合作为蒸馏损失。</p>
+<ol>
+  <li><strong>动手实验</strong>：尝试在PyTorch中实现上述伪代码的核心逻辑。不需要真实数据集，用随机张量验证损失计算是否正确。这是理解蒸馏训练流程最有效的方式。</li>
+  <li><strong>概念串联</strong>：回顾第一课中的"暗知识"概念，思考它在这个框架中具体对应哪个环节。答案是：暗知识存在于教师输出的软标签<code>soft_labels</code>中。</li>
+  <li><strong>带着问题前进</strong>：温度参数T到底如何影响软标签的"信息丰富度"？T=1和T=10的软标签有什么区别？这些问题将直接在下一课"软标签与温度参数"中揭晓。</li>
+</ol>
+<p>现在，你已经站在了蒸馏知识的"主干道"上。下一课，我们将深入Softmax温度的秘密——那是决定蒸馏成败的"炼金术"参数。</p>
+</div>
+
+</div></div></section>
+<section class="article-section" style="padding-top:0"><div class="max-w-4xl mx-auto px-8"><div class="lesson-nav">
+<a href="课节_AI蒸馏_01_知识蒸馏概述_大模型的瘦身术.html">← 上一课：知识蒸馏概述</a>
+<a class="nav-center" href="课程_AI蒸馏.html">课程目录</a>
+<a href="课节_AI蒸馏_03_软标签与温度参数.html">下一课：软标签与温度参数 →</a>
+</div></div></section>
+<footer class="site-footer"><div class="max-w-6xl mx-auto px-8"><div class="footer-grid"><div><div class="footer-logo">群星</div><p class="footer-copy" style="margin-top:4px">AI EDUCATION</p></div><div class="footer-links"><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div><p class="footer-copy">&copy; 2026 群星</p></div></div></footer>
+</main>
+<script src="auth-guard.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+(function(){
+var c=document.getElementById('starField'),f=document.createDocumentFragment();
+for(var i=0;i<100;i++){var d=document.createElement('div');d.className='star-dot';var s=Math.random()*2+.6,g=Math.random()>.78;d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;background:'+(g?'#F0C850':'#fff')+';opacity:'+(Math.random()*.4+.2)+';animation:tw'+i+' '+(Math.random()*4+2)+'s ease-in-out infinite;animation-delay:'+(Math.random()*5)+'s';f.appendChild(d)}c.appendChild(f);
+var st=document.createElement('style'),cs='';
+for(var i=0;i<100;i++)cs+='@keyframes tw'+i+'{0%,100%{opacity:'+(Math.random()*.3+.15)+';transform:scale(1)}50%{opacity:'+(Math.random()*.5+.5)+';transform:scale(1.4)}}';
+st.textContent=cs;document.head.appendChild(st);
+})();
+(function(){
+var links=document.querySelectorAll('.icon-nav .in-item');
+var page=window.location.pathname.split('/').pop();
+links.forEach(function(a){
+  var href=a.getAttribute('href')||'';
+  if(href===page||(page===''&&href==='index.html')){a.classList.add('active')}
+  if(href==='profile.html'){try{var t=JSON.parse(localStorage.getItem('stars_token'));if(t&&t.token)a.classList.add('logged-in')}catch(e){}}
+});
+})();
+</script>
+<script src="stars-practice.js"></script>
+<script>StarsPractice.initLesson("Teacher-Student框架");</script>
+</body></html>
