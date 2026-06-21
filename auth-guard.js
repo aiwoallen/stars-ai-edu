@@ -51,7 +51,7 @@
   style.textContent = [
     '.ag-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,8,22,.92);opacity:0;pointer-events:none;transition:opacity .45s cubic-bezier(.16,1,.3,1)}',
     '.ag-overlay.visible{opacity:1;pointer-events:all}',
-    '.ag-card{background:#141832;border:1px solid rgba(240,200,80,.14);border-radius:28px;padding:48px 44px;width:100%;max-width:440px;position:relative;transform:translateY(24px) scale(.96);transition:transform .5s cubic-bezier(.16,1,.3,1);box-shadow:0 40px 100px rgba(0,0,0,.6);max-height:92vh;overflow-y:auto}',
+    '.ag-card{background:#141832;border:1px solid rgba(240,200,80,.14);border-radius:28px;padding:48px 44px;width:100%;max-width:440px;position:relative;transform:translateY(24px) scale(.96);transition:transform .5s cubic-bezier(.16,1,.3,1);box-shadow:0 40px 100px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);max-height:92vh;overflow-y:auto}',
     '.ag-overlay.visible .ag-card{transform:translateY(0) scale(1)}',
     '.ag-card::-webkit-scrollbar{width:4px}',
     '.ag-card::-webkit-scrollbar-thumb{background:rgba(240,200,80,.15);border-radius:2px}',
@@ -62,7 +62,7 @@
     '.ag-tab.active{background:linear-gradient(135deg,rgba(240,200,80,.15),rgba(240,200,80,.08));color:#F0C850;border:1px solid rgba(240,200,80,.2)}',
     '.ag-group{margin-bottom:18px}',
     '.ag-label{font-size:11px;font-weight:500;color:#8890B0;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:6px}',
-    '.ag-input{width:100%;background:#0A0E27;border:1px solid rgba(240,200,80,.15);border-radius:14px;padding:13px 16px;font-size:14px;color:#E8ECF1;font-family:inherit;outline:none;transition:border-color .3s}',
+    '.ag-input{width:100%;background:#0A0E27;border:1px solid rgba(240,200,80,.15);border-radius:14px;padding:13px 16px;font-size:14px;color:#E8ECF1;font-family:inherit;outline:none;transition:border-color .3s;box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}',
     '.ag-input::placeholder{color:#555D80}',
     '.ag-input:focus{border-color:rgba(240,200,80,.4)}',
     '.ag-input.error{border-color:rgba(255,90,90,.45)}',
@@ -85,6 +85,9 @@
     '.ag-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:99999;padding:12px 28px;border-radius:40px;font-size:13px;font-weight:500;background:#141832;border:1px solid rgba(240,200,80,.3);color:#F0C850;opacity:0;transition:opacity .4s;pointer-events:none}',
     '.ag-toast.show{opacity:1}',
     '.ag-toast.error{border-color:rgba(255,90,90,.4);color:#ff7070}',
+    '.ag-pwd-hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}',
+    '.ag-hint{font-size:10px;color:#555D80;padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);transition:all .35s}',
+    '.ag-hint.ok{color:#60d080;border-color:rgba(96,208,128,.35);background:rgba(96,208,128,.08)}',
   ].join('\n');
   document.head.appendChild(style);
 
@@ -158,8 +161,14 @@
         '<div class="ag-group">',
           '<label class="ag-label">密码</label>',
           '<div class="ag-pwd-wrap">',
-            '<input type="password" class="ag-input" id="agRegPassword" placeholder="至少 6 位" autocomplete="new-password">',
+            '<input type="password" class="ag-input" id="agRegPassword" placeholder="8 位以上，含大小写字母和数字" autocomplete="new-password" oninput="window._agUpdatePwdHints(this.value)">',
             '<button class="ag-eye" onclick="window._agTogglePwd(\'agRegPassword\',this)" type="button">&#128065;</button>',
+          '</div>',
+          '<div class="ag-pwd-hints">',
+            '<span class="ag-hint" id="agHintLen">8+ 个字符</span>',
+            '<span class="ag-hint" id="agHintUpper">大写字母</span>',
+            '<span class="ag-hint" id="agHintLower">小写字母</span>',
+            '<span class="ag-hint" id="agHintNum">数字</span>',
           '</div>',
           '<div class="ag-err" id="agRegPasswordErr"></div>',
         '</div>',
@@ -231,6 +240,32 @@
     btn.innerHTML = inp.type === 'password' ? '&#128065;' : '&#128064;';
   }
 
+  // Password hint live update
+  function updatePwdHints(pw) {
+    var hints = {
+      len: document.getElementById('agHintLen'),
+      upper: document.getElementById('agHintUpper'),
+      lower: document.getElementById('agHintLower'),
+      num: document.getElementById('agHintNum')
+    };
+    function setHint(el, ok) {
+      if (!el) return;
+      if (ok) {
+        el.style.color = '#60d080';
+        el.style.borderColor = 'rgba(96,208,128,.35)';
+        el.style.background = 'rgba(96,208,128,.08)';
+      } else {
+        el.style.color = '#555D80';
+        el.style.borderColor = 'rgba(255,255,255,.06)';
+        el.style.background = 'rgba(255,255,255,.03)';
+      }
+    }
+    setHint(hints.len, pw.length >= 8);
+    setHint(hints.upper, /[A-Z]/.test(pw));
+    setHint(hints.lower, /[a-z]/.test(pw));
+    setHint(hints.num, /[0-9]/.test(pw));
+  }
+
   // ============================================
   // Auth Handlers
   // ============================================
@@ -244,9 +279,19 @@
 
     if (!nickname) { showFieldError('agRegNickname', 'agRegNicknameErr', '昵称不能为空'); valid = false; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showFieldError('agRegEmail', 'agRegEmailErr', '请输入有效的邮箱地址'); valid = false; }
-    if (password.length < 6) { showFieldError('agRegPassword', 'agRegPasswordErr', '密码至少需要 6 位'); valid = false; }
+    if (password.length < 8) { showFieldError('agRegPassword', 'agRegPasswordErr', '密码至少需要 8 个字符'); valid = false; }
+    else if (!/[a-z]/.test(password)) { showFieldError('agRegPassword', 'agRegPasswordErr', '密码需要包含小写字母'); valid = false; }
+    else if (!/[A-Z]/.test(password)) { showFieldError('agRegPassword', 'agRegPasswordErr', '密码需要包含大写字母'); valid = false; }
+    else if (!/[0-9]/.test(password)) { showFieldError('agRegPassword', 'agRegPasswordErr', '密码需要包含数字'); valid = false; }
     if (password !== confirm) { showFieldError('agRegConfirm', 'agRegConfirmErr', '两次密码不一致'); valid = false; }
     if (!valid) return;
+
+    // Show loading state
+    var btn = overlay.querySelector('.ag-btn');
+    var origText = btn.textContent;
+    btn.textContent = '注册中...';
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.7';
 
     try {
       var data = await apiFetch('/auth/register', {
@@ -255,12 +300,22 @@
       });
       saveToken(data.token);
       saveCachedUser(data.user);
-      closeAuth();
       showToast('注册成功，欢迎加入群星！');
-      // Reload page to show content
-      setTimeout(function() { window.location.reload(); }, 600);
+      // Reload page to show content (no redirect to index)
+      setTimeout(function() { window.location.reload(); }, 800);
     } catch(e) {
-      showFieldError('agRegEmail', 'agRegEmailErr', e.message);
+      var msg = e.message || '';
+      btn.textContent = origText;
+      btn.style.pointerEvents = '';
+      btn.style.opacity = '1';
+      // Smart error routing: route to correct field
+      if (msg.indexOf('密码') !== -1) {
+        showFieldError('agRegPassword', 'agRegPasswordErr', msg);
+      } else if (msg.indexOf('邮箱') !== -1 || msg.indexOf('已注册') !== -1) {
+        showFieldError('agRegEmail', 'agRegEmailErr', msg);
+      } else {
+        showFieldError('agRegEmail', 'agRegEmailErr', msg);
+      }
     }
   }
 
@@ -274,6 +329,13 @@
     if (!password) { showFieldError('agLoginPassword', 'agLoginPasswordErr', '请输入密码'); valid = false; }
     if (!valid) return;
 
+    // Show loading state
+    var btn = overlay.querySelector('#agLoginForm .ag-btn');
+    var origText = btn.textContent;
+    btn.textContent = '登录中...';
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.7';
+
     try {
       var data = await apiFetch('/auth/login', {
         method: 'POST',
@@ -281,11 +343,13 @@
       });
       saveToken(data.token);
       saveCachedUser(data.user);
-      closeAuth();
       showToast('登录成功！');
       // Reload page to show content
-      setTimeout(function() { window.location.reload(); }, 600);
+      setTimeout(function() { window.location.reload(); }, 800);
     } catch(e) {
+      btn.textContent = origText;
+      btn.style.pointerEvents = '';
+      btn.style.opacity = '1';
       showFieldError('agLoginEmail', 'agLoginEmailErr', e.message);
       showFieldError('agLoginPassword', 'agLoginPasswordErr', e.message);
     }
@@ -299,6 +363,7 @@
   window._agHandleRegister = handleRegister;
   window._agTogglePwd = togglePwd;
   window._agCloseAuth = closeAuth;
+  window._agUpdatePwdHints = updatePwdHints;
 
   // ============================================
   // Event Listeners
