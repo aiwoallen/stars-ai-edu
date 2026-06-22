@@ -1,2171 +1,624 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>群星 — AI 教育平台</title>
-
-<!-- Fonts: Geist-like geometric sans + Chinese -->
+<meta name="color-scheme" content="dark">
+<title>群星 — AI 教育平台 Apple Deep Space Preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['"Noto Sans SC"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
-        display: ['"Space Grotesk"', '"Noto Sans SC"', 'sans-serif'],
-        body: ['"Noto Sans SC"', 'system-ui', 'sans-serif'],
-      },
-      colors: {
-        deep: {
-          DEFAULT: '#0A0E27',
-          lighter: '#111636',
-          card: '#141832',
-          hover: '#1A2248',
-        },
-        gold: {
-          DEFAULT: '#F0C850',
-          light: '#F8E090',
-          dim: '#A08030',
-        },
-        star: {
-          white: '#E8ECF1',
-          muted: '#8890B0',
-          dim: '#555D80',
-        }
-      },
-    }
-  }
-}
-</script>
-
-<!-- GSAP + ScrollTrigger -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* ---- Base ---- */
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Noto Sans SC', 'Space Grotesk', system-ui, sans-serif;
-    background: #0A0E27;
-    color: #E8ECF1;
-    overflow-x: hidden;
-  }
-
-  /* Cosmic background layers */
-  .cosmic-bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .cosmic-bg .nebula {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.18;
-  }
-  .cosmic-bg .nebula-1 {
-    width: 900px; height: 900px;
-    background: radial-gradient(circle, rgba(91,155,213,0.5) 0%, transparent 70%);
-    top: -10%; left: -15%;
-  }
-  .cosmic-bg .nebula-2 {
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(240,200,80,0.15) 0%, transparent 70%);
-    top: 50%; right: -10%;
-  }
-  .cosmic-bg .nebula-3 {
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(108,92,231,0.2) 0%, transparent 70%);
-    bottom: 20%; left: 30%;
-  }
-  .cosmic-bg .nebula-4 {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(240,200,80,0.08) 0%, transparent 70%);
-    top: 30%; left: 60%;
-  }
-
-  /* Star field */
-  .star-field {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  }
-  .star-dot {
-    position: absolute;
-    border-radius: 50%;
-    background: #fff;
-  }
-
-  /* Grain overlay */
-  .grain-overlay {
-    position: fixed; inset: 0; pointer-events: none; z-index: 1;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
-  }
-
-  /* ---- Navigation ---- */
-  
-  
-  .nav-logo {
-    font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #F0C850;
-    letter-spacing: 3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .nav-logo img { height: 28px; }
-  .nav-logo .sub {
-    font-weight: 400;
-    font-size: 10px;
-    color: #8890B0;
-    letter-spacing: 2px;
-    margin-top: 2px;
-  }
-  .nav-link {
-    font-size: 13px;
-    font-weight: 400;
-    color: #8890B0;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    transition: color 0.3s;
-  }
-  
-
-  /* ---- Hero ---- */
-  .hero-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
-    padding: 120px 40px 80px;
-  }
-  .hero-content {
-    text-align: center;
-    max-width: 1024px;  /* max-w-5xl: guarantees 2-line H1 */
-    width: 100%;
-  }
-  .hero-eyebrow {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: rgba(240,200,80,0.6);
-    margin-bottom: 32px;
-  }
-  .hero-heading {
-    font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
-    font-size: clamp(3rem, 5.5vw, 5.5rem);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: 2px;
-    color: #F0C850;
-    margin-bottom: 24px;
-  }
-  .hero-subtitle {
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
-    font-weight: 300;
-    color: #8890B0;
-    letter-spacing: 1px;
-    margin-bottom: 48px;
-    line-height: 1.6;
-  }
-  .hero-ctas {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 15px 40px;
-    border-radius: 60px;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border: none;
-    font-family: inherit;
-    background: #F0C850;
-    color: #0A0E27;
-    transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-    text-decoration: none;
-  }
-  .btn-primary:hover {
-    background: #F8E090;
-    box-shadow: 0 0 40px rgba(240,200,80,0.3);
-    transform: translateY(-2px);
-  }
-  .btn-outline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 15px 40px;
-    border-radius: 60px;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 1px;
-    cursor: pointer;
-    font-family: inherit;
-    background: transparent;
-    border: 1px solid rgba(240,200,80,0.35);
-    color: #F0C850;
-    transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-    text-decoration: none;
-  }
-  .btn-outline:hover {
-    border-color: #F0C850;
-    background: rgba(240,200,80,0.06);
-  }
-
-  /* ---- Scroll indicator ---- */
-  .scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    opacity: 0.5;
-    animation: floatDown 2s ease-in-out infinite;
-  }
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, rgba(240,200,80,0.4), transparent);
-  }
-  @keyframes floatDown {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(8px); }
-  }
-
-  /* ---- AI News Carousel ---- */
-  .ai-news-section {
-    padding: 70px 0 90px;
-    position: relative;
-    z-index: 2;
-  }
-  .ai-news-section .news-header-row {
-    margin-bottom: 36px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .ai-news-section .news-label {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(240,200,80,0.45);
-    margin-bottom: 8px;
-  }
-  .ai-news-section .news-heading {
-    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
-    font-weight: 500;
-    color: #E8ECF1;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .news-live-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #F0C850;
-    animation: newsPulse 2s ease-in-out infinite;
-  }
-  @keyframes newsPulse {
-    0%, 100% { opacity: 0.4; box-shadow: 0 0 0 0 rgba(240,200,80,0.6); }
-    50% { opacity: 1; box-shadow: 0 0 0 8px rgba(240,200,80,0); }
-  }
-  .news-date-label {
-    font-size: 11px;
-    color: #555D80;
-    letter-spacing: 0.5px;
-  }
-  .news-carousel-wrap {
-    position: relative;
-    overflow: hidden;
-  }
-  .news-carousel-track {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    padding: 8px 4px 28px;
-    cursor: grab;
-    scroll-behavior: smooth;
-  }
-  .news-carousel-track::-webkit-scrollbar { display: none; }
-  .news-carousel-track:active { cursor: grabbing; }
-  .news-carousel-track.dragging { scroll-behavior: auto; }
-  .news-card {
-    flex: 0 0 352px;
-    scroll-snap-align: start;
-    background: rgba(20,24,50,0.72);
-    border: 1px solid rgba(240,200,80,0.07);
-    border-radius: 18px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-    position: relative;
-  }
-  .news-card:hover {
-    border-color: rgba(240,200,80,0.28);
-    background: rgba(24,28,58,0.85);
-    box-shadow: 0 20px 48px rgba(0,0,0,0.45), 0 0 30px rgba(240,200,80,0.06);
-  }
-  .news-card .nc-gradient {
-    width: 100%;
-    height: 130px;
-    position: relative;
-    transition: transform 0.65s cubic-bezier(0.16,1,0.3,1);
-  }
-  .news-card:hover .nc-gradient { transform: scale(1.05); }
-  .news-card .nc-gradient-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 35%, rgba(10,14,39,0.88) 100%);
-  }
-  .news-card .nc-category {
-    position: absolute;
-    top: 12px; right: 12px;
-    padding: 4px 12px;
-    border-radius: 12px;
-    background: rgba(10,14,39,0.72);
-    border: 1px solid rgba(240,200,80,0.18);
-    font-size: 10px;
-    font-weight: 500;
-    color: #F0C850;
-    letter-spacing: 0.5px;
-  }
-  .news-card .nc-body {
-    padding: 18px 20px 22px;
-  }
-  .news-card .nc-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: #E8ECF1;
-    line-height: 1.5;
-    margin-bottom: 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    transition: color 0.4s;
-  }
-  .news-card:hover .nc-title { color: #F0C850; }
-  .news-card .nc-summary {
-    font-size: 12px;
-    color: #8890B0;
-    line-height: 1.6;
-    margin-bottom: 14px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .news-card .nc-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #555D80;
-  }
-  .news-card .nc-source { display: flex; align-items: center; gap: 6px; }
-  .news-card .nc-source-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #5B9BD5;
-  }
-  .news-card .nc-arrow {
-    opacity: 0;
-    color: #F0C850;
-    font-size: 16px;
-    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-  }
-  .news-card:hover .nc-arrow { opacity: 1; }
-  .news-carousel-arrows {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 4px;
-  }
-  .news-carousel-arrows button {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: rgba(20,24,50,0.75);
-    border: 1px solid rgba(240,200,80,0.12);
-    color: #8890B0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    font-size: 16px;
-    padding: 0;
-    line-height: 1;
-  }
-  .news-carousel-arrows button:hover {
-    border-color: rgba(240,200,80,0.4);
-    color: #F0C850;
-    background: rgba(26,34,72,0.88);
-  }
-  .news-skeleton {
-    flex: 0 0 352px;
-    height: 280px;
-    border-radius: 18px;
-    background: rgba(20,24,50,0.4);
-    border: 1px solid rgba(240,200,80,0.05);
-    animation: skPulse 1.8s ease-in-out infinite;
-  }
-  @keyframes skPulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.7; }
-  }
-
-  /* ---- Section spacing ---- */
-  .section-spacer {
-    padding: 120px 0;
-    position: relative;
-    z-index: 2;
-  }
-  .section-spacer-lg {
-    padding: 160px 0;
-  }
-
-  /* ---- Section header ---- */
-  .section-label {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(240,200,80,0.45);
-    margin-bottom: 16px;
-  }
-  .section-heading {
-    font-size: clamp(1.8rem, 3vw, 2.4rem);
-    font-weight: 500;
-    color: #E8ECF1;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
-  .section-sub {
-    font-size: 15px;
-    color: #8890B0;
-    font-weight: 300;
-    max-width: 520px;
-  }
-
-  /* ---- Bento Grid ---- */
-  .bento-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    grid-auto-flow: dense;
-  }
-  .bento-card {
-    background: rgba(20,24,50,0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(240,200,80,0.08);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-    cursor: pointer;
-    position: relative;
-  }
-  .bento-card:hover {
-    border-color: rgba(240,200,80,0.25);
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-    background: rgba(26,34,72,0.8);
-  }
-  .bento-card .card-glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at var(--mx,50%) var(--my,50%), rgba(240,200,80,0.08) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-  }
-  .bento-card:hover .card-glow { opacity: 1; }
-  .bento-card .card-img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    filter: grayscale(30%) contrast(1.15) brightness(0.6);
-    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .bento-card:hover .card-img {
-    filter: grayscale(0%) contrast(1.05) brightness(0.8);
-    transform: scale(1.04);
-  }
-  .bento-card .card-body {
-    padding: 24px;
-  }
-  .bento-card .card-icon {
-    font-size: 28px;
-    margin-bottom: 12px;
-    display: block;
-  }
-  .bento-card .card-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: #E8ECF1;
-    margin-bottom: 8px;
-  }
-  .bento-card .card-desc {
-    font-size: 13px;
-    color: #8890B0;
-    line-height: 1.6;
-    margin-bottom: 14px;
-  }
-  .bento-card .card-tag {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    background: rgba(240,200,80,0.08);
-    color: #F0C850;
-    border: 1px solid rgba(240,200,80,0.15);
-  }
-  /* Large card */
-  .bento-card.span-2 { grid-column: span 2; }
-  .bento-card.span-2 .card-img { height: 200px; }
-  .bento-card.span-full { grid-column: span 3; display: flex; flex-direction: row; }
-  .bento-card.span-full .card-img { width: 40%; height: auto; min-height: 220px; flex-shrink: 0; }
-  .bento-card.span-full .card-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-
-  /* ---- Cinematic Why-Learn Stack: GSAP Split Layout ---- */
-  .why-stack-section {
-    position: relative;
-    z-index: 2;
-    padding: 120px 0 160px;
-  }
-  .why-stack-grid {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 64px;
-    align-items: start;
-  }
-  /* Left: pinned label + progress */
-  .why-stack-left {
-    position: sticky;
-    top: 120px;
-    padding-top: 20px;
-  }
-  .why-stack-left .ws-label {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: rgba(240,200,80,0.5);
-    margin-bottom: 16px;
-  }
-  .why-stack-left .ws-heading {
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
-    font-weight: 500;
-    color: #F0C850;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    line-height: 1.2;
-  }
-  .why-stack-left .ws-sub {
-    font-size: 14px;
-    color: #8890B0;
-    line-height: 1.7;
-    margin-bottom: 40px;
-    font-weight: 300;
-  }
-  /* Progress track */
-  .ws-progress {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-    padding-left: 24px;
-  }
-  .ws-progress::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 8px;
-    bottom: 8px;
-    width: 1px;
-    background: rgba(240,200,80,0.15);
-  }
-  .ws-progress .ws-step {
-    position: relative;
-    padding: 12px 0 28px;
-    cursor: pointer;
-    transition: all 0.4s;
-  }
-  .ws-progress .ws-step:last-child { padding-bottom: 0; }
-  .ws-progress .ws-step::before {
-    content: '';
-    position: absolute;
-    left: -19px;
-    top: 20px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: rgba(240,200,80,0.2);
-    border: 2px solid rgba(240,200,80,0.3);
-    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-    z-index: 2;
-  }
-  .ws-progress .ws-step.active::before {
-    background: #F0C850;
-    border-color: #F0C850;
-    box-shadow: 0 0 12px rgba(240,200,80,0.5);
-  }
-  .ws-progress .ws-step-num {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(240,200,80,0.3);
-    letter-spacing: 2px;
-    transition: color 0.4s;
-  }
-  .ws-progress .ws-step.active .ws-step-num { color: rgba(240,200,80,0.8); }
-  .ws-progress .ws-step-title {
-    font-size: 13px;
-    color: #555D80;
-    margin-top: 2px;
-    transition: color 0.4s;
-    font-weight: 500;
-  }
-  .ws-progress .ws-step.active .ws-step-title { color: #C8D0E0; }
-  /* Right: scrolling cards */
-  .why-stack-right {
-    display: flex;
-    flex-direction: column;
-    gap: 120px;
-    padding-top: 20px;
-  }
-  .ws-card {
-    position: relative;
-    border-radius: 28px;
-    overflow: hidden;
-    background: rgba(18,22,46,0.9);
-    border: 1px solid rgba(240,200,80,0.06);
-    box-shadow: 0 16px 64px rgba(0,0,0,0.45);
-    transition: all 0.7s cubic-bezier(0.16,1,0.3,1);
-  }
-  .ws-card.active {
-    border-color: rgba(240,200,80,0.35);
-    box-shadow: 0 20px 72px rgba(0,0,0,0.55), 0 0 48px rgba(240,200,80,0.04);
-  }
-  .ws-card .ws-media {
-    width: 100%;
-    height: 260px;
-    position: relative;
-    overflow: hidden;
-    transition: height 0.6s;
-  }
-  .ws-card .ws-media-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 1s cubic-bezier(0.16,1,0.3,1), filter 0.8s;
-  }
-  .ws-card:hover .ws-media-bg { transform: scale(1.04); }
-  .ws-card .ws-media-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10,14,39,0.92) 0%, rgba(10,14,39,0.15) 58%, transparent 100%);
-  }
-  .ws-card .ws-step-badge {
-    position: absolute;
-    top: 20px;
-    left: 28px;
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: rgba(10,14,39,0.85);
-    border: 1px solid rgba(240,200,80,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #F0C850;
-    z-index: 3;
-    transition: all 0.5s;
-  }
-  .ws-card.active .ws-step-badge {
-    border-color: #F0C850;
-    box-shadow: 0 0 20px rgba(240,200,80,0.25);
-  }
-  .ws-card .ws-body {
-    padding: 36px 40px;
-    position: relative;
-    z-index: 2;
-  }
-  .ws-card .ws-title {
-    font-size: 26px;
-    font-weight: 500;
-    color: #E8ECF1;
-    margin-bottom: 12px;
-    letter-spacing: 0.5px;
-    transition: color 0.5s;
-  }
-  .ws-card.active .ws-title { color: #F0C850; }
-  .ws-card .ws-desc {
-    font-size: 15px;
-    color: #8890B0;
-    line-height: 1.8;
-    font-weight: 300;
-    transition: color 0.5s;
-  }
-  .ws-card.active .ws-desc { color: #B0B8D0; }
-  .ws-card .ws-stat-row {
-    display: flex;
-    gap: 40px;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(240,200,80,0.06);
-  }
-  .ws-card .ws-stat-num {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 32px;
-    font-weight: 600;
-    color: #F0C850;
-    letter-spacing: 1px;
-  }
-  .ws-card .ws-stat-label {
-    font-size: 11px;
-    color: #8890B0;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-  }
-  /* Mobile collapse */
-  @media (max-width: 768px) {
-    .why-stack-grid { grid-template-columns: 1fr; gap: 40px; }
-    .why-stack-left { position: relative; top: auto; padding-top: 0; }
-    .ws-progress { flex-direction: row; gap: 16px; padding-left: 0; padding-top: 0; }
-    .ws-progress::before { display: none; }
-    .ws-progress .ws-step { padding: 0; }
-    .ws-progress .ws-step::before { display: none; }
-    .why-stack-right { gap: 60px; }
-    .ws-card .ws-media { height: 180px; }
-    .ws-card .ws-body { padding: 24px; }
-    .ws-card .ws-title { font-size: 20px; }
-    .ws-card .ws-stat-row { gap: 24px; }
-    .ws-card .ws-stat-num { font-size: 24px; }
-  }
-
-
-  /* ---- Cinematic Horizontal Accordion: Why Stars ---- */
-  .why-acc-section {
-    z-index: 2;
-    padding: 120px 0;
-  }
-  .h-accordion {
-    display: flex;
-    gap: 10px;
-    height: 480px;
-  }
-  .h-acc-item {
-    flex: 1;
-    border-radius: 26px;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    transition: flex 0.65s cubic-bezier(0.22,1,0.36,1);
-    border: 1px solid rgba(240,200,80,0.08);
-    will-change: flex;
-  }
-  .h-acc-item:not(.active):hover { border-color: rgba(240,200,80,0.25); }
-  .h-acc-item.active { flex: 4; }
-  /* Background gradients per item */
-  .h-acc-item .h-acc-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.6s;
-  }
-  .h-acc-item:not(.active):hover .h-acc-bg { filter: brightness(1.15) saturate(1.2); }
-  .h-acc-item.active .h-acc-bg { filter: brightness(1.05); }
-  /* Overlay gradient */
-  .h-acc-item .h-acc-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10,14,39,0.94) 0%, rgba(10,14,39,0.35) 55%, rgba(10,14,39,0.08) 100%);
-    transition: background 0.6s;
-  }
-  .h-acc-item:not(.active):hover .h-acc-overlay {
-    background: linear-gradient(to top, rgba(10,14,39,0.88) 0%, rgba(10,14,39,0.25) 55%, rgba(10,14,39,0.05) 100%);
-  }
-  /* Number badge */
-  .h-acc-item .h-acc-num {
-    position: absolute;
-    top: 24px;
-    left: 20px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: rgba(240,200,80,0.35);
-    letter-spacing: 2px;
-    z-index: 4;
-    transition: all 0.5s;
-  }
-  .h-acc-item.active .h-acc-num { color: rgba(240,200,80,0.85); left: 32px; }
-  /* Content positioning */
-  .h-acc-item .h-acc-content {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 24px 20px 32px;
-    z-index: 3;
-    transition: padding 0.5s;
-  }
-  .h-acc-item.active .h-acc-content { padding: 32px 36px 40px; }
-  /* Collapsed title - vertical */
-  .h-acc-item .h-acc-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #C8D0E0;
-    letter-spacing: 1.5px;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 4;
-    transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
-    white-space: nowrap;
-  }
-  .h-acc-item:not(.active):hover .h-acc-title { color: #F0C850; }
-  .h-acc-item.active .h-acc-title {
-    writing-mode: horizontal-tb;
-    position: static;
-    transform: none;
-    font-size: 22px;
-    margin-bottom: 10px;
-    color: #F0C850;
-    letter-spacing: 1px;
-  }
-  /* Description & expanded content */
-  .h-acc-item .h-acc-desc {
-    font-size: 14px;
-    color: #8890B0;
-    line-height: 1.7;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: all 0.5s 0.1s cubic-bezier(0.22,1,0.36,1);
-    max-width: 460px;
-  }
-  .h-acc-item.active .h-acc-desc { opacity: 1; transform: translateY(0); }
-  .h-acc-item .h-acc-features {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.5s 0.2s cubic-bezier(0.22,1,0.36,1);
-  }
-  .h-acc-item.active .h-acc-features { opacity: 1; transform: translateY(0); }
-  .h-acc-item .h-acc-tag {
-    padding: 5px 14px;
-    border-radius: 14px;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    border: 1px solid rgba(240,200,80,0.18);
-    color: rgba(240,200,80,0.7);
-    background: rgba(240,200,80,0.05);
-    transition: all 0.3s;
-  }
-  /* Glass info strip in expanded state */
-  .h-acc-item .h-acc-strip {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    display: flex;
-    gap: 24px;
-    opacity: 0;
-    transform: translateX(16px);
-    transition: all 0.5s 0.15s;
-  }
-  .h-acc-item.active .h-acc-strip { opacity: 1; transform: translateX(0); }
-  .h-acc-item .h-acc-strip-item {
-    text-align: right;
-  }
-  .h-acc-item .h-acc-strip-val {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: #F0C850;
-    letter-spacing: 1px;
-  }
-  .h-acc-item .h-acc-strip-label {
-    font-size: 10px;
-    color: #8890B0;
-    letter-spacing: 0.5px;
-  }
-  /* Responsive */
-  @media (max-width: 768px) {
-    .h-accordion { flex-direction: column; height: auto; gap: 8px; }
-    .h-acc-item { height: 66px; flex: none; }
-    .h-acc-item.active { height: 340px; flex: none; }
-    .h-acc-item .h-acc-title { writing-mode: horizontal-tb; position: static; transform: none; font-size: 14px; padding: 22px 24px; }
-    .h-acc-item .h-acc-content { padding: 16px 20px 24px; }
-    .h-acc-item.active .h-acc-content { padding: 24px 28px 32px; }
-    .h-acc-item .h-acc-num { left: 24px; top: 22px; }
-    .h-acc-item .h-acc-strip { top: 22px; right: 20px; gap: 16px; }
-  }
-
-  /* ---- Inline Typography Images ---- */
-  .inline-img {
-    display: inline-block;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    vertical-align: middle;
-    margin: 0 6px;
-    border: 2px solid rgba(240,200,80,0.3);
-    transition: all 0.4s;
-  }
-  .inline-img:hover {
-    border-color: #F0C850;
-    transform: scale(1.15);
-  }
-
-  /* ---- Marquee ---- */
-  .marquee-wrap {
-    overflow: hidden;
-    padding: 40px 0;
-    position: relative;
-  }
-  .marquee-track {
-    display: flex;
-    gap: 60px;
-    animation: marqueeScroll 30s linear infinite;
-    width: max-content;
-  }
-  .marquee-item {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(136,144,176,0.5);
-    letter-spacing: 2px;
-    white-space: nowrap;
-    transition: color 0.4s;
-  }
-  .marquee-item:hover { color: #F0C850; }
-  @keyframes marqueeScroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ---- CTA Section ---- */
-  .cta-section {
-    padding: 100px 0 120px;
-    z-index: 2;
-    position: relative;
-  }
-  .cta-card {
-    background: linear-gradient(135deg, rgba(240,200,80,0.06), rgba(108,92,231,0.08));
-    border: 1px solid rgba(240,200,80,0.12);
-    border-radius: 28px;
-    padding: 72px 48px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .cta-card::before {
-    content: '';
-    position: absolute;
-    top: -30%; left: -30%;
-    width: 160%; height: 160%;
-    background: radial-gradient(ellipse at center, rgba(240,200,80,0.04) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .cta-title {
-    font-size: clamp(2rem, 3.5vw, 2.8rem);
-    font-weight: 500;
-    color: #F0C850;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-    position: relative;
-  }
-  .cta-sub {
-    font-size: 16px;
-    color: #8890B0;
-    margin-bottom: 36px;
-    font-weight: 300;
-    position: relative;
-  }
-
-  /* ---- Footer ---- */
-  .site-footer {
-    padding: 48px 0;
-    border-top: 1px solid rgba(240,200,80,0.06);
-    z-index: 2;
-    position: relative;
-  }
-  .footer-grid {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 24px;
-  }
-  .footer-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #F0C850;
-    letter-spacing: 2px;
-  }
-  .footer-links { display: flex; gap: 28px; }
-  .footer-links a {
-    font-size: 12px;
-    color: #555D80;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    transition: color 0.3s;
-  }
-  .footer-links a:hover { color: #F0C850; }
-  .footer-copy { font-size: 11px; color: #555D80; }
-
-  /* ---- Coming Soon Placeholder: AI News + Community ---- */
-  .coming-dual {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    z-index: 2;
-    position: relative;
-  }
-  .coming-panel {
-    background: rgba(20,24,50,0.55);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(240,200,80,0.1);
-    border-radius: 24px;
-    padding: 48px 36px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s cubic-bezier(0.16,1,0.3,1), border-color 0.5s, background 0.5s;
-    cursor: default;
-  }
-  a.coming-panel { display: block; cursor: pointer; }
-  .coming-panel:hover {
-    border-color: rgba(240,200,80,0.22);
-    background: rgba(26,34,72,0.65);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-    transform: translate3d(0,-3px,0);
-  }
-  .coming-panel::before {
-    content: '';
-    position: absolute;
-    top: -40%; right: -30%;
-    width: 300px; height: 300px;
-    border-radius: 50%;
-    opacity: 0.06;
-    transition: opacity 0.5s;
-    pointer-events: none;
-  }
-  .coming-panel.news::before {
-    background: radial-gradient(circle, rgba(91,155,213,0.8) 0%, transparent 70%);
-  }
-  .coming-panel.community::before {
-    background: radial-gradient(circle, rgba(108,92,231,0.8) 0%, transparent 70%);
-  }
-  .coming-panel:hover::before { opacity: 0.12; }
-  .coming-panel .cp-badge {
-    display: inline-block;
-    padding: 5px 16px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    border: 1px solid;
-  }
-  .coming-panel.news .cp-badge {
-    color: rgba(91,155,213,0.9);
-    border-color: rgba(91,155,213,0.25);
-    background: rgba(91,155,213,0.08);
-  }
-  .coming-panel.community .cp-badge {
-    color: rgba(108,92,231,0.9);
-    border-color: rgba(108,92,231,0.25);
-    background: rgba(108,92,231,0.08);
-  }
-  .coming-panel .cp-icon {
-    font-size: 36px;
-    margin-bottom: 18px;
-    display: block;
-    opacity: 0.7;
-  }
-  .coming-panel h3 {
-    font-size: 22px;
-    font-weight: 500;
-    color: #E8ECF1;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-  }
-  .coming-panel .cp-desc {
-    font-size: 13px;
-    color: #8890B0;
-    line-height: 1.7;
-    margin-bottom: 20px;
-  }
-  .coming-panel .cp-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .coming-panel .cp-feature-tag {
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    border: 1px dashed;
-    opacity: 0.7;
-    transition: all 0.35s;
-  }
-  .coming-panel.news .cp-feature-tag {
-    color: #5B9BD5;
-    border-color: rgba(91,155,213,0.3);
-    background: rgba(91,155,213,0.06);
-  }
-  .coming-panel.community .cp-feature-tag {
-    color: #9B8FEF;
-    border-color: rgba(108,92,231,0.3);
-    background: rgba(108,92,231,0.06);
-  }
-  .coming-panel:hover .cp-feature-tag {
-    opacity: 1;
-    border-style: solid;
-  }
-
-  /* Bottom TabBar - Mobile only */
-  
-  
-  
-  
-  
-  
-
-  /* ---- Responsive ---- */
-  @media (max-width: 1024px) {
-    .bento-grid { grid-template-columns: repeat(2, 1fr); }
-    .bento-card.span-2 { grid-column: span 2; }
-    .bento-card.span-full { grid-column: span 2; flex-direction: column; }
-    .bento-card.span-full .card-img { width: 100%; height: 180px; }
-    .h-accordion { height: 360px; }
-  }
-  @media (max-width: 768px) {
-    
-    
-    body { padding-bottom:72px }
-    .nav-logo { font-size: 14px; letter-spacing: 1px; }
-    .nav-link { font-size: 11px; }
-    .hero-section { padding: 100px 24px 60px; }
-    .hero-heading { font-size: clamp(2rem, 7vw, 3rem); }
-    .bento-grid { grid-template-columns: 1fr; }
-    .bento-card.span-2, .bento-card.span-full { grid-column: span 1; }
-    .bento-card.span-full { flex-direction: column; }
-    .bento-card.span-full .card-img { width: 100%; height: 160px; }
-    .section-spacer, .section-spacer-lg { padding: 72px 0; }
-    .cta-card { padding: 48px 24px; }
-    .footer-grid { flex-direction: column; text-align: center; }
-    .coming-dual { grid-template-columns: 1fr; }
-    .news-card { flex: 0 0 280px; }
-    .news-skeleton { flex: 0 0 280px; }
-    .ai-news-section { padding: 48px 0 60px; }
-  }
-
-.nav-logo{display:none}
-.nav-link{display:none}
-/* ---- Left Sidebar Icon Navigation ---- */
-.icon-nav{position:fixed;left:0;top:0;bottom:0;width:60px;z-index:180;display:flex;flex-direction:column;align-items:center;padding:20px 0;background:rgba(14,18,40,.94);border-right:1px solid rgba(240,200,80,.06)}
-.icon-nav .in-logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#F0C850;letter-spacing:2px;writing-mode:vertical-lr;margin-bottom:20px}
-.icon-nav .in-items{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
-.icon-nav .in-item{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#8890B0;text-decoration:none;transition:all .25s;position:relative}
-.icon-nav .in-item:hover{color:#E8ECF1;background:rgba(240,200,80,.04)}
-.icon-nav .in-item.active{color:#F0C850;background:rgba(240,200,80,.08)}
-.icon-nav .in-item svg{width:18px;height:18px}
-.icon-nav .in-dot{position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#F0C850;border:1.5px solid #0E1232}
-.icon-nav .in-item.logged-in::before{content:'';position:absolute;top:6px;right:10px;width:5px;height:5px;border-radius:50%;background:#60d080;border:1px solid #0E1232}
-/* Page offset for sidebar - push entire page right */
-body.has-icon-nav{padding-left:60px}
-body.has-icon-nav::before{left:60px}
-
-/* Mobile: bottom dock instead */
-@media(max-width:640px){
-  .icon-nav{top:auto;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;padding:0 8px;border-right:none;border-top:1px solid rgba(240,200,80,.06);justify-content:center;gap:0}
-  .icon-nav .in-logo{display:none}
-  .icon-nav .in-items{flex-direction:row;gap:2px;padding-top:0}
-  .icon-nav .in-item{width:auto;flex:1;max-width:64px;height:48px;border-radius:10px;flex-direction:column;gap:1px;font-size:9px;color:#8890B0}
-  .icon-nav .in-item::after{content:attr(data-label);font-size:9px;font-weight:500}
-  .icon-nav .in-item svg{width:16px;height:16px}
-  .in-dot{top:4px;right:auto;left:calc(50% + 6px)}
-  body.has-icon-nav{padding-left:0;padding-bottom:56px}
-  body.has-icon-nav::before{left:0;bottom:56px}
+:root{
+  --bg:#03050b;
+  --bg-2:#070a13;
+  --ink:#f7f8fb;
+  --muted:#a9b0c0;
+  --dim:#687184;
+  --line:rgba(255,255,255,.12);
+  --line-soft:rgba(255,255,255,.07);
+  --gold:#e8c96f;
+  --blue:#9dc7ff;
+  --panel:rgba(12,15,25,.68);
+  --panel-solid:#101520;
+  --radius:18px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --hero:url("images/real/course-ai-what.jpg");
 }
-.menu-btn{display:none}
-
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100dvh;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Noto Sans SC","Manrope",system-ui,sans-serif;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background:
+    linear-gradient(180deg,rgba(3,5,11,.22),rgba(3,5,11,.9) 64%,#03050b),
+    var(--hero) center top/cover no-repeat;
+  transform:scale(1.025);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 18%,rgba(157,199,255,.18),transparent 26%),
+    radial-gradient(circle at 84% 8%,rgba(232,201,111,.10),transparent 18%),
+    linear-gradient(90deg,rgba(3,5,11,.88),rgba(3,5,11,.28) 48%,rgba(3,5,11,.82));
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+.shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
+.site-rail{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:66px;
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  padding:22px 0;
+  border-right:1px solid var(--line-soft);
+  background:rgba(3,5,11,.58);
+  backdrop-filter:blur(26px) saturate(150%);
+  -webkit-backdrop-filter:blur(26px) saturate(150%);
+}
+.rail-logo{
+  writing-mode:vertical-rl;
+  letter-spacing:.18em;
+  font-family:"Manrope","Noto Sans SC",sans-serif;
+  font-weight:800;
+  color:#fff;
+  font-size:14px;
+}
+.rail-items{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.rail-item{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  color:rgba(247,248,251,.58);
+  border:1px solid transparent;
+  transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);
+  position:relative;
+}
+.rail-item:hover,.rail-item.active{color:#fff;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
+.rail-item:active{transform:scale(.96)}
+.rail-item svg{width:19px;height:19px}
+.rail-dot{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:999px;background:var(--gold)}
+.topbar{
+  position:fixed;
+  top:18px;
+  left:calc(66px + 24px);
+  right:24px;
+  z-index:40;
+  height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px 0 22px;
+  border:1px solid var(--line-soft);
+  border-radius:999px;
+  background:rgba(4,7,14,.48);
+  backdrop-filter:blur(26px) saturate(160%);
+  -webkit-backdrop-filter:blur(26px) saturate(160%);
+}
+.brand{display:flex;align-items:baseline;gap:10px;font-weight:800;letter-spacing:.04em}
+.brand span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.08em}
+.top-links{display:flex;align-items:center;gap:6px}
+.top-links a{
+  padding:9px 13px;
+  border-radius:999px;
+  font-size:13px;
+  color:rgba(247,248,251,.72);
+  transition:background .25s var(--ease),color .25s var(--ease);
+}
+.top-links a:hover{background:rgba(255,255,255,.08);color:#fff}
+.top-cta{
+  padding:10px 16px!important;
+  background:#f7f8fb!important;
+  color:#06080f!important;
+  font-weight:700;
+}
+.hero{
+  min-height:100dvh;
+  position:relative;
+  display:grid;
+  align-items:end;
+  padding:118px 0 54px 66px;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(320px,.58fr);
+  align-items:end;
+  gap:56px;
+}
+.kicker{
+  font-family:"Manrope","Noto Sans SC",sans-serif;
+  color:rgba(247,248,251,.68);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  margin-bottom:20px;
+}
+.hero h1{
+  font-size:clamp(3.3rem,8vw,7.4rem);
+  line-height:.96;
+  letter-spacing:0;
+  max-width:860px;
+  text-wrap:balance;
+}
+.hero-copy{
+  margin-top:28px;
+  max-width:640px;
+  color:rgba(247,248,251,.78);
+  font-size:clamp(1rem,1.5vw,1.25rem);
+  line-height:1.9;
+  text-wrap:pretty;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:0 22px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  transition:transform .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease);
+}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:#f7f8fb;color:#06080f}
+.btn.secondary{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff}
+.btn.secondary:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.32)}
+.mission-card{
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
+  backdrop-filter:blur(24px) saturate(155%);
+  -webkit-backdrop-filter:blur(24px) saturate(155%);
+  padding:22px;
+  box-shadow:0 24px 70px rgba(0,0,0,.36);
+}
+.mission-card img{height:210px;width:100%;object-fit:cover;border-radius:15px;filter:saturate(1.08) contrast(1.04)}
+.mission-meta{display:flex;justify-content:space-between;gap:18px;margin-top:18px;color:var(--muted);font-size:12px}
+.mission-meta strong{display:block;color:#fff;font-size:24px;margin-bottom:4px;font-family:"Manrope",sans-serif}
+.section{position:relative;padding:112px 0 0 66px;background:linear-gradient(180deg,rgba(3,5,11,.5),#03050b 32%)}
+.section:first-of-type{padding-top:120px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:34px;margin-bottom:34px}
+.label{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:10px}
+.section h2{font-size:clamp(2rem,4vw,4.4rem);line-height:1.04;letter-spacing:0;text-wrap:balance}
+.section-sub{max-width:520px;color:var(--muted);line-height:1.8;font-size:15px}
+.news-strip{
+  display:grid;
+  grid-template-columns:1.2fr 1fr 1fr;
+  gap:14px;
+}
+.news-card{
+  min-height:230px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--radius);
+  border:1px solid var(--line-soft);
+  background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  padding:22px;
+}
+.news-card:first-child{grid-row:span 2;min-height:474px}
+.news-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:var(--news-bg,linear-gradient(135deg,#172039,#0a0d15));
+  opacity:.54;
+  z-index:0;
+}
+.news-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(3,5,11,.1),rgba(3,5,11,.88));
+  z-index:1;
+}
+.news-card>*{position:relative;z-index:2}
+.news-card small{color:rgba(255,255,255,.58);font-weight:700;margin-bottom:10px}
+.news-card h3{font-size:clamp(1rem,1.8vw,1.7rem);line-height:1.35;margin-bottom:10px}
+.news-card p{color:rgba(247,248,251,.72);font-size:13px;line-height:1.7}
+.course-stage{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:14px;
+}
+.course-card{
+  min-height:430px;
+  grid-column:span 2;
+  position:relative;
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#111722;
+  cursor:pointer;
+  transition:transform .55s var(--ease),border-color .55s var(--ease);
+}
+.course-card.wide{grid-column:span 3;min-height:470px}
+.course-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.28)}
+.course-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.03) brightness(.78) contrast(1.08);transform:scale(1.02);transition:transform .9s var(--ease),filter .9s var(--ease)}
+.course-card:hover img{transform:scale(1.075);filter:saturate(1.16) brightness(.92) contrast(1.02)}
+.course-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(3,5,11,.06),rgba(3,5,11,.35) 42%,rgba(3,5,11,.91)),
+    radial-gradient(circle at 26% 12%,rgba(255,255,255,.18),transparent 22%);
+}
+.course-content{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px}
+.course-top{position:absolute;left:22px;top:22px;right:22px;z-index:2;display:flex;justify-content:space-between;align-items:center}
+.course-code{font-family:"Manrope",sans-serif;font-size:12px;color:rgba(255,255,255,.72);font-weight:800}
+.course-pill{font-size:12px;color:#06080f;background:rgba(247,248,251,.9);border-radius:999px;padding:7px 11px;font-weight:800}
+.course-card h3{font-size:clamp(1.35rem,2.1vw,2rem);line-height:1.18;margin-bottom:12px}
+.course-card p{color:rgba(247,248,251,.72);font-size:14px;line-height:1.75;max-width:420px}
+.course-link{display:inline-flex;margin-top:18px;color:#fff;font-weight:800;font-size:14px}
+.story-grid{
+  display:grid;
+  grid-template-columns:.84fr 1.16fr;
+  gap:22px;
+  align-items:stretch;
+}
+.story-panel{
+  min-height:520px;
+  border-radius:24px;
+  border:1px solid var(--line-soft);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  overflow:hidden;
+  position:relative;
+}
+.story-panel.media img{width:100%;height:100%;object-fit:cover;filter:saturate(1.08) brightness(.78)}
+.story-panel.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(3,5,11,.76))}
+.story-copy{padding:42px;display:flex;flex-direction:column;justify-content:space-between}
+.story-copy h3{font-size:clamp(2rem,4vw,4.8rem);line-height:1.02;max-width:620px}
+.story-copy p{color:var(--muted);line-height:1.9;max-width:620px;margin-top:22px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:50px}
+.metric{border-top:1px solid var(--line-soft);padding-top:18px}
+.metric strong{display:block;font-family:"Manrope",sans-serif;font-size:34px}
+.metric span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.feature-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.feature{
+  min-height:280px;
+  border-radius:22px;
+  border:1px solid var(--line-soft);
+  background:rgba(255,255,255,.045);
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  transition:background .3s var(--ease),transform .3s var(--ease);
+}
+.feature:hover{background:rgba(255,255,255,.075);transform:translateY(-4px)}
+.feature b{font-size:20px}
+.feature p{color:var(--muted);font-size:14px;line-height:1.75;margin-top:12px}
+.feature span{font-family:"Manrope",sans-serif;color:rgba(255,255,255,.35);font-weight:800;font-size:42px}
+.cta{padding:120px 0 82px 66px}
+.cta-card{
+  min-height:420px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    linear-gradient(180deg,rgba(3,5,11,.18),rgba(3,5,11,.88)),
+    url("images/real/course-ai-basics.jpg") center/cover no-repeat;
+  overflow:hidden;
+  padding:42px;
+}
+.cta-card h2{font-size:clamp(2.2rem,5vw,5.2rem);line-height:1.02}
+.cta-card p{max-width:620px;color:rgba(247,248,251,.72);line-height:1.8;margin:18px auto 30px}
+.footer{padding:34px 0 44px 66px;color:rgba(247,248,251,.45);font-size:12px}
+.footer-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line-soft);padding-top:24px}
+.footer a{color:rgba(247,248,251,.62);margin-left:18px}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.visible{opacity:1;transform:none}
+@media(max-width:980px){
+  .topbar{left:82px}
+  .top-links a:not(.top-cta){display:none}
+  .hero-grid,.story-grid{grid-template-columns:1fr}
+  .mission-card{max-width:520px}
+  .course-card,.course-card.wide{grid-column:span 6;min-height:390px}
+  .news-strip{grid-template-columns:1fr}
+  .news-card:first-child{grid-row:auto;min-height:300px}
+  .feature-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .site-rail{top:auto;right:0;bottom:0;width:auto;height:58px;flex-direction:row;padding:0 10px;border-right:0;border-top:1px solid var(--line-soft)}
+  .rail-logo{display:none}
+  .rail-items{flex-direction:row;width:100%;justify-content:space-around}
+  .rail-item{width:48px;height:46px}
+  .topbar{left:12px;right:12px;top:10px;height:50px}
+  .brand span{display:none}
+  .hero,.section,.cta,.footer{padding-left:0}
+  .hero{padding-top:94px;padding-bottom:36px}
+  .shell{width:min(100% - 28px,1180px)}
+  .hero h1{font-size:clamp(2.9rem,17vw,5rem)}
+  .section{padding-top:80px}
+  .section-head{display:block}
+  .section-sub{margin-top:14px}
+  .course-stage{gap:12px}
+  .course-card,.course-card.wide{min-height:360px;border-radius:20px}
+  .story-panel{min-height:auto}
+  .story-copy{padding:28px}
+  .metrics,.feature-row{grid-template-columns:1fr}
+  .cta{padding-bottom:88px}
+  .footer{padding-bottom:88px}
+  .footer a{display:inline-block;margin:12px 14px 0 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
 </style>
+<link rel="stylesheet" href="stars-apple-theme.css">
 </head>
-<body class="has-icon-nav">
-
-<!-- ===== Left Sidebar Icon Navigation ===== -->
-<nav class="icon-nav" id="iconNav">
-  <div class="in-logo">群星</div>
-  <div class="in-items">
-    <a href="index.html" class="in-item active" data-label="首页">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </a>
-    <a href="全部课程.html" class="in-item" data-label="课程">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-    </a>
-        <a href="community.html" class="in-item" data-label="社区">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="7" cy="15" r="2.5"/><path d="M5.5 18.5c.5-1.5 2-3 3.5-3.5M16 12c1.5.5 3 2 3.5 3.5M11 14c-1 1-2 1.5-3.5 1"/></svg>
-    </a>
-<a href="news.html" class="in-item" data-label="资讯">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-      <span class="in-dot"></span>
-    </a>
-    <a href="profile.html" class="in-item" data-label="我的">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </a>
+<body>
+<nav class="site-rail" aria-label="主导航">
+  <div class="rail-logo">群星</div>
+  <div class="rail-items">
+    <a class="rail-item active" href="index.html" aria-label="首页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10.5 12 3l9 7.5V21H5a2 2 0 0 1-2-2v-8.5Z"/><path d="M9 21v-7h6v7"/></svg></a>
+    <a class="rail-item" href="全部课程.html" aria-label="课程"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h14v16H6.5A2.5 2.5 0 0 1 4 17.5v-12A1.5 1.5 0 0 1 5.5 4Z"/><path d="M8 8h8M8 12h8"/></svg></a>
+    <a class="rail-item" href="community.html" aria-label="社区"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM17 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.5 20a6 6 0 0 1 8-5.66M14 14.2A5.5 5.5 0 0 1 21 19.5"/></svg></a>
+    <a class="rail-item" href="news.html" aria-label="资讯"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span class="rail-dot"></span></a>
+    <a class="rail-item" href="profile.html" aria-label="我的"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></a>
   </div>
 </nav>
 
-<!-- Cosmic Background -->
-<div class="cosmic-bg">
-  <div class="nebula nebula-1"></div>
-  <div class="nebula nebula-2"></div>
-  <div class="nebula nebula-3"></div>
-  <div class="nebula nebula-4"></div>
-</div>
-<div class="star-field" id="starField"></div>
-<div class="grain-overlay"></div>
+<header class="topbar">
+  <a class="brand" href="index.html">群星 <span>AI EDUCATION</span></a>
+  <div class="top-links">
+    <a href="#courses">课程</a>
+    <a href="#why">为什么学</a>
+    <a href="#system">体系</a>
+    <a href="news.html">资讯</a>
+    <a class="top-cta" href="全部课程.html">开始学习</a>
+  </div>
+</header>
 
-<!-- Navigation -->
-
-<!-- ===== HERO: Cinematic Center ===== -->
-<section class="hero-section">
-  <div class="hero-content">
-    <p class="hero-eyebrow">Stars AI Education</p>
-    <h1 class="hero-heading">每一颗星辰<br>都是一个起点</h1>
-    <p class="hero-subtitle">
-      在群星，从零开始探索人工智能的无限宇宙。
-      <br>六门体系课程，五十三个实践课节，为你点亮每一段学习旅程。
-    </p>
-    <div class="hero-ctas">
-      <a href="全部课程.html" class="btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        开始探索
-      </a>
-      <a href="课程_AI是什么.html" class="btn-outline">
-        从零入门
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+<main>
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div class="reveal">
+        <div class="kicker">Stars AI Education</div>
+        <h1>每一颗星辰<br>都是一个起点</h1>
+        <p class="hero-copy">在真实宇宙影像的深空里，重新组织 AI 学习路径。从概念、工具、创作到模型原理，群星把复杂技术拆成可以一步步抵达的坐标。</p>
+        <div class="hero-actions">
+          <a href="全部课程.html" class="btn primary">浏览全部课程</a>
+          <a href="课程_AI是什么.html" class="btn secondary">从零入门</a>
+        </div>
+      </div>
+      <aside class="mission-card hero-galaxy-stage reveal" aria-label="交互星系课程概览">
+        <canvas id="heroGalaxyCanvas" aria-hidden="true"></canvas>
+        <div class="hero-galaxy-caption">
+          <small>INTERACTIVE GALAXY</small>
+          <strong>以星系作为学习坐标</strong>
+          <p>拖动鼠标感受星群轻微视差，课程路径像轨道一样从基础、创作、原理一路展开。</p>
+        </div>
+        <div class="mission-meta">
+          <div><strong>6</strong>体系课程</div>
+          <div><strong>53</strong>实践课节</div>
+          <div><strong>0→1</strong>学习路径</div>
+        </div>
+      </aside>
     </div>
-  </div>
-  <div class="scroll-indicator">
-    <div class="scroll-line"></div>
-  </div>
-</section>
+  </section>
 
-<!-- ===== AI NEWS CAROUSEL: Real-time AI industry updates ===== -->
-<section class="ai-news-section">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="news-header-row">
+  <section class="section" aria-labelledby="news-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <div class="label">AI Intelligence</div>
+          <h2 id="news-title">前沿资讯，保持同步。</h2>
+        </div>
+        <p class="section-sub">保留原首页的动态资讯读取逻辑，视觉上改成更接近 Apple Newsroom 的大图块和清晰标题层级。</p>
+      </div>
+      <div class="news-strip reveal" id="newsGrid">
+        <a class="news-card" href="news.html" style="--news-bg:url('images/real/course-ai-basics.jpg') center/cover">
+          <small>每日更新</small>
+          <h3>AI 前沿资讯正在加载</h3>
+          <p>如果本地 news.json 可用，这里会自动替换为真实资讯。</p>
+        </a>
+        <a class="news-card" href="news.html"><small>模型追踪</small><h3>大模型、工具、产业动向</h3><p>把碎片化信息整理成学习者能吸收的更新。</p></a>
+        <a class="news-card" href="news.html"><small>行业应用</small><h3>从课堂到真实世界</h3><p>关注 AI 如何改变内容、编程、科研和工作流。</p></a>
+        <a class="news-card" href="news.html"><small>课程迭代</small><h3>把变化沉淀回课程</h3><p>新知识不是噪声，而是学习路径的更新坐标。</p></a>
+        <a class="news-card" href="news.html"><small>社区精选</small><h3>看见学习者的作品</h3><p>让每一次练习都能被讨论、反馈和继续生长。</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="courses" aria-labelledby="courses-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <div class="label">Curriculum</div>
+          <h2 id="courses-title">六大课程体系。</h2>
+        </div>
+        <p class="section-sub">课程框图片改为真实星系、星云和行星摄影方向，形成统一的深空质感，同时每张卡保留不同课程性格。</p>
+      </div>
+      <div class="course-stage">
+        <article class="course-card wide reveal" onclick="location.href='课程_AI是什么.html'">
+          <img src="images/real/course-ai-what.jpg" alt="AI 入门课程视觉图">
+          <div class="course-top"><span class="course-code">FOUNDATION 01</span><span class="course-pill">入门首选</span></div>
+          <div class="course-content"><h3>AI 是什么</h3><p>从零理解人工智能的本质，建立完整认知框架。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+        <article class="course-card wide reveal" onclick="location.href='课程_AI基础知识.html'">
+          <img src="images/real/course-ai-basics.jpg" alt="AI 基础知识课程视觉图">
+          <div class="course-top"><span class="course-code">FOUNDATION 02</span><span class="course-pill">必修课</span></div>
+          <div class="course-content"><h3>AI 基础知识</h3><p>机器学习、神经网络、深度学习，搭好完整底座。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+        <article class="course-card reveal" onclick="location.href='课程_AI绘画实战.html'">
+          <img src="images/real/course-ai-art.jpg" alt="AI 绘画实战课程视觉图">
+          <div class="course-top"><span class="course-code">CREATE</span><span class="course-pill">热门</span></div>
+          <div class="course-content"><h3>AI 绘画实战</h3><p>从第一张图到商业变现，建立视觉创作工作流。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+        <article class="course-card reveal" onclick="location.href='课程_AI原理实战.html'">
+          <img src="images/real/course-ai-principles.jpg" alt="AI 原理实战课程视觉图">
+          <div class="course-top"><span class="course-code">MODEL</span><span class="course-pill">进阶</span></div>
+          <div class="course-content"><h3>AI 原理实战</h3><p>从零训练第一个模型，动手理解深度学习。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+        <article class="course-card reveal" onclick="location.href='课程_AI文案实战.html'">
+          <img src="images/real/course-ai-copy.jpg" alt="AI 文案实战课程视觉图">
+          <div class="course-top"><span class="course-code">WRITE</span><span class="course-pill">实用</span></div>
+          <div class="course-content"><h3>AI 文案实战</h3><p>Prompt 心法与五大场景，让表达更有结构。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+        <article class="course-card reveal" onclick="location.href='课程_如何与AI对话.html'">
+          <img src="images/real/course-ai-dialogue.jpg" alt="如何与 AI 对话课程视觉图">
+          <div class="course-top"><span class="course-code">DIALOGUE</span><span class="course-pill">核心</span></div>
+          <div class="course-content"><h3>如何与 AI 对话</h3><p>从注意力机制到沟通艺术，掌握协作方式。</p><span class="course-link">进入课程 →</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="why" aria-labelledby="why-title">
+    <div class="shell story-grid">
+      <div class="story-panel media reveal">
+        <img src="images/real/course-ai-basics.jpg" alt="群星 AI 学习体系视觉图">
+      </div>
+      <div class="story-panel story-copy reveal">
+        <div>
+          <div class="label">The Big Why</div>
+          <h3 id="why-title">这不是未来，这就是现在。</h3>
+          <p>AI 正在重塑内容、编程、科学和工作方式。群星不把学习包装成玄学，而是把每个能力拆成可理解、可练习、可反馈的阶段。</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><strong>6</strong><span>门体系课程</span></div>
+          <div class="metric"><strong>53</strong><span>实践课节</span></div>
+          <div class="metric"><strong>100+</strong><span>练习任务方向</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="system" aria-labelledby="system-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <div class="label">Why Stars AI</div>
+          <h2 id="system-title">学习路径像导航一样清晰。</h2>
+        </div>
+        <p class="section-sub">这里会延展到其它页面：课程页、课节页、资讯页、社区页和个人页会共享同一套导航、背景层、卡片和表单规范。</p>
+      </div>
+      <div class="feature-row">
+        <article class="feature reveal"><span>01</span><div><b>体系化学习路径</b><p>从概念到实践，避免被零散教程带着绕路。</p></div></article>
+        <article class="feature reveal"><span>02</span><div><b>AI 实战工坊</b><p>每节课后都有练习和反馈，学完就能做。</p></div></article>
+        <article class="feature reveal"><span>03</span><div><b>前沿资讯同步</b><p>把行业变化转成学习者能理解的更新。</p></div></article>
+        <article class="feature reveal"><span>04</span><div><b>成长型社区</b><p>提问、展示、协作，让学习不是孤立发生。</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="shell cta-card reveal">
       <div>
-        <p class="news-label">AI Intelligence</p>
-        <h2 class="news-heading">
-          <span class="news-live-dot"></span>
-          AI 前沿资讯
-        </h2>
-      </div>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <span class="news-date-label" id="newsDateLabel">每日更新</span>
-        <a href="news.html" style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:8px;border:1px solid rgba(240,200,80,.15);color:#F0C850;font-size:12px;text-decoration:none;transition:all .3s;white-space:nowrap" onmouseover="this.style.background='rgba(240,200,80,.06)';this.style.borderColor='rgba(240,200,80,.3)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(240,200,80,.15)'">查看全部资讯 &#10140;</a>
-      </div>
-    </div>
-
-    <div class="news-carousel-wrap" id="newsCarouselWrap">
-      <div class="news-carousel-track" id="newsTrack">
-        <!-- Skeleton loading -->
-        <div class="news-skeleton"></div>
-        <div class="news-skeleton"></div>
-        <div class="news-skeleton"></div>
-      </div>
-    </div>
-
-    <div class="news-carousel-arrows">
-      <button id="newsPrev" aria-label="Previous">&#10094;</button>
-      <button id="newsNext" aria-label="Next">&#10095;</button>
-    </div>
-  </div>
-</section>
-
-<!-- ===== INTEREST: Bento Grid Courses ===== -->
-<section class="section-spacer-lg">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="mb-14">
-      <p class="section-label">Curriculum</p>
-      <h2 class="section-heading">六大课程体系</h2>
-      <p class="section-sub">从认知到实践，从工具到思维，覆盖AI学习的完整路径</p>
-    </div>
-
-    <!-- BENTO GRID: 3 columns, grid-flow-dense, zero empty cells -->
-    <div class="bento-grid">
-      <!-- Card 1: Span 1, Row 1 -->
-      <div class="bento-card" onclick="location.href='课程_AI是什么.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-what.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#9737;</span>
-          <h3 class="card-title">AI 是什么</h3>
-          <p class="card-desc">从零理解人工智能的本质，建立完整的认知框架。四节课带你走进AI世界。</p>
-          <span class="card-tag">入门首选</span>
-        </div>
-      </div>
-      <!-- Card 2: Span 2, Row 1 (large) -->
-      <div class="bento-card span-2" onclick="location.href='课程_AI基础知识.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-basics.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#9883;</span>
-          <h3 class="card-title">AI 基础知识</h3>
-          <p class="card-desc">机器学习、神经网络、深度学习。六大核心概念，图文并茂，从入门到理解。</p>
-          <span class="card-tag">必修课</span>
-        </div>
-      </div>
-      <!-- Card 3: Span 2, Row 2 -->
-      <div class="bento-card span-2" onclick="location.href='课程_AI绘画实战.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-art.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#10022;</span>
-          <h3 class="card-title">AI 绘画实战</h3>
-          <p class="card-desc">从第一张图到商业变现，完整实战路径。六大课节，Prompt心法到作品集构建。</p>
-          <span class="card-tag">最受欢迎</span>
-        </div>
-      </div>
-      <!-- Card 4: Span 1, Row 2 -->
-      <div class="bento-card" onclick="location.href='课程_AI原理实战.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-principles.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#9889;</span>
-          <h3 class="card-title">AI 原理实战</h3>
-          <p class="card-desc">从零训练第一个模型，动手理解深度学习的本质。</p>
-          <span class="card-tag">进阶</span>
+        <h2>准备好开始你的 AI 之旅了吗？</h2>
+        <p>六门体系课程，五十三个实践课节，从认知到创造，群星陪你走好每一步。</p>
+        <div class="hero-actions" style="justify-content:center">
+          <a href="全部课程.html" class="btn primary">浏览全部课程</a>
+          <a href="contact.html" class="btn secondary">联系我们</a>
         </div>
       </div>
     </div>
+  </section>
+</main>
 
-    <!-- Second row: 2+1 grid -->
-    <div class="bento-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 20px;">
-      <div class="bento-card" onclick="location.href='课程_AI文案实战.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-copy.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#9998;</span>
-          <h3 class="card-title">AI 文案实战</h3>
-          <p class="card-desc">Prompt 心法与五大场景，让你的文字更有力量。</p>
-          <span class="card-tag">实用技能</span>
-        </div>
-      </div>
-      <div class="bento-card" onclick="location.href='课程_如何与AI对话.html'">
-        <div class="card-glow"></div>
-        <img class="card-img" src="images/course-ai-dialogue.png" alt="" loading="lazy">
-        <div class="card-body">
-          <span class="card-icon">&#10077;</span>
-          <h3 class="card-title">如何与 AI 对话</h3>
-          <p class="card-desc">从注意力机制到沟通艺术，掌握AI时代的核心能力。</p>
-          <span class="card-tag">核心能力</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== Infinite Marquee ===== -->
-<div class="marquee-wrap" style="position:relative;z-index:2;">
-  <div class="marquee-track" id="marqueeTrack">
-    <span class="marquee-item">MACHINE LEARNING</span>
-    <span class="marquee-item">NEURAL NETWORKS</span>
-    <span class="marquee-item">DEEP LEARNING</span>
-    <span class="marquee-item">TRANSFORMER</span>
-    <span class="marquee-item">PROMPT ENGINEERING</span>
-    <span class="marquee-item">AI ART</span>
-    <span class="marquee-item">COMPUTER VISION</span>
-    <span class="marquee-item">NATURAL LANGUAGE</span>
-    <span class="marquee-item">MACHINE LEARNING</span>
-    <span class="marquee-item">NEURAL NETWORKS</span>
-    <span class="marquee-item">DEEP LEARNING</span>
-    <span class="marquee-item">TRANSFORMER</span>
-    <span class="marquee-item">PROMPT ENGINEERING</span>
-    <span class="marquee-item">AI ART</span>
-    <span class="marquee-item">COMPUTER VISION</span>
-    <span class="marquee-item">NATURAL LANGUAGE</span>
-  </div>
-</div>
-
-<!-- ===== DESIRE: Cinematic Why-Learn Split Stack ===== -->
-<section class="why-stack-section">
-  <div class="max-w-7xl mx-auto px-8">
-    <div class="why-stack-grid">
-      <!-- LEFT: Pinned Label + Progress -->
-      <div class="why-stack-left" id="wsLeft">
-        <p class="ws-label">The Big Why</p>
-        <h2 class="ws-heading">为什么要学 AI？</h2>
-        <p class="ws-sub">这不仅是学习一门技术，更是掌握这个时代最核心的思维方式。</p>
-        <div class="ws-progress" id="wsProgress">
-          <div class="ws-step" data-index="0">
-            <div class="ws-step-num">01</div>
-            <div class="ws-step-title">认知重塑</div>
-          </div>
-          <div class="ws-step" data-index="1">
-            <div class="ws-step-num">02</div>
-            <div class="ws-step-title">能力跃迁</div>
-          </div>
-          <div class="ws-step" data-index="2">
-            <div class="ws-step-num">03</div>
-            <div class="ws-step-title">同行陪伴</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Scrolling Cards -->
-      <div class="why-stack-right" id="wsRight">
-        <!-- Card 1 -->
-        <div class="ws-card" data-ws="0">
-          <div class="ws-media">
-            <img class="ws-media-bg" src="images/ws-card-1-future.png" alt="" loading="lazy">
-            <div class="ws-media-overlay"></div>
-            <div class="ws-step-badge">01</div>
-          </div>
-          <div class="ws-body">
-            <h3 class="ws-title">这不是未来，这就是现在</h3>
-            <p class="ws-desc">AI 正在重塑每一个行业——从医疗诊断到自动驾驶，从内容创作到科学发现。每一次技术浪潮都会重新定义竞争格局，而这次，你不需要成为数学家也能参与其中。</p>
-            <div class="ws-stat-row">
-              <div><div class="ws-stat-num">97M</div><div class="ws-stat-label">2025年AI新增岗位</div></div>
-              <div><div class="ws-stat-num">+40%</div><div class="ws-stat-label">AI技能薪资溢价</div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="ws-card" data-ws="1">
-          <div class="ws-media">
-            <img class="ws-media-bg" src="images/ws-card-2-access.png" alt="" loading="lazy">
-            <div class="ws-media-overlay"></div>
-            <div class="ws-step-badge">02</div>
-          </div>
-          <div class="ws-body">
-            <h3 class="ws-title">门槛从未如此之低</h3>
-            <p class="ws-desc">十年前想入门AI需要博士学历和十年编程经验。今天，AI工具让任何人都能成为创造者。你需要的只是好奇心，加上一条不绕弯路的学习路径——群星为你准备好了。</p>
-            <div class="ws-stat-row">
-              <div><div class="ws-stat-num">6</div><div class="ws-stat-label">门体系课程</div></div>
-              <div><div class="ws-stat-num">53</div><div class="ws-stat-label">个实践课节</div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="ws-card" data-ws="2">
-          <div class="ws-media">
-            <img class="ws-media-bg" src="images/ws-card-3-journey.png" alt="" loading="lazy">
-            <div class="ws-media-overlay"></div>
-            <div class="ws-step-badge">03</div>
-          </div>
-          <div class="ws-body">
-            <h3 class="ws-title">从 0 到 1，我们陪你走</h3>
-            <p class="ws-desc">完全零基础？没问题。群星的课程体系从「AI是什么」开始，一步步带你走到能独立训练模型、创作AI作品。每一步都有清晰的指引和温暖的陪伴。</p>
-            <div class="ws-stat-row">
-              <div><div class="ws-stat-num">0&rarr;1</div><div class="ws-stat-label">完整成长路径</div></div>
-              <div><div class="ws-stat-num">14&#8201;岁</div><div class="ws-stat-label">创始团队为你设计</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== Cinematic Horizontal Accordion: Why 群星 ===== -->
-<section class="why-acc-section">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="mb-14">
-      <p class="section-label">Why Stars AI</p>
-      <h2 class="section-heading">为什么在群星学习？</h2>
-      <p class="section-sub">不只是课程平台，更是一个会陪伴你成长的AI学习伙伴</p>
-    </div>
-
-    <div class="h-accordion" id="hAccordion">
-      <!-- Item 1: 体系化 -->
-      <div class="h-acc-item active" data-acc="0">
-        <img class="h-acc-bg" src="images/acc-panel-1-system.png" alt="" loading="lazy">
-        <div class="h-acc-overlay"></div>
-        <span class="h-acc-num">01</span>
-        <span class="h-acc-title">体系化学习路径</span>
-        <div class="h-acc-content">
-          <h3 class="h-acc-title">体系化学习路径</h3>
-          <p class="h-acc-desc">6门课程、53个课节，从「AI是什么」到「AI原理实战」，每一条路径都经过精心编排。不绕弯路，不浪费时间，每一步都踩在关键节点上。</p>
-          <div class="h-acc-features">
-            <span class="h-acc-tag">入门到进阶</span>
-            <span class="h-acc-tag">理论+实战</span>
-            <span class="h-acc-tag">6大模块</span>
-          </div>
-        </div>
-        <div class="h-acc-strip">
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">6</div><div class="h-acc-strip-label">课程模块</div></div>
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">53</div><div class="h-acc-strip-label">实践课节</div></div>
-        </div>
-      </div>
-
-      <!-- Item 2: 实战导向 -->
-      <div class="h-acc-item" data-acc="1">
-        <img class="h-acc-bg" src="images/acc-panel-2-practice.png" alt="" loading="lazy">
-        <div class="h-acc-overlay"></div>
-        <span class="h-acc-num">02</span>
-        <span class="h-acc-title">AI实战工坊</span>
-        <div class="h-acc-content">
-          <h3 class="h-acc-title">AI实战工坊</h3>
-          <p class="h-acc-desc">每节课后都有AI实战任务，不是静坐观看，而是真正动手。AI实时评估你的练习成果，给你即时反馈——学完一课，就掌握一课。</p>
-          <div class="h-acc-features">
-            <span class="h-acc-tag">实时评估</span>
-            <span class="h-acc-tag">动手实践</span>
-            <span class="h-acc-tag">奖励系统</span>
-          </div>
-        </div>
-        <div class="h-acc-strip">
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">100+</div><div class="h-acc-strip-label">实践任务</div></div>
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">AI</div><div class="h-acc-strip-label">实时反馈</div></div>
-        </div>
-      </div>
-
-      <!-- Item 3: 前沿资讯 -->
-      <div class="h-acc-item" data-acc="2">
-        <img class="h-acc-bg" src="images/acc-panel-3-news.png" alt="" loading="lazy">
-        <div class="h-acc-overlay"></div>
-        <span class="h-acc-num">03</span>
-        <span class="h-acc-title">前沿AI资讯</span>
-        <div class="h-acc-content">
-          <h3 class="h-acc-title">前沿AI资讯</h3>
-          <p class="h-acc-desc">AI领域日新月异，课程内容持续迭代，资讯每日更新。从大模型发布到行业应用，确保你学到的知识永远不会过时，始终站在浪潮之巅。</p>
-          <div class="h-acc-features">
-            <span class="h-acc-tag">每日更新</span>
-            <span class="h-acc-tag">行业动态</span>
-            <span class="h-acc-tag">大模型追踪</span>
-          </div>
-        </div>
-        <div class="h-acc-strip">
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">7篇/日</div><div class="h-acc-strip-label">精选资讯</div></div>
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">中英</div><div class="h-acc-strip-label">双语来源</div></div>
-        </div>
-      </div>
-
-      <!-- Item 4: 社区共学 -->
-      <div class="h-acc-item" data-acc="3">
-        <img class="h-acc-bg" src="images/acc-panel-4-community.png" alt="" loading="lazy">
-        <div class="h-acc-overlay"></div>
-        <span class="h-acc-num">04</span>
-        <span class="h-acc-title">成长型社区</span>
-        <div class="h-acc-content">
-          <h3 class="h-acc-title">成长型社区</h3>
-          <p class="h-acc-desc">你不是一个人在战斗。提问、交流、协作、分享作品，与志同道合的学习者一起成长。在这里，每一个问题都能得到回应，每一次进步都有人看到。</p>
-          <div class="h-acc-features">
-            <span class="h-acc-tag">问答互助</span>
-            <span class="h-acc-tag">作品展示</span>
-            <span class="h-acc-tag">经验分享</span>
-          </div>
-        </div>
-        <div class="h-acc-strip">
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">共学</div><div class="h-acc-strip-label">学习模式</div></div>
-          <div class="h-acc-strip-item"><div class="h-acc-strip-val">陪伴</div><div class="h-acc-strip-label">成长支持</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ===== COMING SOON: Expanded Dual Section ===== -->
-<section class="section-spacer-lg">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="mb-14">
-      <p class="section-label">Live & Coming</p>
-      <h2 class="section-heading">社区已上线，更多功能在路上</h2>
-      <p class="section-sub">学习者社区现已开放，发帖交流、展示作品。编程作品发布与AI创作工具即将到来</p>
-    </div>
-
-    <div class="max-w-2xl mx-auto">
-      <a href="community.html" class="coming-panel community" style="text-decoration:none">
-        <span class="cp-badge" style="background:rgba(52,211,153,.15);color:#34d399">Live</span>
-        <div class="cp-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(108,92,231,0.6)" stroke-width="1.5">
-            <circle cx="9" cy="7" r="3"/>
-            <circle cx="17" cy="9" r="2.5"/>
-            <circle cx="7" cy="15" r="2.5"/>
-            <path d="M5.5 18.5c.5-1.5 2-3 3.5-3.5M16 12c1.5.5 3 2 3.5 3.5M11 14c-1 1-2 1.5-3.5 1"/>
-          </svg>
-        </div>
-        <h3>学习者社区</h3>
-        <p class="cp-desc">连接每一位AI学习者。在这里提问、交流、协作项目、展示作品。你不是一个人在探索，身边有一群和你一样对AI充满热情的同路人。</p>
-        <div class="cp-features">
-          <span class="cp-feature-tag">文字发帖</span>
-          <span class="cp-feature-tag">图片分享</span>
-          <span class="cp-feature-tag">即时互动</span>
-          <span class="cp-feature-tag">作品展示</span>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== ACTION: CTA ===== -->
-<section class="cta-section">
-  <div class="max-w-4xl mx-auto px-8">
-    <div class="cta-card">
-      <h2 class="cta-title">准备好开始你的 AI 之旅了吗？</h2>
-      <p class="cta-sub">六门体系课程，五十三个实践课节，从认知到创造，群星陪你走好每一步</p>
-      <div class="hero-ctas">
-        <a href="全部课程.html" class="btn-primary">浏览全部课程</a>
-        <a href="contact.html" class="btn-outline">联系我们</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== Footer ===== -->
-<footer class="site-footer">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-logo">群星</div>
-        <p class="footer-copy" style="margin-top:4px;">AI EDUCATION</p>
-      </div>
-      <div class="footer-links">
-        <a href="about.html">隐私政策</a>
-        <a href="about.html">服务条款</a>
-        <a href="contact.html">联系我们</a>
-      </div>
-      <p class="footer-copy">&copy; 2026 群星 · AI 教育平台</p>
-    </div>
+<footer class="footer">
+  <div class="shell footer-grid">
+    <div>© 2026 群星 · AI 教育平台</div>
+    <div><a href="about.html">隐私政策</a><a href="about.html">服务条款</a><a href="contact.html">联系我们</a></div>
   </div>
 </footer>
 
-<!-- Mobile Bottom TabBar -->
-
-<!-- ===== SCRIPTS ===== -->
 <script>
-// ---- Star Field Generation ----
-(function() {
-  var container = document.getElementById('starField');
-  var frag = document.createDocumentFragment();
-  for (var i = 0; i < 150; i++) {
-    var dot = document.createElement('div');
-    dot.className = 'star-dot';
-    var size = Math.random() * 2.5 + 0.8;
-    var isGold = Math.random() > 0.78;
-    dot.style.cssText = [
-      'width:' + size + 'px',
-      'height:' + size + 'px',
-      'top:' + (Math.random() * 100) + '%',
-      'left:' + (Math.random() * 100) + '%',
-      'background:' + (isGold ? '#F0C850' : '#fff'),
-      'opacity:' + (Math.random() * 0.5 + 0.3),
-      'animation:twinkle' + i + ' ' + (Math.random() * 4 + 3) + 's ease-in-out infinite',
-      'animation-delay:' + (Math.random() * 6) + 's'
-    ].join(';');
-    frag.appendChild(dot);
-  }
-  container.appendChild(frag);
-
-  // Dynamic keyframes
-  var style = document.createElement('style');
-  var css = '';
-  for (var i = 0; i < 150; i++) {
-    css += '@keyframes twinkle' + i + ' { 0%,100%{opacity:' + (Math.random()*0.3+0.15) + ';transform:scale(1)} 50%{opacity:' + (Math.random()*0.5+0.5) + ';transform:scale(1.4)} }';
-  }
-  style.textContent = css;
-  document.head.appendChild(style);
-})();
-
-// ---- Navigation scroll effect ----
-(function() {
-  var nav = document.getElementById('navPill');
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 60) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  });
-})();
-
-// ---- Card glow mouse tracking ----
-document.querySelectorAll('.bento-card').forEach(function(card) {
-  card.addEventListener('mousemove', function(e) {
-    var rect = card.getBoundingClientRect();
-    var x = ((e.clientX - rect.left) / rect.width) * 100;
-    var y = ((e.clientY - rect.top) / rect.height) * 100;
-    card.style.setProperty('--mx', x + '%');
-    card.style.setProperty('--my', y + '%');
-  });
-});
-
-// ---- Horizontal Accordion ----
-(function() {
-  var items = document.querySelectorAll('.h-acc-item');
-  if (!items.length) return;
-
-  items.forEach(function(item) {
-    item.addEventListener('click', function() {
-      // If clicking already-active item, do nothing
-      if (item.classList.contains('active')) return;
-      items.forEach(function(el) { el.classList.remove('active'); });
-      item.classList.add('active');
-    });
-  });
-})();
-
-// ---- GSAP: Parallax Depth on Nebula layers ----
-gsap.registerPlugin(ScrollTrigger);
-
-gsap.to('.nebula-1', {
-  y: 200,
-  x: -60,
-  ease: 'none',
-  scrollTrigger: {
-    trigger: 'body',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.8
-  }
-});
-gsap.to('.nebula-2', {
-  y: -150,
-  x: 40,
-  ease: 'none',
-  scrollTrigger: {
-    trigger: 'body',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.8
-  }
-});
-gsap.to('.nebula-3', {
-  y: 100,
-  x: -30,
-  ease: 'none',
-  scrollTrigger: {
-    trigger: 'body',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.8
-  }
-});
-
-// ---- GSAP: Cinematic Why-Learn Split Stack ----
-(function() {
-  var cards = document.querySelectorAll('.ws-card');
-  var steps = document.querySelectorAll('#wsProgress .ws-step');
-  if (!cards.length || !steps.length) return;
-
-  // ScrollTrigger for each card: activate when card enters view
-  cards.forEach(function(card, i) {
-    ScrollTrigger.create({
-      trigger: card,
-      start: 'top 60%',
-      end: 'bottom 40%',
-      onEnter: function() {
-        cards.forEach(function(c) { c.classList.remove('active'); });
-        steps.forEach(function(s) { s.classList.remove('active'); });
-        card.classList.add('active');
-        if (steps[i]) steps[i].classList.add('active');
-      },
-      onEnterBack: function() {
-        cards.forEach(function(c) { c.classList.remove('active'); });
-        steps.forEach(function(s) { s.classList.remove('active'); });
-        card.classList.add('active');
-        if (steps[i]) steps[i].classList.add('active');
-      }
-    });
-
-    // Fade-in animation on scroll
-    gsap.fromTo(card, 
-      { opacity: 0, y: 48, scale: 0.96 },
-      {
-        opacity: 1, y: 0, scale: 1,
-        duration: 0.9,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 82%',
-          toggleActions: 'play none none none'
-        }
-      }
-    );
-  });
-
-  // Clickable progress steps scroll to corresponding card
-  steps.forEach(function(step) {
-    step.addEventListener('click', function() {
-      var index = parseInt(step.getAttribute('data-index'));
-      if (cards[index]) {
-        cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    });
-    step.style.cursor = 'pointer';
-  });
-
-  // Parallax on media backgrounds within cards
-  cards.forEach(function(card) {
-    var bg = card.querySelector('.ws-media-bg');
-    if (!bg) return;
-    gsap.to(bg, {
-      y: -30,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: card,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 0.6
-      }
-    });
-  });
-})();
-
-// ---- Smooth scroll for anchor links ----
-document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-  anchor.addEventListener('click', function(e) {
-    var target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
-</script>
-
-<script>
-// Icon nav active state + login indicator
 (function(){
-  var links = document.querySelectorAll('.icon-nav .in-item');
-  var page = window.location.pathname.split('/').pop() || 'index.html';
-  links.forEach(function(a){
-    var href = a.getAttribute('href') || '';
-    if (href === page || (page === '' && href === 'index.html')) {
-      a.classList.add('active');
+  var seen = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        seen.unobserve(entry.target);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){seen.observe(el);});
+
+  var profile = document.querySelector('.rail-item[href="profile.html"]');
+  try{
+    var token = JSON.parse(localStorage.getItem('stars_token'));
+    if(token && token.token && profile){
+      var dot = document.createElement('span');
+      dot.className = 'rail-dot';
+      dot.style.background = '#6ee7a8';
+      profile.appendChild(dot);
     }
-    // 标记已登录状态
-    if (href === 'profile.html') {
-      try {
-        var token = JSON.parse(localStorage.getItem('stars_token'));
-        if (token && token.token) a.classList.add('logged-in');
-      } catch(e) {}
+  }catch(e){}
+
+  var newsGrid = document.getElementById('newsGrid');
+  if(!newsGrid) return;
+  fetch('news.json?v=' + Date.now()).then(function(res){
+    if(!res.ok) throw new Error('news unavailable');
+    return res.json();
+  }).then(function(data){
+    var flat = [];
+    if(data && data.news && data.dates){
+      data.dates.forEach(function(d){ if(data.news[d]) flat = flat.concat(data.news[d]); });
+    }else if(Array.isArray(data)){
+      flat = data;
     }
-  });
+    flat = flat.slice(0,5);
+    if(!flat.length) return;
+    var bg = [
+      "url('images/real/course-ai-what.jpg') center/cover",
+      "url('images/real/course-ai-principles.jpg') center/cover",
+      "url('images/real/course-ai-art.jpg') center/cover",
+      "url('images/real/course-ai-dialogue.jpg') center/cover",
+      "url('images/real/course-ai-basics.jpg') center/cover"
+    ];
+    newsGrid.innerHTML = flat.map(function(item,i){
+      var url = item.url || 'news.html';
+      return '<a class="news-card" href="'+escapeHtml(url)+'" target="'+(url.indexOf('http')===0?'_blank':'_self')+'" rel="noopener" style="--news-bg:'+bg[i]+'">'
+        + '<small>' + escapeHtml(item.category || item.source || 'AI资讯') + '</small>'
+        + '<h3>' + escapeHtml(item.title || 'AI 前沿资讯') + '</h3>'
+        + '<p>' + escapeHtml(item.summary || '阅读全文了解更多。') + '</p>'
+        + '</a>';
+    }).join('');
+  }).catch(function(){});
+
+  function escapeHtml(value){
+    return String(value || '').replace(/[&<>"']/g,function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch];
+    });
+  }
 })();
 </script>
-
-<!-- ===== AI NEWS CAROUSEL ENGINE ===== -->
-<script>
-(function() {
-  var track = document.getElementById('newsTrack');
-  var prevBtn = document.getElementById('newsPrev');
-  var nextBtn = document.getElementById('newsNext');
-  var dateLabel = document.getElementById('newsDateLabel');
-  if (!track) return;
-
-  var cards = [];
-  var cardWidth = 352 + 20; // card width + gap
-  var autoScrollInterval = null;
-  var autoScrollPaused = false;
-  var userInteracting = false;
-
-  // ---- Fetch and render ----
-  function renderCards(newsData) {
-    // Clear skeletons
-    track.innerHTML = '';
-
-    if (!newsData || !newsData.length) {
-      track.innerHTML = '<div style="width:100%;text-align:center;padding:60px 20px;color:#555D80;font-size:14px;">'
-        + '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#555D80" stroke-width="1" style="margin:0 auto 16px;display:block;opacity:0.4;">'
-        + '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
-        + '资讯正在赶来...</div>';
-      return;
-    }
-
-    // Update date label
-    var dates = newsData.map(function(n) { return n.date; }).filter(Boolean);
-    if (dates.length) {
-      dateLabel.textContent = '更新于 ' + dates[0];
-    }
-
-    newsData.forEach(function(item, i) {
-      var card = document.createElement('div');
-      card.className = 'news-card';
-      card.setAttribute('data-index', i);
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(24px)';
-
-      var hasImage = item.image;
-      var gradient = item.image_gradient || 'linear-gradient(135deg, #1a1a5e 0%, #2d1060 50%, #0e2e4e 100%)';
-
-      var gradientDiv;
-      if (hasImage) {
-        gradientDiv = '<div class="nc-gradient" style="background:' + gradient + ';">'
-          + '<img src="' + item.image + '" alt="" loading="lazy" '
-          + 'style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" '
-          + 'onerror="this.style.opacity=\'0.12\'">'
-          + '<div class="nc-gradient-overlay"></div>'
-          + '<span class="nc-category">' + (item.category || 'AI资讯') + '</span>'
-          + '</div>';
-      } else {
-        gradientDiv = '<div class="nc-gradient" style="background:' + gradient + ';">'
-          + '<div class="nc-gradient-overlay"></div>'
-          + '<span class="nc-category">' + (item.category || 'AI资讯') + '</span>'
-          + '</div>';
-      }
-
-      card.innerHTML = gradientDiv
-        + '<div class="nc-body">'
-        + '<h3 class="nc-title">' + (item.title || '') + '</h3>'
-        + '<p class="nc-summary">' + (item.summary || '') + '</p>'
-        + '<div class="nc-meta">'
-        + '<span class="nc-source"><span class="nc-source-dot"></span>' + (item.source || '') + '</span>'
-        + '<span class="nc-arrow">&#10140;</span>'
-        + '</div>'
-        + '</div>';
-
-      // Native <a> overlay - most reliable cross-browser link handling
-      if (item.url && item.url !== '#') {
-        var linkOverlay = document.createElement('a');
-        linkOverlay.href = item.url;
-        linkOverlay.target = '_blank';
-        linkOverlay.rel = 'noopener';
-        linkOverlay.style.cssText = 'position:absolute;inset:0;z-index:2;';
-        linkOverlay.setAttribute('aria-label', item.title || '新闻链接');
-        card.style.position = 'relative';
-        card.appendChild(linkOverlay);
-      }
-
-      track.appendChild(card);
-      cards.push(card);
-    });
-
-    // GSAP stagger reveal
-    if (typeof gsap !== 'undefined') {
-      gsap.to('.news-card', {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: 'power2.out',
-        delay: 0.2
-      });
-    } else {
-      cards.forEach(function(c) { c.style.opacity = '1'; c.style.transform = 'translateY(0)'; });
-    }
-
-    // Start auto-scroll
-    startAutoScroll();
-  }
-
-  // ---- Flatten date-grouped news into array ----
-  function flattenNews(data) {
-    // v2 format: {updated, dates:[], news:{"2026-06-13":[...]}}
-    if (data && data.news && data.dates) {
-      var flat = [];
-      data.dates.forEach(function(d) {
-        if (data.news[d] && data.news[d].length) {
-          flat = flat.concat(data.news[d]);
-        }
-      });
-      return flat;
-    }
-    // v1 format: [{...}] flat array
-    if (Array.isArray(data)) return data;
-    return null;
-  }
-
-  // ---- Load news data ----
-  function loadNews() {
-    fetch('news.json?v=' + Date.now())
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function(data) {
-        var flat = flattenNews(data);
-        if (flat && flat.length) {
-          renderCards(flat);
-        } else {
-          throw new Error('Empty data');
-        }
-      })
-      .catch(function(err) {
-        console.warn('News fetch fallback - using embedded data, reason:', err.message);
-        renderCards([
-          {id:1,title:'SpaceX以1.77万亿美元登陆纳斯达克，史上最大IPO',summary:'SpaceX正式以SPCX代码挂牌，募资750亿美元，Google与Anthropic为其最大算力客户，合同年化超250亿美元。',source:'36氪',date:'2026-06-12',url:'https://baijiahao.baidu.com/s?id=1867801277251358796',category:'大厂动态',image:'https://picsum.photos/seed/spacex-rocket/800/450'},
-          {id:2,title:'GPT-5.6即将发布：内部代号Iris-Alpha，编程能力显著提升',summary:'OpenAI首席科学家透露GPT-5.6将比GPT-5.5有显著改进，前端与视觉能力大幅跃升。',source:'The Information',date:'2026-06-13',url:'https://news.qq.com/rain/a/20260611A0138K00',category:'大模型',image:'https://picsum.photos/seed/neural-network/800/450'},
-          {id:3,title:'OpenAI秘密提交IPO申请，估值最高达1万亿美元',summary:'OpenAI官宣已秘密向SEC递交IPO申请，正与高盛和大摩合作，最快今秋上市。',source:'IT之家',date:'2026-06-11',url:'https://www.ithome.com/0/962/704.htm',category:'大厂动态',image:'https://picsum.photos/seed/stock-market/800/450'},
-          {id:4,title:'苹果WWDC发布Siri AI：由Gemini提供技术支持',summary:'苹果发布由谷歌Gemini大模型支持的Siri AI，支持端侧+云端混合运算，首次拥有独立应用界面。',source:'软盟资讯',date:'2026-06-11',url:'https://news.softunis.com/61171.html',category:'大厂动态',image:'https://picsum.photos/seed/apple-ai/800/450'},
-          {id:5,title:'DeepSeek首轮融资约500亿元，估值最高590亿美元',summary:'中国AI公司DeepSeek首轮融资吸引约500亿意向，腾讯和宁德时代将成为最大外部投资者。',source:'界面新闻',date:'2026-06-11',url:'https://news.softunis.com/61171.html',category:'融资动态',image:'https://picsum.photos/seed/deep-learning/800/450'},
-          {id:6,title:'2026未来汽车AI技术展重庆开幕：五大板块展示AI+汽车',summary:'设新能源汽车智造、机器人技术应用、AI大模型创新等五大核心板块，同期举办汽车论坛和车展。',source:'IT之家',date:'2026-06-13',url:'https://www.ithome.com/0/959/868.htm',category:'AI应用',image:'https://picsum.photos/seed/autonomous-car/800/450'}
-        ]);
-      });
-  }
-
-  // ---- Auto-scroll ----
-  function startAutoScroll() {
-    if (!cards.length) return;
-    stopAutoScroll();
-    autoScrollInterval = setInterval(function() {
-      if (autoScrollPaused || userInteracting) return;
-      var currentScroll = track.scrollLeft;
-      var maxScroll = track.scrollWidth - track.clientWidth;
-      var nextScroll = currentScroll + cardWidth;
-
-      if (nextScroll >= maxScroll - 10) {
-        // Smooth loop back to start
-        track.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        track.scrollBy({ left: cardWidth, behavior: 'smooth' });
-      }
-    }, 4000);
-  }
-
-  function stopAutoScroll() {
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      autoScrollInterval = null;
-    }
-  }
-
-  // ---- Arrow navigation ----
-  function scrollCards(direction) {
-    userInteracting = true;
-    var currentScroll = track.scrollLeft;
-    var scrollAmount = cardWidth * (direction === 'next' ? 1 : -1);
-    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    autoScrollPaused = true;
-    clearTimeout(track._pauseTimer);
-    track._pauseTimer = setTimeout(function() {
-      autoScrollPaused = false;
-      userInteracting = false;
-    }, 6000);
-  }
-
-  if (prevBtn) prevBtn.addEventListener('click', function() { scrollCards('prev'); });
-  if (nextBtn) nextBtn.addEventListener('click', function() { scrollCards('next'); });
-
-  // ---- Pause auto-scroll on hover ----
-  var wrap = document.getElementById('newsCarouselWrap');
-  if (wrap) {
-    wrap.addEventListener('mouseenter', function() { autoScrollPaused = true; });
-    wrap.addEventListener('mouseleave', function() {
-      autoScrollPaused = false;
-      userInteracting = false;
-    });
-  }
-
-  // ---- Touch/swipe pause ----
-  track.addEventListener('touchstart', function() { autoScrollPaused = true; userInteracting = true; });
-  track.addEventListener('touchend', function() {
-    clearTimeout(track._pauseTimer);
-    track._pauseTimer = setTimeout(function() {
-      autoScrollPaused = false;
-      userInteracting = false;
-    }, 5000);
-  });
-
-  // ---- Mouse drag to scroll ----
-  var isDown = false, startX, scrollLeftStart;
-  track.addEventListener('mousedown', function(e) {
-    isDown = true;
-    track.classList.add('dragging');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeftStart = track.scrollLeft;
-    autoScrollPaused = true;
-    userInteracting = true;
-  });
-  track.addEventListener('mouseleave', function() {
-    if (isDown) { isDown = false; track.classList.remove('dragging'); }
-  });
-  track.addEventListener('mouseup', function() {
-    isDown = false;
-    track.classList.remove('dragging');
-    clearTimeout(track._pauseTimer);
-    track._pauseTimer = setTimeout(function() {
-      autoScrollPaused = false;
-      userInteracting = false;
-    }, 5000);
-  });
-  track.addEventListener('mousemove', function(e) {
-    if (!isDown) return;
-    e.preventDefault();
-    var x = e.pageX - track.offsetLeft;
-    var walk = (x - startX) * 1.8;
-    track.scrollLeft = scrollLeftStart - walk;
-  });
-
-  // ---- GSAP scroll-triggered section reveal ----
-  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-    gsap.from('.ai-news-section', {
-      scrollTrigger: {
-        trigger: '.ai-news-section',
-        start: 'top 78%',
-        toggleActions: 'play none none none'
-      },
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: 'power2.out'
-    });
-  }
-
-  // ---- Init ----
-  loadNews();
-})();
-</script>
+<script src="stars-apple-enhance.js" defer></script>
 </body>
 </html>
+
+
+
+
+
+

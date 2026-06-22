@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -182,6 +182,7 @@ body.has-icon-nav{padding-left:60px}
   .btn-create{padding:8px 16px;font-size:12px}
 }
 </style>
+<link rel="stylesheet" href="stars-apple-theme.css">
 </head>
 <body class="has-icon-nav">
 
@@ -300,7 +301,7 @@ body.has-icon-nav{padding-left:60px}
   <img src="" alt="" id="lightboxImg">
 </div>
 
-<script src="auth-guard.js"></script>
+
 <script>
 // ========== Token Helpers ==========
 function getToken() {
@@ -548,7 +549,7 @@ function renderPosts(posts) {
 // ========== Like ==========
 async function toggleLike(postId, idx) {
   if (!currentUser) { showToast('请先登录', 'error'); return; }
-  const token = localStorage.getItem('stars_token');
+  const token = getToken();
   const res = await fetch(API + '/api/community/like', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -574,7 +575,7 @@ async function addComment(postId) {
   const text = input.value.trim();
   if (!text) return;
 
-  const token = localStorage.getItem('stars_token');
+  const token = getToken();
   const res = await fetch(API + '/api/community/comment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -649,5 +650,10 @@ function closeLightbox() {
   });
 })();
 </script>
+<script src="stars-apple-enhance.js" defer></script>
 </body>
 </html>
+
+
+
+
